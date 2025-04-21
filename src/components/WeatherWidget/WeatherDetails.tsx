@@ -27,7 +27,9 @@ type Props = {
   moonInfo: MoonInfo;
   timeOfDay: "day" | "afternoon" | "night";
   location: string;
+  isLoading?: boolean;
 };
+
 export function WeatherDetails({
   weather,
   forecast,
@@ -35,8 +37,9 @@ export function WeatherDetails({
   moonInfo,
   timeOfDay,
   location,
+  isLoading = false,
 }: Props) {
-  if (!weather) {
+  if (isLoading || !weather) {
     return (
       <div className="h-32 flex items-center justify-center">
         <div className="animate-pulse text-gray-400">Loading weather data...</div>
@@ -68,7 +71,7 @@ export function WeatherDetails({
       <div className="text-xs text-gray-600 mb-1 flex justify-between items-center">
         <div className="flex items-center gap-1">
           <CloudSun className="h-3 w-3" />
-          <span>{location}</span>
+          <span>{location || "Unknown Location"}</span>
         </div>
         <span className="text-[10px] opacity-70">Updated: {new Date().toLocaleTimeString()}</span>
       </div>
@@ -116,7 +119,7 @@ export function WeatherDetails({
       {/* Forecast/History */}
       <div className="mt-1">
         <span className="text-xs font-semibold block pb-1">Next 7 Days</span>
-        <div className="flex gap-1 overflow-x-auto">
+        <div className="flex gap-1 overflow-x-auto pb-1">
           {forecast.map((day, i) => (
             <div key={i} className="min-w-[60px] rounded bg-foliage-light/40 p-1 text-center text-xs flex flex-col items-center">
               <Calendar className="h-3 w-3 m-auto text-gray-400 mb-0.5" />
@@ -129,7 +132,7 @@ export function WeatherDetails({
       </div>
       <div className="mt-2">
         <span className="text-xs font-semibold block pb-1">Past 7 Days</span>
-        <div className="flex gap-1 overflow-x-auto">
+        <div className="flex gap-1 overflow-x-auto pb-1">
           {history.map((day, i) => (
             <div key={i} className="min-w-[60px] rounded bg-sky-light/30 p-1 text-center text-xs flex flex-col items-center">
               <Calendar className="h-3 w-3 m-auto text-gray-400 mb-0.5" />
