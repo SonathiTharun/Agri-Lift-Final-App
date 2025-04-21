@@ -8,7 +8,7 @@ import {
   Sprout, 
   ClipboardList, 
   Bot, 
-  Drone, 
+  Plane, // Replaced 'Drone' with 'Plane'
   Droplet,
   Globe,
   Leaf,
@@ -82,7 +82,7 @@ const Services = () => {
       badge: "Advanced"
     },
     {
-      icon: <Drone className="w-8 h-8" />,
+      icon: <Plane className="w-8 h-8" />, // Changed from Drone to Plane
       title: "Drone Mapping & Analysis",
       description: "Aerial imaging and analysis for crop monitoring",
       features: [
