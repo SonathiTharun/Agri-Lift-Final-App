@@ -1,8 +1,8 @@
-
 import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { AnimatedWeatherIcon } from "./WeatherWidget/AnimatedWeatherIcon";
 import { WeatherDetails } from "./WeatherWidget/WeatherDetails";
+import { toast } from "@/components/ui/use-toast";
 
 // Weather data types
 type WeatherDay = {
@@ -40,84 +40,275 @@ export function WeatherWidget() {
   const [moonInfo, setMoonInfo] = useState<MoonInfo>({ rise: "5:42 AM", set: "7:18 PM", phase: "Waxing Crescent" });
   const [expanded, setExpanded] = useState(false);
   const [timeOfDay, setTimeOfDay] = useState(getTimeOfDay());
+  const [location, setLocation] = useState("Loading location...");
+  const [userCoords, setUserCoords] = useState<{lat: number, lon: number} | null>(null);
 
-  // Simulate API response with extra fields for demonstration
+  // Get user's geolocation
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          setUserCoords({ lat: latitude, lon: longitude });
+          
+          // Fetch location name
+          fetch(`https://api.openweathermap.org/geo/1.0/reverse?lat=${latitude}&lon=${longitude}&limit=1&appid=DEMO_KEY`)
+            .then(res => {
+              // Since we're using a demo key, we'll simulate the response
+              setLocation("Delhi, India");
+            })
+            .catch(() => {
+              setLocation("Location unavailable");
+            });
+        },
+        () => {
+          toast({
+            title: "Location access denied",
+            description: "Using default weather data",
+          });
+          setLocation("Delhi, India");
+        }
+      );
+    } else {
+      setLocation("Geolocation not supported");
+    }
+  }, []);
+
+  // Generate realistic weather data based on location and time
   useEffect(() => {
     const timer = setTimeout(() => {
-      // Current weather (simulate more realistic changes here)
+      // Simulate realistic seasons and weather patterns
+      const month = new Date().getMonth(); // 0-11
       const hour = new Date().getHours();
-      let icon = "sun";
-      let cond = "Sunny";
-      if (hour >= 18 || hour < 5) { icon = "moon"; cond = "Night"; }
-      else if (hour >= 15 && hour < 18) { icon = "sun"; cond = "Sunny"; }
-      else if (hour >= 12 && hour < 15) { icon = "cloud-sun"; cond = "Partly Cloudy"; }
-      else if (hour >= 8 && hour < 12) { icon = "cloud"; cond = "Cloudy"; }
-      if (hour >= 1 && hour < 6) { icon = "cloud-moon"; cond = "Night"; }
-      // You can simulate rainy conditions randomly:
-      if (Math.random() > 0.7) { cond = "Rain"; icon = "cloud-rain"; }
-
+      
+      // Determine seasonal temperature ranges
+      let baseTemp = 25; // default base temp
+      let tempVariation = 5;
+      
+      // Seasonal adjustments
+      if (month >= 11 || month <= 1) { // Winter (Dec-Feb)
+        baseTemp = 15;
+        tempVariation = 8;
+      } else if (month >= 2 && month <= 4) { // Spring (Mar-May)
+        baseTemp = 22;
+        tempVariation = 7;
+      } else if (month >= 5 && month <= 8) { // Summer (Jun-Sep)
+        baseTemp = 32;
+        tempVariation = 6;
+      } else { // Fall (Oct-Nov)
+        baseTemp = 24;
+        tempVariation = 7;
+      }
+      
+      // Diurnal temperature variations
+      if (hour >= 0 && hour < 6) baseTemp -= 3; // Early morning
+      else if (hour >= 6 && hour < 12) baseTemp += 1; // Morning
+      else if (hour >= 12 && hour < 18) baseTemp += 4; // Afternoon
+      else baseTemp -= 1; // Evening
+      
+      // Determine appropriate weather conditions based on season and randomness
+      const conditions = ["Sunny", "Partly Cloudy", "Cloudy", "Rain", "Thunderstorm"];
+      const seasonalProbabilities = {
+        winter: [0.4, 0.3, 0.2, 0.1, 0.0], // Higher chance of clear in winter
+        spring: [0.3, 0.3, 0.2, 0.15, 0.05], 
+        summer: [0.2, 0.3, 0.2, 0.2, 0.1], // Higher chance of storms in summer
+        fall: [0.3, 0.3, 0.2, 0.15, 0.05]
+      };
+      
+      // Select probabilities based on current season
+      let probs;
+      if (month >= 11 || month <= 1) probs = seasonalProbabilities.winter;
+      else if (month >= 2 && month <= 4) probs = seasonalProbabilities.spring;
+      else if (month >= 5 && month <= 8) probs = seasonalProbabilities.summer;
+      else probs = seasonalProbabilities.fall;
+      
+      // Weighted selection of condition
+      const rand = Math.random();
+      let cumulativeProb = 0;
+      let conditionIndex = 0;
+      
+      for (let i = 0; i < probs.length; i++) {
+        cumulativeProb += probs[i];
+        if (rand <= cumulativeProb) {
+          conditionIndex = i;
+          break;
+        }
+      }
+      
+      const condition = conditions[conditionIndex];
+      let icon = "";
+      
+      // Set icon based on condition and time
+      if (hour >= 18 || hour < 6) {
+        icon = "moon";
+        if (condition === "Partly Cloudy") icon = "cloud-moon";
+      } else {
+        if (condition === "Sunny") icon = "sun";
+        else if (condition === "Partly Cloudy") icon = "cloud-sun";
+        else if (condition === "Cloudy") icon = "cloud";
+        else if (condition === "Rain") icon = "cloud-rain";
+        else if (condition === "Thunderstorm") icon = "cloud-lightning";
+      }
+      
+      // Calculate temperature with some randomness
+      const temp = Math.round(baseTemp + (Math.random() * 2 - 1) * tempVariation);
+      
+      // More realistic humidity based on conditions
+      let humidity = 50;
+      if (condition === "Rain" || condition === "Thunderstorm") humidity = 70 + Math.floor(Math.random() * 20);
+      else if (condition === "Cloudy") humidity = 60 + Math.floor(Math.random() * 15);
+      else if (condition === "Partly Cloudy") humidity = 50 + Math.floor(Math.random() * 15);
+      else humidity = 40 + Math.floor(Math.random() * 15);
+      
+      // AQI calculations based on conditions
+      let aqi = Math.floor(Math.random() * 50) + 20;
+      if (condition === "Cloudy" || condition === "Rain") aqi += 10;
+      
+      // Create current weather
       setWeather({
         date: new Date().toLocaleDateString(),
-        temp: Math.floor(Math.random() * 10) + 25,
-        condition: cond,
+        temp,
+        condition,
         icon,
-        humidity: Math.floor(Math.random() * 30) + 40,
+        humidity,
         wind: Math.floor(Math.random() * 15) + 5,
-        aqi: Math.floor(Math.random() * 50) + 20,
-        pollen: ["Low", "Moderate", "High"][Math.floor(Math.random() * 3)],
-        drivingDifficulty: ["Low", "Moderate", "High"][Math.floor(Math.random() * 3)]
+        aqi,
+        pollen: condition === "Rain" ? "Low" : ["Low", "Moderate", "High"][Math.floor(Math.random() * 3)],
+        drivingDifficulty: condition === "Rain" || condition === "Thunderstorm" ? "High" : condition === "Cloudy" ? "Moderate" : "Low"
       });
 
-      // Generate forecast data
+      // Generate forecast data with realistic progression
       const forecastData = Array.from({ length: 7 }, (_, i) => {
         const date = new Date();
         date.setDate(date.getDate() + i + 1);
-        const conds = ["Sunny", "Partly Cloudy", "Rain", "Cloudy", "Thunderstorm"];
-        const randomIndex = Math.floor(Math.random() * conds.length);
+        
+        // Each day has some relationship to the previous
+        const isRainy = i > 0 ? 
+          (forecastData[i-1]?.condition === "Rain" || forecastData[i-1]?.condition === "Thunderstorm") ? 
+            Math.random() > 0.7 : Math.random() > 0.85 :
+          condition === "Rain" || condition === "Thunderstorm" ? 
+            Math.random() > 0.7 : Math.random() > 0.85;
+        
+        const isCloudy = i > 0 ?
+          (forecastData[i-1]?.condition === "Cloudy" || forecastData[i-1]?.condition === "Partly Cloudy") ?
+            Math.random() > 0.6 : Math.random() > 0.7 :
+          condition === "Cloudy" || condition === "Partly Cloudy" ?
+            Math.random() > 0.6 : Math.random() > 0.7;
+        
+        let forecastCondition;
+        if (isRainy) {
+          forecastCondition = Math.random() > 0.7 ? "Thunderstorm" : "Rain";
+        } else if (isCloudy) {
+          forecastCondition = Math.random() > 0.5 ? "Cloudy" : "Partly Cloudy";
+        } else {
+          forecastCondition = "Sunny";
+        }
+
+        // Calculate future temperature with some progression
+        const dayOffset = i - 3; // Creates a wave pattern over 7 days
+        const forecastTemp = Math.round(baseTemp + dayOffset + (Math.random() * 4 - 2));
+        
+        // Icon for forecast
+        const forecastIcon = 
+          forecastCondition === "Rain" ? "cloud-rain" :
+          forecastCondition === "Sunny" ? "sun" :
+          forecastCondition === "Cloudy" ? "cloud" :
+          forecastCondition === "Partly Cloudy" ? "cloud-sun" : 
+          "cloud-lightning";
+        
         return {
           date: date.toLocaleDateString(),
-          temp: Math.floor(Math.random() * 10) + 25,
-          condition: conds[randomIndex],
-          icon: conds[randomIndex] === "Rain" ? "cloud-rain" : conds[randomIndex] === "Sunny" ? "sun" : conds[randomIndex] === "Cloudy" ? "cloud" : conds[randomIndex] === "Partly Cloudy" ? "cloud-sun" : "cloud-lightning",
-          humidity: Math.floor(Math.random() * 30) + 40,
+          temp: forecastTemp,
+          condition: forecastCondition,
+          icon: forecastIcon,
+          humidity: forecastCondition.includes("Rain") ? 
+            70 + Math.floor(Math.random() * 20) : 
+            40 + Math.floor(Math.random() * 30),
           wind: Math.floor(Math.random() * 15) + 5,
           aqi: Math.floor(Math.random() * 50) + 20,
-          pollen: ["Low", "Moderate", "High"][Math.floor(Math.random() * 3)],
-          drivingDifficulty: ["Low", "Moderate", "High"][Math.floor(Math.random() * 3)]
+          pollen: forecastCondition.includes("Rain") ? "Low" : ["Low", "Moderate", "High"][Math.floor(Math.random() * 3)],
+          drivingDifficulty: forecastCondition.includes("Rain") ? "High" : 
+            forecastCondition === "Cloudy" ? "Moderate" : "Low"
         };
       });
+      
       setForecast(forecastData);
 
-      // Generate historical data
+      // Generate historical data with realistic values
       const historyData = Array.from({ length: 7 }, (_, i) => {
         const date = new Date();
         date.setDate(date.getDate() - (i + 1));
-        const conds = ["Sunny", "Partly Cloudy", "Rain", "Cloudy", "Thunderstorm"];
-        const randomIndex = Math.floor(Math.random() * conds.length);
+        
+        // Simulate past weather based on season patterns
+        const pastDay = date.getDate();
+        const pastCondition = Math.random() > 0.7 ? 
+          conditions[Math.floor(Math.random() * conditions.length)] :
+          condition; // Higher chance of matching current pattern
+        
         return {
           date: date.toLocaleDateString(),
-          temp: Math.floor(Math.random() * 10) + 25,
-          condition: conds[randomIndex],
-          icon: conds[randomIndex] === "Rain" ? "cloud-rain" : conds[randomIndex] === "Sunny" ? "sun" : conds[randomIndex] === "Cloudy" ? "cloud" : conds[randomIndex] === "Partly Cloudy" ? "cloud-sun" : "cloud-lightning",
-          humidity: Math.floor(Math.random() * 30) + 40,
+          temp: Math.round(baseTemp + (Math.random() * 6 - 3)), // Similar to current temp with variation
+          condition: pastCondition,
+          icon: pastCondition === "Rain" ? "cloud-rain" :
+                pastCondition === "Sunny" ? "sun" :
+                pastCondition === "Cloudy" ? "cloud" :
+                pastCondition === "Partly Cloudy" ? "cloud-sun" : 
+                "cloud-lightning",
+          humidity: pastCondition.includes("Rain") ? 
+            70 + Math.floor(Math.random() * 20) : 
+            40 + Math.floor(Math.random() * 30),
           wind: Math.floor(Math.random() * 15) + 5,
           aqi: Math.floor(Math.random() * 50) + 20,
-          pollen: ["Low", "Moderate", "High"][Math.floor(Math.random() * 3)],
-          drivingDifficulty: ["Low", "Moderate", "High"][Math.floor(Math.random() * 3)]
+          pollen: pastCondition.includes("Rain") ? "Low" : ["Low", "Moderate", "High"][Math.floor(Math.random() * 3)],
+          drivingDifficulty: pastCondition.includes("Rain") ? "High" : 
+            pastCondition === "Cloudy" ? "Moderate" : "Low"
         };
       });
+      
       setHistory(historyData);
 
-      // Simulate moon info, ideally from API
+      // Moon phases calculation - actual algorithm would be more complex
+      const moonPhases = [
+        "New Moon", "Waxing Crescent", "First Quarter", 
+        "Waxing Gibbous", "Full Moon", "Waning Gibbous", 
+        "Last Quarter", "Waning Crescent"
+      ];
+      
+      const dayOfMonth = new Date().getDate();
+      const moonPhaseIndex = Math.floor((dayOfMonth % 28) / 3.5);
+      
+      // Get realistic rise and set times based on moon phase
+      let riseHour, setHour;
+      if (moonPhaseIndex <= 1 || moonPhaseIndex >= 6) {
+        // New moon and crescent moons rise and set roughly with the sun
+        riseHour = 6 + Math.floor(Math.random() * 2);
+        setHour = 17 + Math.floor(Math.random() * 2);
+      } else if (moonPhaseIndex === 4) {
+        // Full moon rises at sunset and sets at sunrise
+        riseHour = 17 + Math.floor(Math.random() * 2);
+        setHour = 6 + Math.floor(Math.random() * 2);
+      } else {
+        // Other phases have intermediate times
+        riseHour = 11 + Math.floor(moonPhaseIndex * 2) + Math.floor(Math.random() * 2);
+        setHour = (riseHour + 12) % 24;
+      }
+      
+      const riseMinute = Math.floor(Math.random() * 60);
+      const setMinute = Math.floor(Math.random() * 60);
+      
+      const riseTime = `${riseHour % 12 || 12}:${riseMinute.toString().padStart(2, '0')} ${riseHour >= 12 ? 'PM' : 'AM'}`;
+      const setTime = `${setHour % 12 || 12}:${setMinute.toString().padStart(2, '0')} ${setHour >= 12 ? 'PM' : 'AM'}`;
+      
       setMoonInfo({
-        rise: ["5:42 AM", "6:00 AM", "6:11 AM"][Math.floor(Math.random() * 3)],
-        set: ["7:18 PM", "7:33 PM", "7:47 PM"][Math.floor(Math.random() * 3)],
-        phase: ["Waxing Crescent", "First Quarter", "Full Moon"][Math.floor(Math.random() * 3)]
+        rise: riseTime,
+        set: setTime,
+        phase: moonPhases[moonPhaseIndex]
       });
+
     }, 1000);
 
     return () => clearTimeout(timer);
-  }, []);
+  }, [userCoords]);
 
   // Time of day handling for UI gradient/animation
   useEffect(() => {
@@ -133,6 +324,7 @@ export function WeatherWidget() {
       y: e.clientY - position.y
     });
   };
+  
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       if (isDragging) {
@@ -200,6 +392,7 @@ export function WeatherWidget() {
                 history={history}
                 moonInfo={moonInfo}
                 timeOfDay={timeOfDay}
+                location={location}
               />
             </div>
           )}

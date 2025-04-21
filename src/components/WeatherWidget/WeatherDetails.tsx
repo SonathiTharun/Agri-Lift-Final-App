@@ -1,6 +1,6 @@
 
 import React from "react";
-import { AirVent, Moon, Droplet, Wind, Calendar } from "lucide-react";
+import { AirVent, Moon, Droplet, Wind, Calendar, CloudSun } from "lucide-react";
 
 type WeatherDay = {
   date: string;
@@ -26,6 +26,7 @@ type Props = {
   history: WeatherDay[];
   moonInfo: MoonInfo;
   timeOfDay: "day" | "afternoon" | "night";
+  location: string;
 };
 export function WeatherDetails({
   weather,
@@ -33,6 +34,7 @@ export function WeatherDetails({
   history,
   moonInfo,
   timeOfDay,
+  location,
 }: Props) {
   if (!weather) {
     return (
@@ -63,6 +65,14 @@ export function WeatherDetails({
 
   return (
     <div className="">
+      <div className="text-xs text-gray-600 mb-1 flex justify-between items-center">
+        <div className="flex items-center gap-1">
+          <CloudSun className="h-3 w-3" />
+          <span>{location}</span>
+        </div>
+        <span className="text-[10px] opacity-70">Updated: {new Date().toLocaleTimeString()}</span>
+      </div>
+      
       <div className="grid grid-cols-2 gap-2 pb-2">
         {/* Core metrics */}
         <div className="rounded bg-gray-50 p-2">
@@ -112,7 +122,7 @@ export function WeatherDetails({
               <Calendar className="h-3 w-3 m-auto text-gray-400 mb-0.5" />
               <span className="">{day.date.split('/')[1]}/{day.date.split('/')[0]}</span>
               <span>{day.temp}°C</span>
-              <span>{day.condition[0]}</span>
+              <span>{day.condition.substring(0, 4)}</span>
             </div>
           ))}
         </div>
@@ -125,7 +135,7 @@ export function WeatherDetails({
               <Calendar className="h-3 w-3 m-auto text-gray-400 mb-0.5" />
               <span className="">{day.date.split('/')[1]}/{day.date.split('/')[0]}</span>
               <span>{day.temp}°C</span>
-              <span>{day.condition[0]}</span>
+              <span>{day.condition.substring(0, 4)}</span>
             </div>
           ))}
         </div>
