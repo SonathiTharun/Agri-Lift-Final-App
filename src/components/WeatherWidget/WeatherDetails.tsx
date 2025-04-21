@@ -1,4 +1,3 @@
-
 import React from "react";
 import { AirVent, Moon, Droplet, Wind, Calendar, CloudSun } from "lucide-react";
 
@@ -28,6 +27,7 @@ type Props = {
   timeOfDay: "day" | "afternoon" | "night";
   location: string;
   isLoading?: boolean;
+  sunrise?: string;
 };
 
 export function WeatherDetails({
@@ -38,6 +38,7 @@ export function WeatherDetails({
   timeOfDay,
   location,
   isLoading = false,
+  sunrise,
 }: Props) {
   if (isLoading || !weather) {
     return (
@@ -67,7 +68,7 @@ export function WeatherDetails({
   };
 
   return (
-    <div className="">
+    <div>
       <div className="text-xs text-gray-600 mb-1 flex justify-between items-center">
         <div className="flex items-center gap-1">
           <CloudSun className="h-3 w-3" />
@@ -88,6 +89,9 @@ export function WeatherDetails({
               <Wind className="h-3 w-3 text-sky-700" />
               <span className="text-xs">{weather.wind} km/h</span>
             </div>
+            {sunrise && (
+              <span className="text-xs text-sky-500">🌅 Sunrise: {sunrise}</span>
+            )}
           </div>
         </div>
         <div className="rounded bg-gray-50 p-2">

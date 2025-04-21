@@ -1,11 +1,9 @@
-
 import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { AnimatedWeatherIcon } from "./WeatherWidget/AnimatedWeatherIcon";
 import { WeatherDetails } from "./WeatherWidget/WeatherDetails";
 import { toast } from "@/components/ui/use-toast";
 
-// Weather data types
 type WeatherDay = {
   date: string;
   temp: number;
@@ -24,7 +22,6 @@ type MoonInfo = {
   phase: string;
 };
 
-// OpenWeatherMap API key
 const API_KEY = "6bae7433a583b203dfb57475dded77db";
 
 function getTimeOfDay(): "day" | "afternoon" | "night" {
@@ -34,7 +31,6 @@ function getTimeOfDay(): "day" | "afternoon" | "night" {
   return "night";
 }
 
-// Function to get weather condition from OpenWeatherMap weather ID
 function getWeatherCondition(id: number): string {
   if (id >= 200 && id < 300) return "Thunderstorm";
   if (id >= 300 && id < 400) return "Drizzle";
@@ -46,9 +42,7 @@ function getWeatherCondition(id: number): string {
   return "Unknown";
 }
 
-// Function to convert OpenWeatherMap icon to our icon format
 function getWeatherIcon(owmIcon: string, timeOfDay: "day" | "afternoon" | "night"): string {
-  // night time
   if (timeOfDay === "night" || owmIcon.includes("n")) {
     if (owmIcon.includes("01")) return "moon";
     if (owmIcon.includes("02") || owmIcon.includes("03")) return "cloud-moon";
@@ -58,7 +52,6 @@ function getWeatherIcon(owmIcon: string, timeOfDay: "day" | "afternoon" | "night
     if (owmIcon.includes("13")) return "cloud-snow";
     if (owmIcon.includes("50")) return "cloud-fog";
   } else {
-    // day time
     if (owmIcon.includes("01")) return "sun";
     if (owmIcon.includes("02") || owmIcon.includes("03")) return "cloud-sun";
     if (owmIcon.includes("04")) return "cloud";
@@ -67,53 +60,40 @@ function getWeatherIcon(owmIcon: string, timeOfDay: "day" | "afternoon" | "night
     if (owmIcon.includes("13")) return "cloud-snow";
     if (owmIcon.includes("50")) return "cloud-fog";
   }
-  return "cloud"; // default
+  return "cloud";
 }
 
-// Function to convert wind speed from m/s to km/h
 function mpsToKmh(mps: number): number {
   return Math.round(mps * 3.6);
 }
 
-// Function to determine agricultural field work difficulty based on weather
 function getDrivingDifficulty(weatherId: number, humidity: number): string {
-  // Rain or snow conditions
   if ((weatherId >= 500 && weatherId < 700) || humidity > 85) {
     return "High";
   }
-  // Foggy or extreme conditions
   if (weatherId >= 700 && weatherId < 800) {
     return "Moderate";
   }
-  // Good weather
   return "Low";
 }
 
-// Function to determine pollen levels based on weather and season
 function getPollenLevel(weatherId: number, month: number): string {
-  // Rain significantly reduces pollen
   if (weatherId >= 500 && weatherId < 700) {
     return "Low";
   }
-  
-  // Seasonal considerations (Northern hemisphere)
-  // Spring (March-May) and Fall (Sept-Oct) typically have higher pollen counts
   if ((month >= 2 && month <= 4) || (month >= 8 && month <= 9)) {
-    // But not if it's raining or snowing
     if (weatherId < 500 || weatherId >= 800) {
       return "High";
     }
   }
-  
   return "Moderate";
 }
 
-// Function to get moon phase
 function getMoonPhase(date: Date): string {
-  const synmonth = 29.53058867; // Synodic month length
-  const daysSinceNewMoon = 13; // Reference date, adjust as needed
+  const synmonth = 29.53058867;
+  const daysSinceNewMoon = 13;
   
-  const date1 = new Date("2023-01-21"); // Known new moon date
+  const date1 = new Date("2023-01-21");
   const date2 = date;
   const timeDiff = date2.getTime() - date1.getTime();
   const daysDiff = timeDiff / (1000 * 3600 * 24);
@@ -142,8 +122,8 @@ export function WeatherWidget() {
   const [location, setLocation] = useState("Loading location...");
   const [userCoords, setUserCoords] = useState<{lat: number, lon: number} | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [sunrise, setSunrise] = useState("");
 
-  // Get user's geolocation
   useEffect(() => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -151,7 +131,6 @@ export function WeatherWidget() {
           const { latitude, longitude } = position.coords;
           setUserCoords({ lat: latitude, lon: longitude });
           
-          // Fetch location name using OpenWeatherMap Geocoding API
           fetch(`https://api.openweathermap.org/geo/1.0/reverse?lat=${latitude}&lon=${longitude}&limit=1&appid=${API_KEY}`)
             .then(res => res.json())
             .then(data => {
@@ -175,37 +154,43 @@ export function WeatherWidget() {
             description: "Using default location",
           });
           setLocation("New Delhi, India");
-          // Default coordinates for New Delhi
           setUserCoords({ lat: 28.6139, lon: 77.2090 });
         }
       );
     } else {
       setLocation("Geolocation not supported");
-      setUserCoords({ lat: 28.6139, lon: 77.2090 }); // Default to New Delhi
+      setUserCoords({ lat: 28.6139, lon: 77.2090 });
     }
   }, []);
 
-  // Fetch real weather data when coordinates are available
   useEffect(() => {
     const fetchWeatherData = async () => {
       if (!userCoords) return;
       
       setIsLoading(true);
       try {
-        // Current weather
         const weatherResponse = await fetch(
           `https://api.openweathermap.org/data/2.5/weather?lat=${userCoords.lat}&lon=${userCoords.lon}&units=metric&appid=${API_KEY}`
         );
         const weatherData = await weatherResponse.json();
 
         if (weatherData.cod === 200) {
-          // Air quality
+          const sunriseUTC = weatherData.sys && weatherData.sys.sunrise;
+          if (sunriseUTC) {
+            const date = new Date(sunriseUTC * 1000);
+            let h = date.getHours(), m = date.getMinutes();
+            let ampm = h >= 12 ? "PM" : "AM";
+            h = h % 12 || 12;
+            setSunrise(`${h}:${m.toString().padStart(2, '0')} ${ampm}`);
+          } else {
+            setSunrise("N/A");
+          }
+
           const aqiResponse = await fetch(
             `https://api.openweathermap.org/data/2.5/air_pollution?lat=${userCoords.lat}&lon=${userCoords.lon}&appid=${API_KEY}`
           );
           const aqiData = await aqiResponse.json();
           
-          // Create current weather object
           const currentDate = new Date();
           const currentMonth = currentDate.getMonth();
           const weatherId = weatherData.weather[0].id;
@@ -217,19 +202,17 @@ export function WeatherWidget() {
             icon: getWeatherIcon(weatherData.weather[0].icon, timeOfDay),
             humidity: weatherData.main.humidity,
             wind: mpsToKmh(weatherData.wind.speed),
-            aqi: aqiData.list && aqiData.list[0] ? aqiData.list[0].main.aqi * 25 : 50, // Convert 1-5 scale to AQI
+            aqi: aqiData.list && aqiData.list[0] ? aqiData.list[0].main.aqi * 25 : 50,
             pollen: getPollenLevel(weatherId, currentMonth),
             drivingDifficulty: getDrivingDifficulty(weatherId, weatherData.main.humidity)
           });
           
-          // Fetch forecast data
           const forecastResponse = await fetch(
             `https://api.openweathermap.org/data/2.5/forecast?lat=${userCoords.lat}&lon=${userCoords.lon}&units=metric&appid=${API_KEY}`
           );
           const forecastData = await forecastResponse.json();
           
           if (forecastData.cod === "200") {
-            // Process forecast data - get one forecast per day
             const dailyForecasts: WeatherDay[] = [];
             const processedDates: Set<string> = new Set();
             
@@ -237,7 +220,6 @@ export function WeatherWidget() {
               const forecastDate = new Date(item.dt * 1000);
               const dateString = forecastDate.toLocaleDateString();
               
-              // Only take the first forecast for each day to get daily data
               if (!processedDates.has(dateString) && dailyForecasts.length < 7) {
                 processedDates.add(dateString);
                 
@@ -248,7 +230,7 @@ export function WeatherWidget() {
                   icon: getWeatherIcon(item.weather[0].icon, timeOfDay),
                   humidity: item.main.humidity,
                   wind: mpsToKmh(item.wind.speed),
-                  aqi: 50, // Default since forecast doesn't include AQI
+                  aqi: 50,
                   pollen: getPollenLevel(item.weather[0].id, forecastDate.getMonth()),
                   drivingDifficulty: getDrivingDifficulty(item.weather[0].id, item.main.humidity)
                 });
@@ -258,17 +240,14 @@ export function WeatherWidget() {
             setForecast(dailyForecasts);
           }
           
-          // Simulate history data (API doesn't provide historical data in free tier)
           const historicalData = Array.from({ length: 7 }, (_, i) => {
             const pastDate = new Date();
             pastDate.setDate(pastDate.getDate() - (i + 1));
             
-            // Simulate past weather based on current patterns
             const pastCondition = weatherData.weather[0].id;
             const variation = Math.floor(Math.random() * 100);
             let pastWeatherId = pastCondition;
             
-            // Add some variation to historical data
             if (variation < 30) {
               pastWeatherId = pastCondition + (Math.random() > 0.5 ? 1 : -1) * Math.floor(Math.random() * 5);
             }
@@ -277,7 +256,7 @@ export function WeatherWidget() {
               date: pastDate.toLocaleDateString(),
               temp: Math.round(weatherData.main.temp + (Math.random() * 6 - 3)),
               condition: getWeatherCondition(pastWeatherId),
-              icon: getWeatherIcon("01d", timeOfDay), // Simplified for history
+              icon: getWeatherIcon("01d", timeOfDay),
               humidity: weatherData.main.humidity + Math.floor(Math.random() * 10 - 5),
               wind: mpsToKmh(weatherData.wind.speed) + Math.floor(Math.random() * 6 - 3),
               aqi: (aqiData.list && aqiData.list[0] ? aqiData.list[0].main.aqi * 25 : 50) + Math.floor(Math.random() * 20 - 10),
@@ -288,11 +267,9 @@ export function WeatherWidget() {
           
           setHistory(historicalData);
           
-          // Setup moon info
           const moonPhase = getMoonPhase(currentDate);
           let moonriseHour, moonsetHour;
           
-          // Approximate moonrise/set times based on phase
           if (moonPhase === "New Moon" || moonPhase.includes("Crescent")) {
             moonriseHour = (6 + Math.floor(Math.random() * 2)) % 24;
             moonsetHour = (18 + Math.floor(Math.random() * 2)) % 24;
@@ -331,18 +308,15 @@ export function WeatherWidget() {
 
     fetchWeatherData();
     
-    // Refresh weather data every 30 minutes
     const intervalId = setInterval(fetchWeatherData, 30 * 60 * 1000);
     return () => clearInterval(intervalId);
   }, [userCoords, timeOfDay]);
 
-  // Time of day handling for UI gradient/animation
   useEffect(() => {
     const intv = setInterval(() => setTimeOfDay(getTimeOfDay()), 60000);
     return () => clearInterval(intv);
   }, []);
 
-  // Handle dragging functionality
   const handleMouseDown = (e: React.MouseEvent) => {
     setIsDragging(true);
     setStartPos({
@@ -373,7 +347,7 @@ export function WeatherWidget() {
 
   return (
     <div
-      className={`absolute z-40 animate-fade-in shadow-lg select-none`}
+      className={`fixed z-40 animate-fade-in shadow-lg select-none`}
       style={{
         top: `${position.y}px`,
         left: `${position.x}px`,
@@ -395,18 +369,20 @@ export function WeatherWidget() {
         </div>
         <CardContent className={`${expanded ? "p-3 animate-fade-in" : "p-2"}`}>
           <div className={`flex flex-col justify-center items-center transition-all`}>
-            {/* Animated weather icon, always shown */}
             <AnimatedWeatherIcon
               condition={weather?.condition || "Sunny"}
               timeOfDay={timeOfDay}
             />
-            {/* Show summary, always */}
             <div className="my-1 text-center">
               <div className="font-semibold text-xl">
                 {weather ? `${weather.temp}°C` : "..."}
               </div>
               <div className="text-xs text-gray-600">
                 {weather?.condition || "Loading..."}
+              </div>
+              <div className="text-xs text-gray-600 flex justify-center gap-1">
+                <span>Sunrise:</span>
+                <span>{sunrise || "..."}</span>
               </div>
             </div>
           </div>
@@ -420,6 +396,7 @@ export function WeatherWidget() {
                 timeOfDay={timeOfDay}
                 location={location}
                 isLoading={isLoading}
+                sunrise={sunrise}
               />
             </div>
           )}
