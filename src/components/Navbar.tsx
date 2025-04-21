@@ -1,10 +1,10 @@
-
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useLanguage } from "./LanguageContext";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Globe } from "lucide-react";
+
 export function Navbar() {
   const location = useLocation();
   const {
@@ -69,7 +69,11 @@ export function Navbar() {
   return <nav className="fixed top-0 left-0 right-0 z-50 bg-[#2ecc71] py-2 px-4 shadow-md">
       <div className="container mx-auto flex justify-between items-center">
         <Link to="/home" className="flex items-center">
-          <img alt="AgriLift Logo" className="h-16 w-auto invert" src="/lovable-uploads/bad258d5-10ef-4d65-bb8b-35f2420c6caa.png" />
+          <img 
+            alt="AgriLift Logo" 
+            className="h-20 w-auto" 
+            src="/lovable-uploads/bad258d5-10ef-4d65-bb8b-35f2420c6caa.png" 
+          />
         </Link>
         
         <div className="hidden md:flex space-x-1">
