@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useLanguage } from "@/components/LanguageContext";
 import { Button } from "@/components/ui/button";
@@ -8,6 +8,7 @@ import { Globe, Beaker, Banknote, ShoppingBag, Tractor, Users, CloudSun, Egg, St
 import { WeatherWidget } from "@/components/WeatherWidget";
 import { LoginModal } from "@/components/LoginModal";
 import { RegisterModal } from "@/components/RegisterModal";
+
 const translations = {
   en: {
     "hero-title": "Empowering Farmers, Transforming Agriculture",
@@ -88,17 +89,17 @@ const translations = {
     "market": "சந்தை",
     "market-desc": "நம்பகமான விநியோகஸ்தர்களிடமிருந்து தரமான விதைகள் மற்றும் பொருட்கள்",
     "machinery-options": "இயந்திர விருப்பங்கள்",
-    "machinery-options-desc": "நெகிழ்வான உழவு மற்றும் அறுவடை இயந்திர வாடகை",
+    "machinery-options-desc": "நெகிழ்வான உழவு மற்று��் அறுவடை இயந்திர வாடகை",
     "labor-management": "தொழிலாளர் மேலாண்மை",
     "labor-management-desc": "திறமையான நடவு தொழிலாளர்கள் மற்றும் பண்ணை மேலாளர்களுடன் இணைக்கவும்",
     "weather-forecasts": "வானிலை முன்னறிவிப்புகள்",
     "weather-forecasts-desc": "துல்லியமான திட்டமிடலுக்கான உள்ளூர், நிகழ்நேர வானிலை புதுப்பிப்புகள்",
-    "diverse-farming": "பல்வேறு விவசாயம்",
+    "diverse-farming": "விவിധ ஖ेती",
     "diverse-farming-desc": "கோழி வளர்ப்பு, பால் பண்ணை மற்றும் மீன் வளர்ப்பு செயல்பாடுகளுக்கு ஆதரவு",
     "market-connections": "ஏற்றுமதி",
     "market-connections-desc": "விவசாயி லாபத்தை அதிகரிக்க நேரடி பயிர் விற்பனை தளம்",
     "footer-title": "அக்ரிலிஃப்ட் - உங்கள் விவசாய பங்காளர்",
-    "footer-description": "ப्रौद्योगिकी மற்றும் ஸ்஥ாயிய தீர்வுகள் மூலம் விவசாயத்தில் புதுமை",
+    "footer-description": "ப्रौद्योगिकी மற்றும் ஸ்஥ாயிய தீர்வுகள் ஦్వారా விவசாயంలో வినూత్నత",
     "privacy-policy": "தனியுரிமை கொள்கை",
     "terms-of-service": "சேவை விதிமுறைகள்",
     "support": "ஆதரவு",
@@ -126,7 +127,7 @@ const translations = {
     "weather-forecasts": "వాతావరణ సూచనలు",
     "weather-forecasts-desc": "ఖచ్చితమైన ప్రణాళిక కోసం స్థానిక, రియల్-టైమ్ వాతావరణ నవీకరణలు",
     "diverse-farming": "వైవిధ్యమైన వ్యవసాయం",
-    "diverse-farming-desc": "పౌల్ట్రీ, డైరీ మరియు మత్స్య సాగు కార్�కలాపాలకు మద్దతు",
+    "diverse-farming-desc": "పౌల్ట్రీ, డైరీ మరియు మత్స్య సాగు కార్మికలాపాలకు మద్దతు",
     "market-connections": "ఎగుమతి",
     "market-connections-desc": "రైతు లాభాలను గరిష్టీకరించడానికి ప్రత్యక్ష పంట అమ్మకాల వేదిక",
     "footer-title": "అగ్రిలిఫ్ట్ - ఉங்களు వ్యవసాయ భాగస్వామి",
@@ -138,6 +139,7 @@ const translations = {
     "language": "భాష"
   }
 };
+
 const backgroundImages = ['https://images.unsplash.com/photo-1625246333195-78d9c38ad449?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80', 'https://images.unsplash.com/photo-1523348837708-15d4a09cfac2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80', 'https://images.unsplash.com/photo-1464226184884-fa280b87c399?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80', 'https://images.unsplash.com/photo-1486754735734-325b5831c3ad?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80'];
 const features = [{
   icon: Beaker,
@@ -180,6 +182,7 @@ const features = [{
   descKey: "market-connections-desc",
   path: "/export"
 }];
+
 const Welcome = () => {
   const [lang, setLang] = useState('en');
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -189,19 +192,22 @@ const Welcome = () => {
   const {
     t
   } = useLanguage();
+
   const handleOpenLogin = (type: 'farmer' | 'executive') => {
     setUserType(type);
     setLoginOpen(true);
   };
+
   const handleOpenRegister = (type: 'farmer' | 'executive') => {
     setUserType(type);
     setRegisterOpen(true);
   };
+
   return <div className="min-h-screen bg-gradient-to-br from-white to-gray-50">
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-foliage-dark via-foliage to-foliage-light py-2 px-4 shadow-md">
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-[#1A1F2C] via-[#1A1F2C] to-[#1A1F2C] py-2 px-4 shadow-md">
         <div className="container mx-auto flex justify-between items-center">
           <Link to="/" className="flex items-center">
-            <img alt="AgriLift Logo" src="/lovable-uploads/4491d2ba-6945-440d-a80d-feb878e74769.png" className="h-12 w-auto object-fill" />
+            <img alt="AgriLift Logo" src="/lovable-uploads/4491d2ba-6945-440d-a80d-feb878e74769.png" className="h-12 w-auto object-fill invert" />
           </Link>
           
           <div className="flex items-center space-x-6">
@@ -368,4 +374,5 @@ const Welcome = () => {
       <RegisterModal open={registerOpen} setOpen={setRegisterOpen} userType={userType} lang={lang} t={t} />
     </div>;
 };
+
 export default Welcome;
