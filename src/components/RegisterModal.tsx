@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
@@ -63,8 +62,8 @@ export function RegisterModal({ open, setOpen, userType, lang, t }: RegisterModa
       setPhone('');
       setPassword('');
       setConfirmPassword('');
-      // Redirect to /home after successful registration
-      navigate('/home');
+      // Redirect to /dashboard after successful registration
+      navigate('/dashboard');
     }, 1500);
   };
 

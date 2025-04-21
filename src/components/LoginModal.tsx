@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
@@ -47,8 +46,8 @@ export function LoginModal({ open, setOpen, userType, lang, t }: LoginModalProps
       setOpen(false);
       setEmail('');
       setPassword('');
-      // Redirect to /home after successful login
-      navigate('/home');
+      // Redirect to /dashboard after successful login
+      navigate('/dashboard');
     }, 1500);
   };
 
