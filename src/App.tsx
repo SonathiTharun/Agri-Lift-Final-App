@@ -17,6 +17,7 @@ import Labour from "./pages/Labour";
 import Machinery from "./pages/Machinery";
 import Export from "./pages/Export";
 import Monitoring from "./pages/Monitoring";
+import Services from "./pages/Services";
 import Contact from "./pages/Contact";
 
 const queryClient = new QueryClient();
