@@ -767,4 +767,72 @@ const Monitoring = () => {
                         
                         <div className="flex flex-col items-center gap-1 p-3 bg-gray-50 rounded-lg">
                           <Cloud className="h-5 w-5 text-blue-600" />
-                          <span className="text-sm text-gray-600">
+                          <span className="text-sm text-gray-600">Cloud Cover</span>
+                          <span className="font-medium">40%</span>
+                        </div>
+                        
+                        <div className="flex flex-col items-center gap-1 p-3 bg-gray-50 rounded-lg">
+                          <Thermometer className="h-5 w-5 text-blue-600" />
+                          <span className="text-sm text-gray-600">Feels Like</span>
+                          <span className="font-medium">28°C</span>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="h-[300px] bg-gray-100 rounded-lg flex items-center justify-center">
+                      <p className="text-gray-500">Temperature forecast for next 7 days</p>
+                    </div>
+                  </CardContent>
+                </Card>
+                
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Weather Alerts</CardTitle>
+                    <CardDescription>Upcoming conditions to be aware of</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      <div className="p-3 bg-yellow-50 rounded-lg">
+                        <div className="flex gap-2 text-yellow-800 font-medium">
+                          <AlertTriangle className="h-5 w-5" />
+                          <span>Heavy Rain Alert</span>
+                        </div>
+                        <p className="text-sm text-yellow-800 mt-1">Expected heavy rainfall tomorrow. Consider adjusting irrigation schedules.</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="crops">
+            <div className="text-center p-12 text-gray-500">
+              Crops & Fields monitoring data would be displayed here.
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="irrigation">
+            <div className="text-center p-12 text-gray-500">
+              Water & Irrigation monitoring data would be displayed here.
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="machinery">
+            <div className="text-center p-12 text-gray-500">
+              Machinery monitoring data would be displayed here.
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="livestock">
+            <div className="text-center p-12 text-gray-500">
+              Livestock monitoring data would be displayed here.
+            </div>
+          </TabsContent>
+        </Tabs>
+      </div>
+    </Layout>
+  );
+};
+
+export default Monitoring;
