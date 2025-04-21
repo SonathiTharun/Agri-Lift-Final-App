@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -14,6 +13,7 @@ import Labour from "./pages/Labour";
 import Machinery from "./pages/Machinery";
 import Export from "./pages/Export";
 import Monitoring from "./pages/Monitoring";
+import Contact from "./pages/Contact";
 
 const queryClient = new QueryClient();
 
@@ -33,7 +33,7 @@ const App = () => (
           <Route path="/machinery" element={<Machinery />} />
           <Route path="/export" element={<Export />} />
           <Route path="/monitoring" element={<Monitoring />} />
-          <Route path="/contact" element={<NotFound />} />
+          <Route path="/contact" element={<Contact />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </TooltipProvider>

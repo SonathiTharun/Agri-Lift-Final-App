@@ -144,14 +144,14 @@ export default function Machinery() {
     <div className="min-h-screen bg-gradient-to-br from-soil-light/10 to-foliage-light/10">
       <Navbar />
       
-      {/* Weather Widget (Common Component) */}
       <WeatherWidget />
       
       <main className="container mx-auto pt-20 px-4 pb-10">
         <div className="max-w-5xl mx-auto text-center mb-8 animate-fade-in">
           <h1 className="text-3xl md:text-4xl font-bold text-soil-dark mb-2">Farm Machinery</h1>
           <p className="text-gray-600 max-w-2xl mx-auto">
-            Access modern farming equipment through flexible rental or purchase options
+            Access modern farming equipment through flexible rental or purchase options.<br />
+            <span className="block text-amber-600 mt-2 font-medium">New: View combo packages with operator + machinery for optimized harvest!</span>
           </p>
         </div>
         
@@ -188,7 +188,12 @@ export default function Machinery() {
                         </Badge>
                         {getAvailabilityBadge(item.availability)}
                       </div>
-                      <p className="text-gray-600 mt-2">{item.description}</p>
+                      <p className="text-gray-600 mt-2"><span className="font-medium">{item.name}</span>: {item.description}</p>
+                      <ul className="text-xs text-gray-500 mt-1 list-disc pl-5">
+                        <li>Daily maintenance included in rental.</li>
+                        <li>On-site support in case of breakdowns.</li>
+                        <li>Discounts for rentals &gt; 3 days!</li>
+                      </ul>
                       <p className="text-lg font-semibold text-foliage-dark mt-3">
                         ${item.dailyRentalPrice}/day
                       </p>
@@ -236,7 +241,12 @@ export default function Machinery() {
                           </Badge>
                         )}
                       </div>
-                      <p className="text-gray-600 mt-2">{item.description}</p>
+                      <p className="text-gray-600 mt-2"><span className="font-medium">{item.name}</span>: {item.description}</p>
+                      <ul className="text-xs text-gray-500 mt-1 list-disc pl-5">
+                        <li>Warranty up to 4 years for all equipment.</li>
+                        <li>Free training for first-time buyers.</li>
+                        <li>Bulk purchase discount available.</li>
+                      </ul>
                       <p className="text-lg font-semibold text-foliage-dark mt-3">
                         ${item.purchasePrice.toLocaleString()}
                       </p>
@@ -278,7 +288,8 @@ export default function Machinery() {
               <div className="mb-6 p-6 bg-wheat-light rounded-lg border border-wheat">
                 <h3 className="text-xl font-semibold text-soil-dark mb-2">Machine + Labor Combo Packages</h3>
                 <p className="text-gray-700">
-                  Get the equipment you need along with skilled operators to maximize productivity. These packages offer significant savings compared to separate rentals.
+                  Get the equipment you need along with skilled operators to maximize productivity. These packages offer significant savings compared to separate rentals.<br />
+                  <span className="text-green-600 font-medium">Operator background verified and insured for all combo packages.</span>
                 </p>
               </div>
               
@@ -311,6 +322,11 @@ export default function Machinery() {
                         </Badge>
                       </div>
                       <p className="text-gray-600 mt-2">{combo.description}</p>
+                      <ul className="text-xs text-gray-500 mt-1 list-disc pl-5">
+                        <li>Includes operator and helpers as per package.</li>
+                        <li>Fixed daily rate for the entire combo.</li>
+                        <li>Assistance for crop-specific needs (on request).</li>
+                      </ul>
                       <div className="mt-3 flex justify-between items-center">
                         <p className="text-lg font-semibold text-foliage-dark">
                           ${combo.dailyPrice}/day
@@ -353,3 +369,4 @@ export default function Machinery() {
     </div>
   );
 }
+// End file 

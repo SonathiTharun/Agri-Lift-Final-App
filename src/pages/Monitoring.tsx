@@ -14,7 +14,7 @@ import {
   Leaf,
   Wind,
   Signal,
-  Gauge, // Replacing Sensor with Gauge
+  Gauge,
   Cloud,
   Flower,
   Crop,
@@ -27,7 +27,6 @@ import {
   Satellite
 } from "lucide-react";
 
-// Sample data
 const soilMoistureData = [
   { time: '00:00', moisture: 42 },
   { time: '04:00', moisture: 40 },
@@ -142,7 +141,6 @@ const machinesData = [
   }
 ];
 
-// Sample alerts data
 const alertsData = [
   { id: 1, type: 'moisture', message: 'Low soil moisture detected in East Field', severity: 'warning', time: '2 hours ago' },
   { id: 2, type: 'temperature', message: 'Greenhouse temperature above threshold', severity: 'critical', time: '30 minutes ago' },
@@ -807,26 +805,143 @@ const Monitoring = () => {
           </TabsContent>
           
           <TabsContent value="crops">
-            <div className="text-center p-12 text-gray-500">
-              Crops & Fields monitoring data would be displayed here.
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Crop Diversity</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-lg font-semibold mb-2">Wheat, Corn, Soybeans, Rice</div>
+                  <div className="text-gray-700 text-sm">Rotational cropping in different fields enhances soil health and productivity.</div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader>
+                  <CardTitle>Growth Stages</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ul className="text-sm space-y-1">
+                    <li>North Field: Heading (Wheat)</li>
+                    <li>East Field: Pollination (Corn)</li>
+                    <li>South Field: Pod Fill (Soybeans)</li>
+                    <li>West Field: Tillering (Rice)</li>
+                  </ul>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader>
+                  <CardTitle>Crop Health Alerts</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ul className="text-red-600 text-sm space-y-1">
+                    <li>Rice: Pest risk detected</li>
+                    <li>Corn: Low nitrogen in East Field</li>
+                  </ul>
+                </CardContent>
+              </Card>
             </div>
           </TabsContent>
           
           <TabsContent value="irrigation">
-            <div className="text-center p-12 text-gray-500">
-              Water & Irrigation monitoring data would be displayed here.
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Irrigation Overview</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex items-center gap-3">
+                    <span className="font-medium">North Field:</span>
+                    <span className="text-green-600">Auto drip (21mm)</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="font-medium">East Field:</span>
+                    <span className="text-yellow-600">Scheduled (morning/evening)</span>
+                  </div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader>
+                  <CardTitle>Water Quality Status</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div>
+                    <span className="block text-gray-700 mb-1">pH: <span className="text-foliage-dark">7.0</span></span>
+                    <span className="block text-gray-700 mb-1">EC: <span className="text-blue-600">0.34 dS/m</span></span>
+                    <span className="block text-gray-700">Dissolved Oxygen: <span className="text-green-500">Good</span></span>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
           </TabsContent>
           
           <TabsContent value="machinery">
-            <div className="text-center p-12 text-gray-500">
-              Machinery monitoring data would be displayed here.
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Active Machines</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div>3 machines in use: John Deere Tractor, Case IH Harvester, Sprayer Drone</div>
+                  <div className="text-sm text-gray-600 mt-2">Next scheduled maintenance: 2024-06-15</div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader>
+                  <CardTitle>Fuel & Power</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ul className="text-sm">
+                    <li>Tractor fuel: 78%</li>
+                    <li>Harvester fuel: 45% (maintenance required)</li>
+                    <li>Sprayer Drone battery: 95%</li>
+                  </ul>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader>
+                  <CardTitle>Alert & Status</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div>
+                    <span className="text-red-600">Harvester scheduled for maintenance!</span>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
           </TabsContent>
           
           <TabsContent value="livestock">
-            <div className="text-center p-12 text-gray-500">
-              Livestock monitoring data would be displayed here.
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Dairy Herd</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="mb-2">Cows: 38</div>
+                  <ul className="text-sm">
+                    <li>Avg. Milk Yield: <span className="text-green-700">19.5L/day</span></li>
+                    <li>2 cows showing fever (action required)</li>
+                  </ul>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader>
+                  <CardTitle>Poultry</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div>Broiler Chickens: 1200</div>
+                  <ul className="text-sm"><li>Eggs per day: <span className="text-amber-700">924</span></li></ul>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader>
+                  <CardTitle>Bee Hives</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div>Active Hives: 8</div>
+                  <ul className="text-sm"><li>Honey yield: <span className="text-yellow-600">11.2kg/week</span></li></ul>
+                </CardContent>
+              </Card>
             </div>
           </TabsContent>
         </Tabs>
