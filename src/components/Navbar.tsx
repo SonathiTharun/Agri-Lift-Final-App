@@ -1,19 +1,16 @@
-
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useLanguage } from "./LanguageContext";
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Globe } from "lucide-react";
-
 export function Navbar() {
   const location = useLocation();
-  const { language, setLanguage, t } = useLanguage();
+  const {
+    language,
+    setLanguage,
+    t
+  } = useLanguage();
   const [activeItem, setActiveItem] = useState(() => {
     const path = location.pathname;
     if (path === "/home") return "home";
@@ -27,54 +24,57 @@ export function Navbar() {
     if (path === "/services") return "services";
     return "home";
   });
-
   useEffect(() => {
     const path = location.pathname;
-    if (path === "/home") setActiveItem("home");
-    else if (path === "/loans") setActiveItem("loans");
-    else if (path === "/contact") setActiveItem("contact");
-    else if (path === "/market") setActiveItem("market");
-    else if (path === "/labour") setActiveItem("labour");
-    else if (path === "/machinery") setActiveItem("machinery");
-    else if (path === "/export") setActiveItem("export");
-    else if (path === "/monitoring") setActiveItem("monitoring");
-    else if (path === "/services") setActiveItem("services");
+    if (path === "/home") setActiveItem("home");else if (path === "/loans") setActiveItem("loans");else if (path === "/contact") setActiveItem("contact");else if (path === "/market") setActiveItem("market");else if (path === "/labour") setActiveItem("labour");else if (path === "/machinery") setActiveItem("machinery");else if (path === "/export") setActiveItem("export");else if (path === "/monitoring") setActiveItem("monitoring");else if (path === "/services") setActiveItem("services");
   }, [location]);
-
-  const navItems = [
-    { id: "home", label: t("home"), path: "/home" },
-    { id: "loans", label: t("loans"), path: "/loans" },
-    { id: "market", label: t("market"), path: "/market" },
-    { id: "labour", label: t("labour"), path: "/labour" },
-    { id: "machinery", label: t("machinery"), path: "/machinery" },
-    { id: "export", label: t("export"), path: "/export" },
-    { id: "monitoring", label: t("monitoring"), path: "/monitoring" },
-    { id: "services", label: t("services"), path: "/services" },
-    { id: "contact", label: t("contact"), path: "/contact" },
-  ];
-
-  return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-foliage-dark via-foliage to-foliage-light py-2 px-4 shadow-md">
+  const navItems = [{
+    id: "home",
+    label: t("home"),
+    path: "/home"
+  }, {
+    id: "loans",
+    label: t("loans"),
+    path: "/loans"
+  }, {
+    id: "market",
+    label: t("market"),
+    path: "/market"
+  }, {
+    id: "labour",
+    label: t("labour"),
+    path: "/labour"
+  }, {
+    id: "machinery",
+    label: t("machinery"),
+    path: "/machinery"
+  }, {
+    id: "export",
+    label: t("export"),
+    path: "/export"
+  }, {
+    id: "monitoring",
+    label: t("monitoring"),
+    path: "/monitoring"
+  }, {
+    id: "services",
+    label: t("services"),
+    path: "/services"
+  }, {
+    id: "contact",
+    label: t("contact"),
+    path: "/contact"
+  }];
+  return <nav className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-foliage-dark via-foliage to-foliage-light py-2 px-4 shadow-md">
       <div className="container mx-auto flex justify-between items-center">
         <Link to="/home" className="flex items-center">
-          <img src="/logo.png" alt="AgriLift Logo" className="h-12 w-auto" />
+          <img alt="AgriLift Logo" className="h-12 w-auto" src="/lovable-uploads/3c35378f-1080-4789-a3e0-6825864a6de9.png" />
         </Link>
         
         <div className="hidden md:flex space-x-1">
-          {navItems.map(item => (
-            <Link
-              key={item.id}
-              to={item.path}
-              onClick={() => setActiveItem(item.id)}
-              className={`px-3 py-1.5 text-sm rounded-md transition duration-200 ${
-                activeItem === item.id 
-                  ? "bg-white text-foliage-dark font-medium" 
-                  : "text-white hover:bg-white/20"
-              }`}
-            >
+          {navItems.map(item => <Link key={item.id} to={item.path} onClick={() => setActiveItem(item.id)} className={`px-3 py-1.5 text-sm rounded-md transition duration-200 ${activeItem === item.id ? "bg-white text-foliage-dark font-medium" : "text-white hover:bg-white/20"}`}>
               {item.label}
-            </Link>
-          ))}
+            </Link>)}
         </div>
         
         <div className="flex items-center gap-2">
@@ -93,7 +93,5 @@ export function Navbar() {
           </DropdownMenu>
         </div>
       </div>
-    </nav>
-  );
+    </nav>;
 }
-
