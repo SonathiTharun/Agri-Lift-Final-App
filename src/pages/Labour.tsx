@@ -1,69 +1,26 @@
 import { useState } from "react";
-import { Navbar } from "@/components/Navbar";
+import { useLocation } from "react-router-dom";
 import { WeatherWidget } from "@/components/WeatherWidget";
-import { 
-  Tabs, 
-  TabsContent, 
-  TabsList, 
-  TabsTrigger 
-} from "@/components/ui/tabs";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle
-} from "@/components/ui/card";
-import {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow
-} from "@/components/ui/table";
+import { Layout } from "@/components/Layout";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger
-} from "@/components/ui/accordion";
-import { 
-  Popover, 
-  PopoverContent, 
-  PopoverTrigger 
-} from "@/components/ui/popover";
-import { 
-  Form, 
-  FormControl, 
-  FormField, 
-  FormItem, 
-  FormLabel, 
-  FormMessage 
-} from "@/components/ui/form";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { 
-  User, 
-  Users, 
-  Plus, 
-  Calendar, 
-  MapPin, 
-  Briefcase,
-  Mail,
-  Phone
-} from "lucide-react";
+import { User, Users, Plus, Calendar, MapPin, Briefcase, Mail, Phone } from "lucide-react";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
+import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
 
 type Labour = {
   id: string;
@@ -290,12 +247,10 @@ export default function Labour() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-soil-light/10 to-foliage-light/10">
-      <Navbar />
-      
+    <Layout>
       <WeatherWidget />
       
-      <main className="container mx-auto pt-20 px-4 pb-10">
+      <main className="container mx-auto px-4 pb-10">
         <div className="max-w-5xl mx-auto text-center mb-8">
           <h1 className="text-3xl md:text-4xl font-bold text-soil-dark mb-2">AgriLift Labour Management</h1>
           <p className="text-gray-600 max-w-2xl mx-auto">
@@ -887,6 +842,6 @@ export default function Labour() {
           confirmLabel="Confirm Hire"
         />
       </main>
-    </div>
+    </Layout>
   );
 }

@@ -1,6 +1,5 @@
-
 import { useState } from "react";
-import { Navbar } from "@/components/Navbar";
+import { Layout } from "@/components/Layout";
 import { WeatherWidget } from "@/components/WeatherWidget";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -141,12 +140,10 @@ export default function Machinery() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-soil-light/10 to-foliage-light/10">
-      <Navbar />
-      
+    <Layout>
       <WeatherWidget />
       
-      <main className="container mx-auto pt-20 px-4 pb-10">
+      <main className="container mx-auto px-4 pb-10">
         <div className="max-w-5xl mx-auto text-center mb-8 animate-fade-in">
           <h1 className="text-3xl md:text-4xl font-bold text-soil-dark mb-2">Farm Machinery</h1>
           <p className="text-gray-600 max-w-2xl mx-auto">
@@ -155,7 +152,6 @@ export default function Machinery() {
           </p>
         </div>
         
-        {/* Tabs for different sections */}
         <div className="max-w-5xl mx-auto">
           <Tabs defaultValue="rental" onValueChange={setCurrentTab} value={currentTab} className="w-full">
             <TabsList className="grid grid-cols-3 mb-8 w-full md:w-auto">
@@ -164,7 +160,6 @@ export default function Machinery() {
               <TabsTrigger value="combo">Machine + Labor Combos</TabsTrigger>
             </TabsList>
             
-            {/* Rental Equipment Tab */}
             <TabsContent value="rental" className="mt-6">
               <div className="grid md:grid-cols-2 gap-6">
                 {machineryItems.map(item => (
@@ -213,7 +208,6 @@ export default function Machinery() {
               </div>
             </TabsContent>
             
-            {/* Purchase Options Tab */}
             <TabsContent value="purchase" className="mt-6">
               <div className="grid md:grid-cols-2 gap-6">
                 {machineryItems.map(item => (
@@ -283,7 +277,6 @@ export default function Machinery() {
               </div>
             </TabsContent>
             
-            {/* Machine + Labor Combos Tab */}
             <TabsContent value="combo" className="mt-6">
               <div className="mb-6 p-6 bg-wheat-light rounded-lg border border-wheat">
                 <h3 className="text-xl font-semibold text-soil-dark mb-2">Machine + Labor Combo Packages</h3>
@@ -366,7 +359,6 @@ export default function Machinery() {
           </Tabs>
         </div>
       </main>
-    </div>
+    </Layout>
   );
 }
-// End file 
