@@ -10,9 +10,10 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
-      <div className="pt-16">
+      <div className="pt-24">
         {children}
       </div>
     </div>
   );
 };
+

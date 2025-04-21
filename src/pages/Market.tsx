@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Navbar } from "@/components/Navbar";
 import { WeatherWidget } from "@/components/WeatherWidget";
@@ -61,7 +62,7 @@ export default function Market() {
       {/* Weather Widget (Draggable) */}
       <WeatherWidget />
       
-      <main className="container mx-auto pt-20 px-4 pb-10">
+      <main className="container mx-auto pt-28 px-4 pb-10">
         <div className="max-w-5xl mx-auto text-center mb-8 animate-fade-in">
           <h1 className="text-3xl md:text-4xl font-bold text-soil-dark mb-2">{t("market-title")}</h1>
           <p className="text-gray-600 max-w-2xl mx-auto">
