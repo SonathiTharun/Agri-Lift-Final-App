@@ -1,24 +1,14 @@
-
-import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { useState, useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
+import { useLanguage } from "@/components/LanguageContext";
 import { Button } from "@/components/ui/button";
-import { WeatherWidget } from "@/components/WeatherWidget";
-import { Card, CardContent } from "@/components/ui/card";
-import { 
-  Briefcase, 
-  ArrowRight, 
-  UserCircle, 
-  Beaker, 
-  Banknote, 
-  ShoppingBag, 
-  Tractor, 
-  Users, 
-  CloudSun, 
-  Egg, 
-  Store 
-} from 'lucide-react';
-import { LoginModal } from '@/components/LoginModal';
-import { RegisterModal } from '@/components/RegisterModal';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Globe } from "lucide-react";
 
 const translations = {
   en: {
@@ -78,7 +68,7 @@ const translations = {
     "market-connections": "निर्यात",
     "market-connections-desc": "किसान लाभ को अधिकतम करने के लिए प्रत्यक्ष फसल बिक्री मंच",
     "footer-title": "एग्रीलिफ्ट - आपका कृषि साथी",
-    "footer-description": "प्रौद्योगिकी और स्थायी समाधानों के माध्यम से कृषि में नवाचार",
+    "footer-description": "Innovating agriculture through technology and sustainable solutions",
     "privacy-policy": "गोपनीयता नीति",
     "terms-of-service": "सेवा की शर्तें",
     "support": "सहायता",
@@ -110,7 +100,7 @@ const translations = {
     "market-connections": "ஏற்றுமதி",
     "market-connections-desc": "விவசாயி லாபத்தை அதிகரிக்க நேரடி பயிர் விற்பனை தளம்",
     "footer-title": "அக்ரிலிஃப்ட் - உங்கள் விவசாய பங்காளர்",
-    "footer-description": "தொழில்நுட்பம் மற்றும் நிலையான தீர்வுகள் மூலம் விவசாயத்தில் புதுமை",
+    "footer-description": "ப्रौद्योगिकी மற்றும் ஸ்஥ாயிய தீர்வுகள் மூலம் விவசாயத்தில் புதுமை",
     "privacy-policy": "தனியுரிமை கொள்கை",
     "terms-of-service": "சேவை விதிமுறைகள்",
     "support": "ஆதரவு",
@@ -138,10 +128,10 @@ const translations = {
     "weather-forecasts": "వాతావరణ సూచనలు",
     "weather-forecasts-desc": "ఖచ్చితమైన ప్రణాళిక కోసం స్థానిక, రియల్-టైమ్ వాతావరణ నవీకరణలు",
     "diverse-farming": "వైవిధ్యమైన వ్యవసాయం",
-    "diverse-farming-desc": "పౌల్ట్రీ, డైరీ మరియు మత్స్య సాగు కార్యకలాపాలకు మద్దతు",
+    "diverse-farming-desc": "పౌల్ట్రీ, డైరీ మరియు మత్స్య సాగు కార్�కలాపాలకు మద్దతు",
     "market-connections": "ఎగుమతి",
     "market-connections-desc": "రైతు లాభాలను గరిష్టీకరించడానికి ప్రత్యక్ష పంట అమ్మకాల వేదిక",
-    "footer-title": "అగ్రిలిఫ్ట్ - మీ వ్యవసాయ భాగస్వామి",
+    "footer-title": "అగ్రిలిఫ్ట్ - ఉங்களు వ్యవసాయ భాగస్వామి",
     "footer-description": "సాంకేతిక పరిజ్ఞానం మరియు స్థిరమైన పరిష్కారాల ద్వారా వ్యవసాయంలో వినూత్నత",
     "privacy-policy": "గోప్యతా విధానం",
     "terms-of-service": "సేవా నిబంధనలు",
@@ -151,7 +141,6 @@ const translations = {
   }
 };
 
-// Background images for hero section
 const backgroundImages = [
   'https://images.unsplash.com/photo-1625246333195-78d9c38ad449?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80',
   'https://images.unsplash.com/photo-1523348837708-15d4a09cfac2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80',
@@ -176,18 +165,7 @@ const Welcome = () => {
   const [loginOpen, setLoginOpen] = useState(false);
   const [registerOpen, setRegisterOpen] = useState(false);
   const [userType, setUserType] = useState<'farmer' | 'executive'>('farmer');
-  
-  // Function to translate text
-  const t = (key: string) => translations[lang]?.[key] || translations.en[key];
-
-  // Rotate hero slides
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentSlide((prevSlide) => (prevSlide + 1) % backgroundImages.length);
-    }, 5000);
-    
-    return () => clearInterval(interval);
-  }, []);
+  const { t } = useLanguage();
 
   const handleOpenLogin = (type: 'farmer' | 'executive') => {
     setUserType(type);
@@ -201,12 +179,47 @@ const Welcome = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-white to-gray-50">
-      {/* Compact Weather Widget */}
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-foliage-dark via-foliage to-foliage-light py-2 px-4 shadow-md">
+        <div className="container mx-auto flex justify-between items-center">
+          <Link to="/" className="flex items-center">
+            <img src="/logo.png" alt="AgriLift Logo" className="h-12 w-auto" />
+          </Link>
+          
+          <div className="flex items-center space-x-6">
+            <Link 
+              to="/services" 
+              className="text-white hover:text-white/80 transition-colors"
+            >
+              {t('services')}
+            </Link>
+            <Link 
+              to="/contact" 
+              className="text-white hover:text-white/80 transition-colors"
+            >
+              {t('contact')}
+            </Link>
+            
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm" className="bg-white/20 border-white/30 text-white hover:bg-white/30">
+                  <Globe size={16} className="mr-1" /> {lang.toUpperCase()}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => setLang('en')}>English</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setLang('hi')}>हिंदी</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setLang('ta')}>தமிழ்</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setLang('te')}>తెలుగు</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        </div>
+      </nav>
+
       <div className="fixed top-24 sm:top-20 right-4 z-40 transform scale-[0.6] origin-top-right">
         <WeatherWidget />
       </div>
       
-      {/* Language Selector */}
       <div className="fixed top-20 left-4 z-40 bg-white/90 backdrop-blur-sm p-2 rounded-lg shadow-md">
         <select 
           value={lang}
@@ -220,9 +233,7 @@ const Welcome = () => {
         </select>
       </div>
       
-      {/* Hero Section */}
       <section className="relative h-screen flex items-center">
-        {/* Background images */}
         {backgroundImages.map((img, index) => (
           <div
             key={index}
@@ -278,7 +289,6 @@ const Welcome = () => {
           </div>
         </div>
         
-        {/* Hero dots */}
         <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex gap-2">
           {backgroundImages.map((_, index) => (
             <button
@@ -293,7 +303,6 @@ const Welcome = () => {
         </div>
       </section>
       
-      {/* Features Section */}
       <section className="py-20 bg-white">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
@@ -331,7 +340,6 @@ const Welcome = () => {
         </div>
       </section>
       
-      {/* Footer */}
       <footer className="bg-gradient-to-r from-foliage-dark to-foliage text-white py-12">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -382,7 +390,6 @@ const Welcome = () => {
         </div>
       </footer>
       
-      {/* Login Modal */}
       <LoginModal 
         open={loginOpen} 
         setOpen={setLoginOpen} 
@@ -391,7 +398,6 @@ const Welcome = () => {
         t={t}
       />
       
-      {/* Register Modal */}
       <RegisterModal
         open={registerOpen}
         setOpen={setRegisterOpen}
