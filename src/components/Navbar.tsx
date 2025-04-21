@@ -1,12 +1,23 @@
 
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
+import { useLanguage } from "./LanguageContext";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Globe } from "lucide-react";
 
 export function Navbar() {
   const location = useLocation();
+  const { language, setLanguage, t } = useLanguage();
   const [activeItem, setActiveItem] = useState(() => {
     // Set initial active state based on current path
     const path = location.pathname;
+    if (path === "/home") return "home";
     if (path === "/loans") return "loans";
     if (path === "/contact") return "contact";
     if (path === "/market") return "market";
@@ -15,13 +26,14 @@ export function Navbar() {
     if (path === "/export") return "export";
     if (path === "/monitoring") return "monitoring";
     // Add more path checks as needed
-    return "home"; // Default
+    return "welcome"; // Default
   });
 
   // Update active state when location changes
   useEffect(() => {
     const path = location.pathname;
-    if (path === "/") setActiveItem("home");
+    if (path === "/") setActiveItem("welcome");
+    else if (path === "/home") setActiveItem("home");
     else if (path === "/loans") setActiveItem("loans");
     else if (path === "/contact") setActiveItem("contact");
     else if (path === "/market") setActiveItem("market");
@@ -33,14 +45,15 @@ export function Navbar() {
   }, [location]);
 
   const navItems = [
-    { id: "home", label: "Home", path: "/" },
-    { id: "loans", label: "Loans", path: "/loans" },
-    { id: "contact", label: "Contact", path: "/contact" },
-    { id: "market", label: "Market", path: "/market" },
-    { id: "labour", label: "Labour", path: "/labour" },
-    { id: "machinery", label: "Machinery", path: "/machinery" },
-    { id: "export", label: "Export", path: "/export" },
-    { id: "monitoring", label: "Monitoring", path: "/monitoring" },
+    { id: "welcome", label: "Welcome", path: "/" },
+    { id: "home", label: t("home"), path: "/home" },
+    { id: "loans", label: t("loans"), path: "/loans" },
+    { id: "market", label: t("market"), path: "/market" },
+    { id: "labour", label: t("labour"), path: "/labour" },
+    { id: "machinery", label: t("machinery"), path: "/machinery" },
+    { id: "export", label: t("export"), path: "/export" },
+    { id: "monitoring", label: t("monitoring"), path: "/monitoring" },
+    { id: "contact", label: t("contact"), path: "/contact" },
   ];
 
   return (
@@ -68,11 +81,27 @@ export function Navbar() {
           ))}
         </div>
         
-        <button className="md:hidden text-white">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-          </svg>
-        </button>
+        <div className="flex items-center gap-2">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm" className="bg-white/20 border-white/30 text-white hover:bg-white/30">
+                <Globe size={16} className="mr-1" /> {language.toUpperCase()}
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => setLanguage('en')}>English</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setLanguage('hi')}>हिंदी</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setLanguage('ta')}>தமிழ்</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setLanguage('te')}>తెలుగు</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          
+          <Button className="md:hidden text-white bg-transparent hover:bg-white/20">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </Button>
+        </div>
       </div>
     </nav>
   );
