@@ -1,12 +1,9 @@
-
 import { useState } from "react";
-import { Navbar } from "@/components/Navbar";
 import LoanCalculator from "@/components/LoanCalculator";
 import BankCard from "@/components/BankCard";
 import DisclaimerBanner from "@/components/DisclaimerBanner";
 import LoanAdvisorModal from "@/components/LoanAdvisorModal";
 import ThankYouModal from "@/components/ThankYouModal";
-import { Button } from "@/components/ui/button";
 import CountryMapSelector from "@/components/CountryMapSelector";
 
 type Bank = {
@@ -120,7 +117,6 @@ const banks: Bank[] = [
     type: "Government",
     country: "Brazil"
   }
-  // ... add more if needed ...
 ];
 
 const countries = ["India", "United States", "Brazil"];
@@ -137,7 +133,6 @@ export default function Loans() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 to-foliage-light/10">
-      <Navbar />
       <main className="container mx-auto pt-24 px-4 pb-10">
         <div className="max-w-4xl mx-auto text-center mb-8">
           <h1 className="text-3xl md:text-4xl font-bold text-soil-dark mb-2">
@@ -161,7 +156,7 @@ export default function Loans() {
             {countries.map((c) => <option key={c}>{c}</option>)}
           </select>
         </section>
-        {/* Map Selector (placeholder placeholder for Leaflet) */}
+        {/* Map Selector */}
         <section className="max-w-md mx-auto mb-6">
           <CountryMapSelector country={country} onCountryChange={setCountry} />
         </section>
@@ -193,13 +188,13 @@ export default function Loans() {
           </div>
         </section>
 
-        {/* What’s Working Well */}
+        {/* What's Working Well */}
         <section
           aria-label="What's Working Well"
           className="my-5 bg-green-50 border-l-4 border-green-500 p-4 rounded shadow"
         >
           <h3 className="font-bold mb-1 text-green-800 flex items-center gap-2" aria-label="Success Highlights">
-            <span>✅</span> What’s Working Well
+            <span>✅</span> What's Working Well
           </h3>
           <ul className="ml-6 list-disc text-green-900 text-[15px] leading-relaxed">
             <li><b>Stunning UI:</b> Modern, responsive design with vibrant bank listings and useful animations.</li>
