@@ -13,6 +13,7 @@ import Checkout from "./pages/Checkout";
 import Labour from "./pages/Labour";
 import Machinery from "./pages/Machinery";
 import Export from "./pages/Export";
+import Monitoring from "./pages/Monitoring";
 
 const queryClient = new QueryClient();
 
@@ -31,8 +32,8 @@ const App = () => (
           <Route path="/labour" element={<Labour />} />
           <Route path="/machinery" element={<Machinery />} />
           <Route path="/export" element={<Export />} />
+          <Route path="/monitoring" element={<Monitoring />} />
           <Route path="/contact" element={<NotFound />} />
-          <Route path="/monitoring" element={<NotFound />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </TooltipProvider>

@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 
 export function Navbar() {
@@ -9,9 +9,28 @@ export function Navbar() {
     const path = location.pathname;
     if (path === "/loans") return "loans";
     if (path === "/contact") return "contact";
+    if (path === "/market") return "market";
+    if (path === "/labour") return "labour";
+    if (path === "/machinery") return "machinery";
+    if (path === "/export") return "export";
+    if (path === "/monitoring") return "monitoring";
     // Add more path checks as needed
     return "home"; // Default
   });
+
+  // Update active state when location changes
+  useEffect(() => {
+    const path = location.pathname;
+    if (path === "/") setActiveItem("home");
+    else if (path === "/loans") setActiveItem("loans");
+    else if (path === "/contact") setActiveItem("contact");
+    else if (path === "/market") setActiveItem("market");
+    else if (path === "/labour") setActiveItem("labour");
+    else if (path === "/machinery") setActiveItem("machinery");
+    else if (path === "/export") setActiveItem("export");
+    else if (path === "/monitoring") setActiveItem("monitoring");
+    // Add more path checks as needed
+  }, [location]);
 
   const navItems = [
     { id: "home", label: "Home", path: "/" },
