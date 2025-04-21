@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Navbar } from "@/components/Navbar";
 import { WeatherWidget } from "@/components/WeatherWidget";
@@ -64,8 +63,8 @@ import {
   Mail,
   Phone
 } from "lucide-react";
+import { ConfirmDialog } from "@/components/ConfirmDialog";
 
-// Labour data types
 type Labour = {
   id: string;
   name: string;
@@ -103,7 +102,6 @@ type Job = {
   deadline: string;
 };
 
-// Mock data for labour, teams and jobs
 const labours: Labour[] = [
   {
     id: "l1",
@@ -193,7 +191,6 @@ const jobs: Job[] = [
   }
 ];
 
-// Form schemas
 const jobFormSchema = z.object({
   title: z.string().min(5, "Job title must be at least 5 characters"),
   location: z.string().min(3, "Location is required"),
@@ -216,8 +213,11 @@ const contactFormSchema = z.object({
 export default function Labour() {
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("workers");
-  
-  // Job posting form
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [hireType, setHireType] = useState<"worker" | "team" | null>(null);
+  const [selectedLabour, setSelectedLabour] = useState<Labour | null>(null);
+  const [selectedTeam, setSelectedTeam] = useState<Team | null>(null);
+
   const jobForm = useForm<z.infer<typeof jobFormSchema>>({
     resolver: zodResolver(jobFormSchema),
     defaultValues: {
@@ -230,8 +230,7 @@ export default function Labour() {
       deadline: ""
     }
   });
-  
-  // Contact form
+
   const contactForm = useForm<z.infer<typeof contactFormSchema>>({
     resolver: zodResolver(contactFormSchema),
     defaultValues: {
@@ -243,8 +242,7 @@ export default function Labour() {
       preferredDate: ""
     }
   });
-  
-  // Form submission handlers
+
   const onJobSubmit = (data: z.infer<typeof jobFormSchema>) => {
     toast({
       title: "Job Posted Successfully",
@@ -252,7 +250,7 @@ export default function Labour() {
     });
     jobForm.reset();
   };
-  
+
   const onContactSubmit = (data: z.infer<typeof contactFormSchema>) => {
     toast({
       title: "Appointment Request Sent",
@@ -261,11 +259,40 @@ export default function Labour() {
     contactForm.reset();
   };
 
+  const handleHireNow = (labour: Labour) => {
+    setSelectedLabour(labour);
+    setHireType("worker");
+    setDialogOpen(true);
+  };
+
+  const handleHireTeam = (team: Team) => {
+    setSelectedTeam(team);
+    setHireType("team");
+    setDialogOpen(true);
+  };
+
+  const handleConfirmHire = () => {
+    setDialogOpen(false);
+    if (hireType === "worker" && selectedLabour) {
+      toast({
+        title: "Worker Hired!",
+        description: `${selectedLabour.name} has been successfully hired.`,
+      });
+    } else if (hireType === "team" && selectedTeam) {
+      toast({
+        title: "Team Hired!",
+        description: `${selectedTeam.name} has been successfully hired.`,
+      });
+    }
+    setSelectedLabour(null);
+    setSelectedTeam(null);
+    setHireType(null);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-soil-light/10 to-foliage-light/10">
       <Navbar />
       
-      {/* Weather Widget (Draggable) */}
       <WeatherWidget />
       
       <main className="container mx-auto pt-20 px-4 pb-10">
@@ -284,7 +311,6 @@ export default function Labour() {
             <TabsTrigger value="contact">Schedule Meeting</TabsTrigger>
           </TabsList>
           
-          {/* Individual Workers Tab */}
           <TabsContent value="workers" className="mt-6">
             <div className="grid md:grid-cols-2 gap-6">
               {labours.map(labour => (
@@ -340,7 +366,11 @@ export default function Labour() {
                             </PopoverContent>
                           </Popover>
                         </div>
-                        <Button size="sm" className="bg-foliage hover:bg-foliage-dark">
+                        <Button
+                          size="sm"
+                          className="bg-foliage hover:bg-foliage-dark"
+                          onClick={() => handleHireNow(labour)}
+                        >
                           Hire Now
                         </Button>
                       </CardFooter>
@@ -357,7 +387,6 @@ export default function Labour() {
             </div>
           </TabsContent>
           
-          {/* Teams Tab */}
           <TabsContent value="teams" className="mt-6">
             <div className="grid md:grid-cols-2 gap-6">
               {teams.map(team => (
@@ -407,7 +436,11 @@ export default function Labour() {
                             </PopoverContent>
                           </Popover>
                         </div>
-                        <Button size="sm" className="bg-foliage hover:bg-foliage-dark">
+                        <Button
+                          size="sm"
+                          className="bg-foliage hover:bg-foliage-dark"
+                          onClick={() => handleHireTeam(team)}
+                        >
                           Hire Team
                         </Button>
                       </CardFooter>
@@ -424,7 +457,6 @@ export default function Labour() {
             </div>
           </TabsContent>
           
-          {/* Post Jobs Tab */}
           <TabsContent value="jobs" className="mt-6">
             <div className="grid md:grid-cols-5 gap-6">
               <div className="md:col-span-2">
@@ -611,7 +643,6 @@ export default function Labour() {
             </div>
           </TabsContent>
           
-          {/* Schedule Meeting Tab */}
           <TabsContent value="contact" className="mt-6">
             <div className="grid md:grid-cols-2 gap-6">
               <Card>
@@ -829,6 +860,32 @@ export default function Labour() {
             </div>
           </TabsContent>
         </Tabs>
+        
+        <ConfirmDialog
+          open={dialogOpen && hireType === "worker"}
+          title="Confirm Hire Worker"
+          description={
+            selectedLabour
+              ? `Are you sure you want to hire ${selectedLabour.name}?`
+              : ""
+          }
+          onConfirm={handleConfirmHire}
+          onCancel={() => setDialogOpen(false)}
+          confirmLabel="Confirm Hire"
+        />
+        
+        <ConfirmDialog
+          open={dialogOpen && hireType === "team"}
+          title="Confirm Hire Team"
+          description={
+            selectedTeam
+              ? `Are you sure you want to hire ${selectedTeam.name}?`
+              : ""
+          }
+          onConfirm={handleConfirmHire}
+          onCancel={() => setDialogOpen(false)}
+          confirmLabel="Confirm Hire"
+        />
       </main>
     </div>
   );
