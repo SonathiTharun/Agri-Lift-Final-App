@@ -15,7 +15,6 @@ export function Navbar() {
   const location = useLocation();
   const { language, setLanguage, t } = useLanguage();
   const [activeItem, setActiveItem] = useState(() => {
-    // Set initial active state based on current path
     const path = location.pathname;
     if (path === "/home") return "home";
     if (path === "/loans") return "loans";
@@ -25,11 +24,10 @@ export function Navbar() {
     if (path === "/machinery") return "machinery";
     if (path === "/export") return "export";
     if (path === "/monitoring") return "monitoring";
-    // Add more path checks as needed
-    return "welcome"; // Default
+    if (path === "/services") return "services";
+    return "welcome";
   });
 
-  // Update active state when location changes
   useEffect(() => {
     const path = location.pathname;
     if (path === "/") setActiveItem("welcome");
@@ -41,7 +39,7 @@ export function Navbar() {
     else if (path === "/machinery") setActiveItem("machinery");
     else if (path === "/export") setActiveItem("export");
     else if (path === "/monitoring") setActiveItem("monitoring");
-    // Add more path checks as needed
+    else if (path === "/services") setActiveItem("services");
   }, [location]);
 
   const navItems = [
@@ -53,6 +51,7 @@ export function Navbar() {
     { id: "machinery", label: t("machinery"), path: "/machinery" },
     { id: "export", label: t("export"), path: "/export" },
     { id: "monitoring", label: t("monitoring"), path: "/monitoring" },
+    { id: "services", label: t("services"), path: "/services" },
     { id: "contact", label: t("contact"), path: "/contact" },
   ];
 
@@ -60,8 +59,7 @@ export function Navbar() {
     <nav className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-foliage-dark via-foliage to-foliage-light py-2 px-4 shadow-md">
       <div className="container mx-auto flex justify-between items-center">
         <Link to="/" className="flex items-center">
-          <h1 className="text-white font-bold text-xl mr-2">AgriLift</h1>
-          <span className="bg-white text-foliage-dark text-xs px-1.5 py-0.5 rounded-md font-semibold">SOIL INSIGHT</span>
+          <img src="/logo.png" alt="AgriLift Logo" className="h-12 w-auto" />
         </Link>
         
         <div className="hidden md:flex space-x-1">
@@ -95,12 +93,6 @@ export function Navbar() {
               <DropdownMenuItem onClick={() => setLanguage('te')}>తెలుగు</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-          
-          <Button className="md:hidden text-white bg-transparent hover:bg-white/20">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-          </Button>
         </div>
       </div>
     </nav>

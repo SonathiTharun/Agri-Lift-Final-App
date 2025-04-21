@@ -1,7 +1,5 @@
-
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
-// Define all the languages and translations we support
 export const translations = {
   en: {
     "home": "Home",
@@ -12,7 +10,9 @@ export const translations = {
     "machinery": "Machinery",
     "export": "Export",
     "monitoring": "Monitoring",
-    // Add more translations as needed
+    "services": "Services",
+    "service-title": "Our Services",
+    "service-description": "Comprehensive agricultural solutions for modern farming"
   },
   hi: {
     "home": "होम",
@@ -23,7 +23,9 @@ export const translations = {
     "machinery": "मशीनरी",
     "export": "निर्यात",
     "monitoring": "निगरानी",
-    // Add more translations as needed
+    "services": "सेवाएं",
+    "service-title": "हमारी सेवाएं",
+    "service-description": "आधुनिक खेती के लिए व्यापक कृषि समाधान"
   },
   ta: {
     "home": "முகப்பு",
@@ -34,7 +36,9 @@ export const translations = {
     "machinery": "இயந்திரங்கள்",
     "export": "ஏற்றுமதி",
     "monitoring": "கண்காணிப்பு",
-    // Add more translations as needed
+    "services": "சேவைகள்",
+    "service-title": "எங்கள் சேவைகள்",
+    "service-description": "நவீன விவசாயத்திற்கான விரிவான விவசாய தீர்வுகள்"
   },
   te: {
     "home": "హోమ్",
@@ -45,11 +49,12 @@ export const translations = {
     "machinery": "యంత్రాలు",
     "export": "ఎగుమతి",
     "monitoring": "పర్యవేక్షణ",
-    // Add more translations as needed
+    "services": "సేవలు",
+    "service-title": "మా సేవలు",
+    "service-description": "ఆధునిక వ్యవసాయానికి సమగ్ర వ్యవసాయ పరిష్కారాలు"
   }
 };
 
-// Define types for our context
 type Language = 'en' | 'hi' | 'ta' | 'te';
 
 type LanguageContextType = {
@@ -58,18 +63,15 @@ type LanguageContextType = {
   t: (key: string) => string;
 };
 
-// Create context with default values
 const LanguageContext = createContext<LanguageContextType>({
   language: 'en',
   setLanguage: () => {},
   t: (key) => key,
 });
 
-// Create provider component
 export const LanguageProvider: React.FC<{children: ReactNode}> = ({ children }) => {
   const [language, setLanguage] = useState<Language>('en');
   
-  // Translation function
   const t = (key: string): string => {
     return translations[language]?.[key] || translations.en[key] || key;
   };
@@ -81,5 +83,4 @@ export const LanguageProvider: React.FC<{children: ReactNode}> = ({ children }) 
   );
 };
 
-// Custom hook for using the language context
 export const useLanguage = () => useContext(LanguageContext);
