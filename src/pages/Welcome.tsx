@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
@@ -78,7 +77,7 @@ const translations = {
     "market-connections": "निर्यात",
     "market-connections-desc": "किसान लाभ को अधिकतम करने के लिए प्रत्यक्ष फसल बिक्री मंच",
     "footer-title": "एग्रीलिफ्ट - आपका कृषि साथी",
-    "footer-description": "प्रौद्योगिकी और स्थायी समाधानों के माध्यम से कृषि में नवाचार",
+    "footer-description": "Innovating agriculture through technology and sustainable solutions",
     "privacy-policy": "गोपनीयता नीति",
     "terms-of-service": "सेवा की शर्तें",
     "support": "सहायता",
@@ -138,10 +137,10 @@ const translations = {
     "weather-forecasts": "వాతావరణ సూచనలు",
     "weather-forecasts-desc": "ఖచ్చితమైన ప్రణాళిక కోసం స్థానిక, రియల్-టైమ్ వాతావరణ నవీకరణలు",
     "diverse-farming": "వైవిధ్యమైన వ్యవసాయం",
-    "diverse-farming-desc": "పౌల్ట్రీ, డైరీ మరియు మత్స్య సాగు కార్యకలాపాలకు మద్దతు",
+    "diverse-farming-desc": "పౌల్ట్రీ, డైరీ మరియు మత్స్య సాగు కార్�కలాపాలకు మద్దతు",
     "market-connections": "ఎగుమతి",
     "market-connections-desc": "రైతు లాభాలను గరిష్టీకరించడానికి ప్రత్యక్ష పంట అమ్మకాల వేదిక",
-    "footer-title": "అగ్రిలిఫ్ట్ - మీ వ్యవసాయ భాగస్వామి",
+    "footer-title": "అగ్రిలిఫ్ట్ - ఉங்களు వ్యవసాయ భాగస్వామి",
     "footer-description": "సాంకేతిక పరిజ్ఞానం మరియు స్థిరమైన పరిష్కారాల ద్వారా వ్యవసాయంలో వినూత్నత",
     "privacy-policy": "గోప్యతా విధానం",
     "terms-of-service": "సేవా నిబంధనలు",
@@ -151,7 +150,6 @@ const translations = {
   }
 };
 
-// Background images for hero section
 const backgroundImages = [
   'https://images.unsplash.com/photo-1625246333195-78d9c38ad449?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80',
   'https://images.unsplash.com/photo-1523348837708-15d4a09cfac2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80',
@@ -160,13 +158,13 @@ const backgroundImages = [
 ];
 
 const features = [
-  { icon: Beaker, key: "land-testing", descKey: "land-testing-desc", path: "/" },
+  { icon: Beaker, key: "land-testing", descKey: "land-testing-desc", path: "/dashboard" },
   { icon: Banknote, key: "loan-services", descKey: "loan-services-desc", path: "/loans" },
   { icon: ShoppingBag, key: "market", descKey: "market-desc", path: "/market" },
   { icon: Tractor, key: "machinery-options", descKey: "machinery-options-desc", path: "/machinery" },
   { icon: Users, key: "labor-management", descKey: "labor-management-desc", path: "/labour" },
-  { icon: CloudSun, key: "weather-forecasts", descKey: "weather-forecasts-desc", path: "/" },
-  { icon: Egg, key: "diverse-farming", descKey: "diverse-farming-desc", path: "/" },
+  { icon: CloudSun, key: "weather-forecasts", descKey: "weather-forecasts-desc", path: "/dashboard" },
+  { icon: Egg, key: "diverse-farming", descKey: "diverse-farming-desc", path: "/farming-type" },
   { icon: Store, key: "market-connections", descKey: "market-connections-desc", path: "/export" },
 ];
 
@@ -177,10 +175,8 @@ const Welcome = () => {
   const [registerOpen, setRegisterOpen] = useState(false);
   const [userType, setUserType] = useState<'farmer' | 'executive'>('farmer');
   
-  // Function to translate text
   const t = (key: string) => translations[lang]?.[key] || translations.en[key];
 
-  // Rotate hero slides
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentSlide((prevSlide) => (prevSlide + 1) % backgroundImages.length);
@@ -201,12 +197,10 @@ const Welcome = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-white to-gray-50">
-      {/* Compact Weather Widget */}
       <div className="fixed top-24 sm:top-20 right-4 z-40 transform scale-[0.6] origin-top-right">
         <WeatherWidget />
       </div>
       
-      {/* Language Selector */}
       <div className="fixed top-20 left-4 z-40 bg-white/90 backdrop-blur-sm p-2 rounded-lg shadow-md">
         <select 
           value={lang}
@@ -220,9 +214,7 @@ const Welcome = () => {
         </select>
       </div>
       
-      {/* Hero Section */}
       <section className="relative h-screen flex items-center">
-        {/* Background images */}
         {backgroundImages.map((img, index) => (
           <div
             key={index}
@@ -278,7 +270,6 @@ const Welcome = () => {
           </div>
         </div>
         
-        {/* Hero dots */}
         <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex gap-2">
           {backgroundImages.map((_, index) => (
             <button
@@ -293,7 +284,6 @@ const Welcome = () => {
         </div>
       </section>
       
-      {/* Features Section */}
       <section className="py-20 bg-white">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
@@ -331,7 +321,6 @@ const Welcome = () => {
         </div>
       </section>
       
-      {/* Footer */}
       <footer className="bg-gradient-to-r from-foliage-dark to-foliage text-white py-12">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -382,7 +371,6 @@ const Welcome = () => {
         </div>
       </footer>
       
-      {/* Login Modal */}
       <LoginModal 
         open={loginOpen} 
         setOpen={setLoginOpen} 
@@ -391,7 +379,6 @@ const Welcome = () => {
         t={t}
       />
       
-      {/* Register Modal */}
       <RegisterModal
         open={registerOpen}
         setOpen={setRegisterOpen}
