@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Navbar } from "@/components/Navbar";
 import { WeatherWidget } from "@/components/WeatherWidget";
 import { Link } from "react-router-dom";
@@ -49,10 +49,10 @@ const categories: ProductCategory[] = [
 export default function Market() {
   const [pageLoaded, setPageLoaded] = useState(false);
 
-  // Simulate page loading - fix the useState to useEffect
-  useState(() => {
+  // Fixed: Changed useState to useEffect for page loading simulation
+  useEffect(() => {
     setTimeout(() => setPageLoaded(true), 100);
-  });
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-soil-light/10 to-foliage-light/10">

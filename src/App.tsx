@@ -10,6 +10,7 @@ import Loans from "./pages/Loans";
 import Market from "./pages/Market";
 import ProductDetail from "./pages/ProductDetail";
 import Checkout from "./pages/Checkout";
+import Labour from "./pages/Labour";
 
 const queryClient = new QueryClient();
 
@@ -25,8 +26,8 @@ const App = () => (
           <Route path="/market" element={<Market />} />
           <Route path="/market/:category" element={<ProductDetail />} />
           <Route path="/checkout" element={<Checkout />} />
+          <Route path="/labour" element={<Labour />} />
           <Route path="/contact" element={<NotFound />} />
-          <Route path="/labour" element={<NotFound />} />
           <Route path="/machinery" element={<NotFound />} />
           <Route path="/export" element={<NotFound />} />
           <Route path="/monitoring" element={<NotFound />} />
