@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Navbar } from "@/components/Navbar";
 import { useLanguage } from "@/components/LanguageContext";
@@ -5,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { Flask, Seedling, ClipboardList, Robot, Globe, Leaf, Utensils } from "lucide-react";
+import { Beaker, Leaf, ClipboardList, Bot, Globe, Sprout, Utensils } from "lucide-react";
 
 const Services = () => {
   const { t } = useLanguage();
@@ -20,7 +21,7 @@ const Services = () => {
 
   const farmingServices = [
     {
-      icon: <Flask className="h-6 w-6" />,
+      icon: <Beaker className="h-6 w-6" />, // Replaced Flask with Beaker
       title: "Soil Testing & Analysis",
       description: "Comprehensive soil health assessment with AI-powered recommendations",
       features: [
@@ -31,7 +32,7 @@ const Services = () => {
       badge: "Popular"
     },
     {
-      icon: <Seedling className="h-6 w-6" />,
+      icon: <Sprout className="h-6 w-6" />, // Replaced Seedling with Sprout
       title: "Premium Seed Supply",
       description: "Certified seeds with guaranteed germination rates",
       stats: [
@@ -55,7 +56,7 @@ const Services = () => {
 
   const advancedServices = [
     {
-      icon: <Robot className="h-6 w-6" />,
+      icon: <Bot className="h-6 w-6" />, // Corrected from Robot to Bot
       title: "Smart Farming Solutions",
       description: "IoT-enabled farming systems for precision agriculture",
       badge: "Advanced"
