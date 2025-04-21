@@ -4,6 +4,7 @@ import { useLanguage } from "./LanguageContext";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Globe } from "lucide-react";
+
 export function Navbar() {
   const location = useLocation();
   const {
@@ -65,10 +66,10 @@ export function Navbar() {
     label: t("contact"),
     path: "/contact"
   }];
-  return <nav className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-foliage-dark via-foliage to-foliage-light py-2 px-4 shadow-md">
+  return <nav className="fixed top-0 left-0 right-0 z-50 bg-[#2ecc71] py-2 px-4 shadow-md">
       <div className="container mx-auto flex justify-between items-center">
         <Link to="/home" className="flex items-center">
-          <img alt="AgriLift Logo" className="h-12 w-auto" src="/lovable-uploads/3c35378f-1080-4789-a3e0-6825864a6de9.png" />
+          <img alt="AgriLift Logo" className="h-12 w-auto invert" src="/lovable-uploads/3c35378f-1080-4789-a3e0-6825864a6de9.png" />
         </Link>
         
         <div className="hidden md:flex space-x-1">
