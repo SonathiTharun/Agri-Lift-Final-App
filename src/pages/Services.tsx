@@ -40,7 +40,7 @@ const Services = () => {
         "Crop suitability assessment for your soil type",
         "Custom fertilizer recommendations for optimal yield"
       ],
-      action: () => navigate("/home"),
+      action: () => navigate("/dashboard"),
       badge: "Popular"
     },
     {
@@ -127,7 +127,7 @@ const Services = () => {
         "EU Organic",
         "India Organic (NPOP)"
       ],
-      action: () => navigate("/monitoring"),
+      action: () => navigate("/farming-type?type=organic"),
       badge: "Eco-Friendly"
     },
     {
@@ -210,9 +210,9 @@ const Services = () => {
               <Button 
                 size="lg"
                 variant="outline"
-                onClick={() => navigate("/register")}
+                onClick={() => navigate("/farming-type")}
               >
-                Sign Up
+                Choose Farming Type
               </Button>
             </div>
           </div>

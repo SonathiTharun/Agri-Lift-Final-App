@@ -7,7 +7,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { LanguageProvider } from "./components/LanguageContext";
 
 import Welcome from "./pages/Welcome";
-import Index from "./pages/Index";
+import Dashboard from "./pages/Dashboard"; // Renamed from Index to Dashboard
 import NotFound from "./pages/NotFound";
 import Loans from "./pages/Loans";
 import Market from "./pages/Market";
@@ -19,6 +19,7 @@ import Export from "./pages/Export";
 import Monitoring from "./pages/Monitoring";
 import Services from "./pages/Services";
 import Contact from "./pages/Contact";
+import FarmingType from "./pages/FarmingType"; // New page for farming type selection
 
 const queryClient = new QueryClient();
 
@@ -31,7 +32,8 @@ const App = () => (
           <Sonner />
           <Routes>
             <Route path="/" element={<Welcome />} />
-            <Route path="/home" element={<Index />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/farming-type" element={<FarmingType />} />
             <Route path="/loans" element={<Loans />} />
             <Route path="/market" element={<Market />} />
             <Route path="/market/:category" element={<ProductDetail />} />
