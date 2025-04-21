@@ -5,6 +5,7 @@ import DisclaimerBanner from "@/components/DisclaimerBanner";
 import LoanAdvisorModal from "@/components/LoanAdvisorModal";
 import ThankYouModal from "@/components/ThankYouModal";
 import CountryMapSelector from "@/components/CountryMapSelector";
+import WeatherCard from "@/components/WeatherCard";
 
 type Bank = {
   name: string;
@@ -17,7 +18,6 @@ type Bank = {
   country: string;
 };
 
-// Extended bank list for richer demo
 const banks: Bank[] = [
   {
     name: "State Bank of India",
@@ -133,65 +133,73 @@ export default function Loans() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 to-foliage-light/10">
-      <main className="container mx-auto pt-24 px-4 pb-10">
-        <div className="max-w-4xl mx-auto text-center mb-8">
-          <h1 className="text-3xl md:text-4xl font-bold text-soil-dark mb-2">
-            Smart Agri Loans Guide
-          </h1>
-          <p className="text-gray-600 max-w-2xl mx-auto">
-            Discover official bank rates, compare loan options, and get guidance on government and private agricultural loans suited for your needs. AgriLift empowers you with impartial, country-specific information, insightful calculators, and advisor support.
-          </p>
-        </div>
-
-        {/* Country Selector */}
-        <section aria-label="Select your country" className="mb-2">
-          <label htmlFor="country-picker" className="text-sm font-medium mr-2">Country:</label>
-          <select
-            id="country-picker"
-            className="border rounded py-1 px-2"
-            aria-label="Choose country for loan info"
-            value={country}
-            onChange={e => setCountry(e.target.value)}
-          >
-            {countries.map((c) => <option key={c}>{c}</option>)}
-          </select>
+      <main className="container mx-auto pt-8 px-2 pb-10 max-w-6xl">
+        <section className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center mb-10 animate-fade-in">
+          <div>
+            <h1 className="text-3xl md:text-4xl font-bold text-soil-dark mb-2">
+              Smart Agri Loans Guide
+            </h1>
+            <p className="text-gray-600 max-w-xl">
+              Discover official bank rates, compare loan options, and get guidance on government and private agricultural loans suited for your needs. AgriLift empowers you with impartial, country-specific information, insightful calculators, and advisor support.
+            </p>
+            <div className="flex gap-3 mt-6 items-end">
+              <WeatherCard country={country} />
+              <div className="flex flex-col ml-4">
+                <label htmlFor="country-picker" className="text-sm font-medium mb-1 inline-block">Country:</label>
+                <select
+                  id="country-picker"
+                  className="border rounded py-1 px-2 bg-white text-base"
+                  aria-label="Choose country for loan info"
+                  value={country}
+                  onChange={e => setCountry(e.target.value)}
+                >
+                  {countries.map((c) => <option key={c}>{c}</option>)}
+                </select>
+              </div>
+            </div>
+          </div>
+          <div>
+            <CountryMapSelector country={country} onCountryChange={setCountry} />
+          </div>
         </section>
-        {/* Map Selector */}
-        <section className="max-w-md mx-auto mb-6">
-          <CountryMapSelector country={country} onCountryChange={setCountry} />
+
+        <section className="mb-3 text-center">
+          <DisclaimerBanner />
         </section>
 
-        {/* Disclaimer Banner */}
-        <DisclaimerBanner />
-
-        {/* Bank Section */}
-        <section aria-label="Loan Bank Options" className="mb-2">
+        <section
+          aria-label="Loan Bank Options"
+          className="mb-9 bg-white/90 rounded-xl shadow p-6 animate-fade-in"
+        >
           <h2 className="text-xl font-semibold text-soil-dark mb-1">Banks in {country}</h2>
-          <p className="text-gray-500 text-sm mb-4">Compare top government and private banks for agriculture finance and guidance.</p>
-          <div className="grid md:grid-cols-2 gap-6 my-6">
+          <p className="text-gray-500 text-sm mb-6">Compare top government and private banks for agriculture finance and guidance.</p>
+          <div className="grid gap-7 md:grid-cols-2">
             {govBanks.length > 0 && (
               <div>
                 <h3 className="font-semibold mb-2 text-foliage-dark">Government Banks</h3>
-                {govBanks.map(bank => (
-                  <BankCard key={bank.name} bank={bank} onInfoClick={() => setAdvisorOpen(true)} />
-                ))}
+                <div className="space-y-5">
+                  {govBanks.map(bank => (
+                    <BankCard key={bank.name} bank={bank} onInfoClick={() => setAdvisorOpen(true)} />
+                  ))}
+                </div>
               </div>
             )}
             {privateBanks.length > 0 && (
               <div>
                 <h3 className="font-semibold mb-2 text-foliage">Private Banks</h3>
-                {privateBanks.map(bank => (
-                  <BankCard key={bank.name} bank={bank} onInfoClick={() => setAdvisorOpen(true)} />
-                ))}
+                <div className="space-y-5">
+                  {privateBanks.map(bank => (
+                    <BankCard key={bank.name} bank={bank} onInfoClick={() => setAdvisorOpen(true)} />
+                  ))}
+                </div>
               </div>
             )}
           </div>
         </section>
 
-        {/* What's Working Well */}
         <section
           aria-label="What's Working Well"
-          className="my-5 bg-green-50 border-l-4 border-green-500 p-4 rounded shadow"
+          className="my-7 bg-green-50 border-l-4 border-green-500 p-5 rounded shadow animate-fade-in"
         >
           <h3 className="font-bold mb-1 text-green-800 flex items-center gap-2" aria-label="Success Highlights">
             <span>✅</span> What's Working Well
@@ -205,22 +213,19 @@ export default function Loans() {
           </ul>
         </section>
 
-        {/* Loan Calculator */}
-        <section className="max-w-xl mx-auto my-10">
+        <section className="max-w-2xl mx-auto my-12 animate-fade-in">
           <LoanCalculator />
         </section>
-        {/* User Message Block (Educational Note) */}
-        <div className="my-6 bg-foliage-light/30 rounded p-4 text-soil-dark text-[15px]">
+
+        <div className="my-8 bg-foliage-light/25 rounded p-4 text-soil-dark text-[15px] max-w-2xl mx-auto shadow-sm animate-fade-in">
           <strong>Note:</strong> AgriLift is a reference platform only. We collate loan rates and features from verified banks and government partners; we do not disburse funds. For actual loan approval, please reach out to the banks listed.
         </div>
       </main>
-      {/* Advisor Info Modal */}
       <LoanAdvisorModal
         open={advisorOpen}
         onClose={() => setAdvisorOpen(false)}
         onThankYou={() => { setAdvisorOpen(false); setThankYouOpen(true); }}
       />
-      {/* Thank-You Modal */}
       <ThankYouModal open={thankYouOpen} onClose={() => setThankYouOpen(false)} />
     </div>
   );
