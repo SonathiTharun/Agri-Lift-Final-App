@@ -4,7 +4,6 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { Navbar } from "@/components/Navbar";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import { WeatherWidget } from "@/components/WeatherWidget";
@@ -14,9 +13,11 @@ const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <BrowserRouter>
-      <TooltipProvider>
-        <Navbar />
+    <TooltipProvider>
+      <Toaster />
+      <Sonner />
+      <WeatherWidget />
+      <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/loans" element={<Loans />} />
@@ -28,11 +29,8 @@ const App = () => (
           <Route path="/monitoring" element={<NotFound />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
-        <WeatherWidget />
-        <Toaster />
-        <Sonner />
-      </TooltipProvider>
-    </BrowserRouter>
+      </BrowserRouter>
+    </TooltipProvider>
   </QueryClientProvider>
 );
 
