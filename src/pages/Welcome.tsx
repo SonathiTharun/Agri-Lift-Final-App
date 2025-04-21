@@ -1,33 +1,13 @@
-
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useLanguage } from "@/components/LanguageContext";
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Card, CardContent } from "@/components/ui/card";
-import { 
-  Globe, 
-  Beaker, 
-  Banknote, 
-  ShoppingBag, 
-  Tractor, 
-  Users, 
-  CloudSun, 
-  Egg, 
-  Store, 
-  ArrowRight, 
-  UserCircle, 
-  Briefcase 
-} from "lucide-react";
+import { Globe, Beaker, Banknote, ShoppingBag, Tractor, Users, CloudSun, Egg, Store, ArrowRight, UserCircle, Briefcase } from "lucide-react";
 import { WeatherWidget } from "@/components/WeatherWidget";
 import { LoginModal } from "@/components/LoginModal";
 import { RegisterModal } from "@/components/RegisterModal";
-
 const translations = {
   en: {
     "hero-title": "Empowering Farmers, Transforming Agriculture",
@@ -158,62 +138,77 @@ const translations = {
     "language": "భాష"
   }
 };
-
-const backgroundImages = [
-  'https://images.unsplash.com/photo-1625246333195-78d9c38ad449?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80',
-  'https://images.unsplash.com/photo-1523348837708-15d4a09cfac2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80',
-  'https://images.unsplash.com/photo-1464226184884-fa280b87c399?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80',
-  'https://images.unsplash.com/photo-1486754735734-325b5831c3ad?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80',
-];
-
-const features = [
-  { icon: Beaker, key: "land-testing", descKey: "land-testing-desc", path: "/" },
-  { icon: Banknote, key: "loan-services", descKey: "loan-services-desc", path: "/loans" },
-  { icon: ShoppingBag, key: "market", descKey: "market-desc", path: "/market" },
-  { icon: Tractor, key: "machinery-options", descKey: "machinery-options-desc", path: "/machinery" },
-  { icon: Users, key: "labor-management", descKey: "labor-management-desc", path: "/labour" },
-  { icon: CloudSun, key: "weather-forecasts", descKey: "weather-forecasts-desc", path: "/" },
-  { icon: Egg, key: "diverse-farming", descKey: "diverse-farming-desc", path: "/" },
-  { icon: Store, key: "market-connections", descKey: "market-connections-desc", path: "/export" },
-];
-
+const backgroundImages = ['https://images.unsplash.com/photo-1625246333195-78d9c38ad449?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80', 'https://images.unsplash.com/photo-1523348837708-15d4a09cfac2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80', 'https://images.unsplash.com/photo-1464226184884-fa280b87c399?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80', 'https://images.unsplash.com/photo-1486754735734-325b5831c3ad?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80'];
+const features = [{
+  icon: Beaker,
+  key: "land-testing",
+  descKey: "land-testing-desc",
+  path: "/"
+}, {
+  icon: Banknote,
+  key: "loan-services",
+  descKey: "loan-services-desc",
+  path: "/loans"
+}, {
+  icon: ShoppingBag,
+  key: "market",
+  descKey: "market-desc",
+  path: "/market"
+}, {
+  icon: Tractor,
+  key: "machinery-options",
+  descKey: "machinery-options-desc",
+  path: "/machinery"
+}, {
+  icon: Users,
+  key: "labor-management",
+  descKey: "labor-management-desc",
+  path: "/labour"
+}, {
+  icon: CloudSun,
+  key: "weather-forecasts",
+  descKey: "weather-forecasts-desc",
+  path: "/"
+}, {
+  icon: Egg,
+  key: "diverse-farming",
+  descKey: "diverse-farming-desc",
+  path: "/"
+}, {
+  icon: Store,
+  key: "market-connections",
+  descKey: "market-connections-desc",
+  path: "/export"
+}];
 const Welcome = () => {
   const [lang, setLang] = useState('en');
   const [currentSlide, setCurrentSlide] = useState(0);
   const [loginOpen, setLoginOpen] = useState(false);
   const [registerOpen, setRegisterOpen] = useState(false);
   const [userType, setUserType] = useState<'farmer' | 'executive'>('farmer');
-  const { t } = useLanguage();
-
+  const {
+    t
+  } = useLanguage();
   const handleOpenLogin = (type: 'farmer' | 'executive') => {
     setUserType(type);
     setLoginOpen(true);
   };
-  
   const handleOpenRegister = (type: 'farmer' | 'executive') => {
     setUserType(type);
     setRegisterOpen(true);
   };
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-white to-gray-50">
+  return <div className="min-h-screen bg-gradient-to-br from-white to-gray-50">
       <nav className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-foliage-dark via-foliage to-foliage-light py-2 px-4 shadow-md">
         <div className="container mx-auto flex justify-between items-center">
           <Link to="/" className="flex items-center">
-            <img src="/logo.png" alt="AgriLift Logo" className="h-12 w-auto" />
+            <img alt="AgriLift Logo" src="/lovable-uploads/4491d2ba-6945-440d-a80d-feb878e74769.png" className="h-12 w-auto object-fill" />
           </Link>
           
           <div className="flex items-center space-x-6">
-            <Link 
-              to="/services" 
-              className="text-white hover:text-white/80 transition-colors"
-            >
+            <Link to="/services" className="text-white hover:text-white/80 transition-colors">
               {t('services')}
             </Link>
-            <Link 
-              to="/contact" 
-              className="text-white hover:text-white/80 transition-colors"
-            >
+            <Link to="/contact" className="text-white hover:text-white/80 transition-colors">
               {t('contact')}
             </Link>
             
@@ -239,11 +234,7 @@ const Welcome = () => {
       </div>
       
       <div className="fixed top-20 left-4 z-40 bg-white/90 backdrop-blur-sm p-2 rounded-lg shadow-md">
-        <select 
-          value={lang}
-          onChange={(e) => setLang(e.target.value)}
-          className="bg-transparent text-sm font-medium focus:outline-none"
-        >
+        <select value={lang} onChange={e => setLang(e.target.value)} className="bg-transparent text-sm font-medium focus:outline-none">
           <option value="en">English</option>
           <option value="hi">हिंदी</option>
           <option value="ta">தமிழ்</option>
@@ -252,19 +243,11 @@ const Welcome = () => {
       </div>
       
       <section className="relative h-screen flex items-center">
-        {backgroundImages.map((img, index) => (
-          <div
-            key={index}
-            className={`absolute inset-0 transition-opacity duration-1000 ${
-              index === currentSlide ? 'opacity-100' : 'opacity-0'
-            }`}
-            style={{
-              backgroundImage: `linear-gradient(to bottom, rgba(0,0,0,0.5), rgba(0,0,0,0.7)), url(${img})`,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-            }}
-          />
-        ))}
+        {backgroundImages.map((img, index) => <div key={index} className={`absolute inset-0 transition-opacity duration-1000 ${index === currentSlide ? 'opacity-100' : 'opacity-0'}`} style={{
+        backgroundImage: `linear-gradient(to bottom, rgba(0,0,0,0.5), rgba(0,0,0,0.7)), url(${img})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center'
+      }} />)}
         
         <div className="container mx-auto px-4 relative z-10">
           <div className="bg-black/60 backdrop-blur-sm p-8 md:p-12 rounded-xl max-w-3xl mx-auto text-center">
@@ -273,33 +256,19 @@ const Welcome = () => {
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <div className="space-y-2">
-                <Button 
-                  onClick={() => handleOpenLogin('farmer')}
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white flex items-center gap-2"
-                >
+                <Button onClick={() => handleOpenLogin('farmer')} className="w-full bg-blue-600 hover:bg-blue-700 text-white flex items-center gap-2">
                   <UserCircle size={18} /> {t('farmer-login')}
                 </Button>
-                <Button 
-                  onClick={() => handleOpenRegister('farmer')}
-                  variant="outline" 
-                  className="w-full bg-white/10 hover:bg-white/20 text-white border-white/30"
-                >
+                <Button onClick={() => handleOpenRegister('farmer')} variant="outline" className="w-full bg-white/10 hover:bg-white/20 text-white border-white/30">
                   {t('farmer-register')}
                 </Button>
               </div>
               
               <div className="space-y-2">
-                <Button 
-                  onClick={() => handleOpenLogin('executive')}
-                  className="w-full bg-foliage hover:bg-foliage-dark text-white flex items-center gap-2"
-                >
+                <Button onClick={() => handleOpenLogin('executive')} className="w-full bg-foliage hover:bg-foliage-dark text-white flex items-center gap-2">
                   <Briefcase size={18} /> {t('executive-portal')}
                 </Button>
-                <Button 
-                  onClick={() => handleOpenRegister('executive')}
-                  variant="outline" 
-                  className="w-full bg-white/10 hover:bg-white/20 text-white border-white/30"
-                >
+                <Button onClick={() => handleOpenRegister('executive')} variant="outline" className="w-full bg-white/10 hover:bg-white/20 text-white border-white/30">
                   {t('farmer-register')}
                 </Button>
               </div>
@@ -308,16 +277,7 @@ const Welcome = () => {
         </div>
         
         <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex gap-2">
-          {backgroundImages.map((_, index) => (
-            <button
-              key={index}
-              onClick={() => setCurrentSlide(index)}
-              className={`w-3 h-3 rounded-full transition-all ${
-                index === currentSlide ? 'bg-white scale-110' : 'bg-white/50'
-              }`}
-              aria-label={`Go to slide ${index + 1}`}
-            />
-          ))}
+          {backgroundImages.map((_, index) => <button key={index} onClick={() => setCurrentSlide(index)} className={`w-3 h-3 rounded-full transition-all ${index === currentSlide ? 'bg-white scale-110' : 'bg-white/50'}`} aria-label={`Go to slide ${index + 1}`} />)}
         </div>
       </section>
       
@@ -332,11 +292,7 @@ const Welcome = () => {
           </div>
           
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {features.map((feature, index) => (
-              <Card 
-                key={index} 
-                className="hover:shadow-lg transition-all duration-300 hover:-translate-y-2 cursor-pointer overflow-hidden group"
-              >
+            {features.map((feature, index) => <Card key={index} className="hover:shadow-lg transition-all duration-300 hover:-translate-y-2 cursor-pointer overflow-hidden group">
                 <Link to={feature.path}>
                   <CardContent className="p-6">
                     <div className="mb-4 text-foliage bg-foliage/10 w-14 h-14 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -352,8 +308,7 @@ const Welcome = () => {
                     </div>
                   </CardContent>
                 </Link>
-              </Card>
-            ))}
+              </Card>)}
           </div>
         </div>
       </section>
@@ -408,23 +363,9 @@ const Welcome = () => {
         </div>
       </footer>
       
-      <LoginModal 
-        open={loginOpen} 
-        setOpen={setLoginOpen} 
-        userType={userType}
-        lang={lang}
-        t={t}
-      />
+      <LoginModal open={loginOpen} setOpen={setLoginOpen} userType={userType} lang={lang} t={t} />
       
-      <RegisterModal
-        open={registerOpen}
-        setOpen={setRegisterOpen}
-        userType={userType}
-        lang={lang}
-        t={t}
-      />
-    </div>
-  );
+      <RegisterModal open={registerOpen} setOpen={setRegisterOpen} userType={userType} lang={lang} t={t} />
+    </div>;
 };
-
 export default Welcome;
