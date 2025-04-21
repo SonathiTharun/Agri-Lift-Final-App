@@ -20,6 +20,7 @@ import Monitoring from "./pages/Monitoring";
 import Services from "./pages/Services";
 import Contact from "./pages/Contact";
 import FarmingType from "./pages/FarmingType"; // New page for farming type selection
+import CropAllocation from "./pages/CropAllocation"; // New page for crop allocation
 
 const queryClient = new QueryClient();
 
@@ -34,6 +35,7 @@ const App = () => (
             <Route path="/" element={<Welcome />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/farming-type" element={<FarmingType />} />
+            <Route path="/crop-allocation" element={<CropAllocation />} />
             <Route path="/loans" element={<Loans />} />
             <Route path="/market" element={<Market />} />
             <Route path="/market/:category" element={<ProductDetail />} />

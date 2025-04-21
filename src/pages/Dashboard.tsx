@@ -30,7 +30,7 @@ const Dashboard = () => {
         </div>
         
         {/* Farming Type Selection Card */}
-        <div className="mb-12 bg-white p-6 rounded-lg shadow-md animate-fade-in" style={{ animationDelay: '0.2s' }}>
+        <div className="mb-6 bg-white p-6 rounded-lg shadow-md animate-fade-in" style={{ animationDelay: '0.2s' }}>
           <h2 className="text-2xl font-semibold text-emerald-700 mb-4">Select Your Farming Type</h2>
           <p className="text-gray-600 mb-6">
             Access specialized content, tools, and resources tailored to your specific farming activity.
@@ -42,8 +42,22 @@ const Dashboard = () => {
           </Link>
         </div>
         
+        {/* Crop Allocation Card */}
+        <div className="mb-6 bg-white p-6 rounded-lg shadow-md animate-fade-in" style={{ animationDelay: '0.3s' }}>
+          <h2 className="text-2xl font-semibold text-foliage-dark mb-4">Crop Allocation Planner</h2>
+          <p className="text-gray-600 mb-6">
+            Plan your crop allocation with our AI-powered tool. Maximize yield and optimize resource utilization based on
+            your land, soil type, and local climate conditions.
+          </p>
+          <Link to="/crop-allocation" className="inline-flex items-center">
+            <Button className="bg-foliage hover:bg-foliage-dark">
+              Plan Your Crops <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+          </Link>
+        </div>
+        
         {/* Main Content Container */}
-        <div className="animate-fade-in" style={{ animationDelay: '0.2s' }}>
+        <div className="animate-fade-in" style={{ animationDelay: '0.4s' }}>
           <SoilAnalysis />
         </div>
         
