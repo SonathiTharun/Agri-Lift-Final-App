@@ -1,5 +1,6 @@
 
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -16,6 +17,7 @@ interface RegisterModalProps {
 
 export function RegisterModal({ open, setOpen, userType, lang, t }: RegisterModalProps) {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
@@ -61,6 +63,8 @@ export function RegisterModal({ open, setOpen, userType, lang, t }: RegisterModa
       setPhone('');
       setPassword('');
       setConfirmPassword('');
+      // Redirect to /home after successful registration
+      navigate('/home');
     }, 1500);
   };
 

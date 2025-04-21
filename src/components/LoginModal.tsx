@@ -1,5 +1,6 @@
 
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -16,6 +17,7 @@ interface LoginModalProps {
 
 export function LoginModal({ open, setOpen, userType, lang, t }: LoginModalProps) {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -45,6 +47,8 @@ export function LoginModal({ open, setOpen, userType, lang, t }: LoginModalProps
       setOpen(false);
       setEmail('');
       setPassword('');
+      // Redirect to /home after successful login
+      navigate('/home');
     }, 1500);
   };
 
