@@ -8,7 +8,7 @@ import {
   Briefcase, 
   ArrowRight, 
   UserCircle, 
-  Flask, 
+  Beaker, 
   Banknote, 
   ShoppingBag, 
   Tractor, 
@@ -160,7 +160,7 @@ const backgroundImages = [
 ];
 
 const features = [
-  { icon: Flask, key: "land-testing", descKey: "land-testing-desc", path: "/" },
+  { icon: Beaker, key: "land-testing", descKey: "land-testing-desc", path: "/" },
   { icon: Banknote, key: "loan-services", descKey: "loan-services-desc", path: "/loans" },
   { icon: ShoppingBag, key: "market", descKey: "market-desc", path: "/market" },
   { icon: Tractor, key: "machinery-options", descKey: "machinery-options-desc", path: "/machinery" },
