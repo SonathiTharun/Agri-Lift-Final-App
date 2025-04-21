@@ -1,8 +1,8 @@
 
-import { Navbar } from "@/components/Navbar";
 import { WeatherWidget } from "@/components/WeatherWidget";
 import { SoilAnalysis } from "@/components/SoilAnalysis";
 import { useState } from "react";
+import { Layout } from "@/components/Layout";
 
 const Index = () => {
   const [pageLoaded, setPageLoaded] = useState(false);
@@ -13,13 +13,11 @@ const Index = () => {
   });
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-soil-light/10 to-foliage-light/10">
-      <Navbar />
-      
+    <Layout>
       {/* Weather Widget (Draggable) */}
       <WeatherWidget />
       
-      <main className="container mx-auto pt-28 px-4 pb-10">
+      <main className="container mx-auto px-4 pb-10">
         <div className="max-w-5xl mx-auto text-center mb-10 animate-fade-in">
           <h1 className="text-3xl md:text-4xl font-bold text-soil-dark mb-4">AgriLift Soil Insight</h1>
           <p className="text-gray-600 max-w-2xl mx-auto">
@@ -38,7 +36,7 @@ const Index = () => {
           <p>AgriLift © 2025 • Smart Agricultural Solutions</p>
         </div>
       </main>
-    </div>
+    </Layout>
   );
 };
 
