@@ -5,7 +5,7 @@ import { WeatherWidget } from "@/components/WeatherWidget";
 import { Link } from "react-router-dom";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ShoppingCart, Seed, Plant, Fertilizer, PlusCross } from "lucide-react";
+import { ShoppingCart, Leaf, Sprout, FlaskConical, Flower } from "lucide-react";
 
 type ProductCategory = {
   id: string;
@@ -20,28 +20,28 @@ const categories: ProductCategory[] = [
     id: "lab-grown-plants",
     name: "Lab Grown Plants",
     description: "High-yield, disease-resistant plants grown using advanced lab techniques",
-    icon: <Plant className="h-6 w-6" />,
+    icon: <Sprout className="h-6 w-6" />,
     image: "https://images.unsplash.com/photo-1611843467160-25afb8df1074?q=80&w=2940&auto=format&fit=crop"
   },
   {
     id: "seeds",
     name: "Seeds",
     description: "Premium quality seeds with high germination rates for various crops",
-    icon: <Seed className="h-6 w-6" />,
+    icon: <Leaf className="h-6 w-6" />,
     image: "https://images.unsplash.com/photo-1599533987883-8c40198b470e?q=80&w=2787&auto=format&fit=crop"
   },
   {
     id: "fertilizers",
     name: "Fertilizers",
     description: "Organic and chemical fertilizers for enhanced crop growth",
-    icon: <Fertilizer className="h-6 w-6" />,
+    icon: <FlaskConical className="h-6 w-6" />,
     image: "https://images.unsplash.com/photo-1599942598277-2a99b937846d?q=80&w=2940&auto=format&fit=crop"
   },
   {
     id: "pesticides",
     name: "Pesticides",
     description: "Effective pest control solutions for healthier crops",
-    icon: <PlusCross className="h-6 w-6" />,
+    icon: <Flower className="h-6 w-6" />,
     image: "https://images.unsplash.com/photo-1621206093794-d970288a732d?q=80&w=2940&auto=format&fit=crop"
   }
 ];
@@ -49,7 +49,7 @@ const categories: ProductCategory[] = [
 export default function Market() {
   const [pageLoaded, setPageLoaded] = useState(false);
 
-  // Simulate page loading
+  // Simulate page loading - fix the useState to useEffect
   useState(() => {
     setTimeout(() => setPageLoaded(true), 100);
   });
