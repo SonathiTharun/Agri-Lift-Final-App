@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useLanguage } from "@/components/LanguageContext";
@@ -8,7 +9,24 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Globe } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { 
+  Globe, 
+  Beaker, 
+  Banknote, 
+  ShoppingBag, 
+  Tractor, 
+  Users, 
+  CloudSun, 
+  Egg, 
+  Store, 
+  ArrowRight, 
+  UserCircle, 
+  Briefcase 
+} from "lucide-react";
+import { WeatherWidget } from "@/components/WeatherWidget";
+import { LoginModal } from "@/components/LoginModal";
+import { RegisterModal } from "@/components/RegisterModal";
 
 const translations = {
   en: {
