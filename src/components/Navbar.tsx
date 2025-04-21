@@ -25,13 +25,12 @@ export function Navbar() {
     if (path === "/export") return "export";
     if (path === "/monitoring") return "monitoring";
     if (path === "/services") return "services";
-    return "welcome";
+    return "home";
   });
 
   useEffect(() => {
     const path = location.pathname;
-    if (path === "/") setActiveItem("welcome");
-    else if (path === "/home") setActiveItem("home");
+    if (path === "/home") setActiveItem("home");
     else if (path === "/loans") setActiveItem("loans");
     else if (path === "/contact") setActiveItem("contact");
     else if (path === "/market") setActiveItem("market");
@@ -43,7 +42,6 @@ export function Navbar() {
   }, [location]);
 
   const navItems = [
-    { id: "welcome", label: "Welcome", path: "/" },
     { id: "home", label: t("home"), path: "/home" },
     { id: "loans", label: t("loans"), path: "/loans" },
     { id: "market", label: t("market"), path: "/market" },
@@ -58,7 +56,7 @@ export function Navbar() {
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-foliage-dark via-foliage to-foliage-light py-2 px-4 shadow-md">
       <div className="container mx-auto flex justify-between items-center">
-        <Link to="/" className="flex items-center">
+        <Link to="/home" className="flex items-center">
           <img src="/logo.png" alt="AgriLift Logo" className="h-12 w-auto" />
         </Link>
         
@@ -98,3 +96,4 @@ export function Navbar() {
     </nav>
   );
 }
+
