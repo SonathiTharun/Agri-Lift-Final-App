@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Navbar } from "@/components/Navbar";
 import LoanCalculator from "@/components/LoanCalculator";
@@ -7,6 +6,7 @@ import DisclaimerBanner from "@/components/DisclaimerBanner";
 import LoanAdvisorModal from "@/components/LoanAdvisorModal";
 import ThankYouModal from "@/components/ThankYouModal";
 import { Button } from "@/components/ui/button";
+import { useLanguage } from "@/components/LanguageContext";
 
 type Bank = {
   name: string;
@@ -169,7 +169,8 @@ export default function Loans() {
   const [country, setCountry] = useState(defaultCountry);
   const [advisorOpen, setAdvisorOpen] = useState(false);
   const [thankYouOpen, setThankYouOpen] = useState(false);
-
+  const { t } = useLanguage();
+  
   // Placeholder for Leaflet country selection map.
   // For full integration, add: import { MapContainer, TileLayer, ... } from 'react-leaflet';
   // and install leaflet/react-leaflet. Using basic dropdown for now.
@@ -180,9 +181,9 @@ export default function Loans() {
       <Navbar />
       <main className="container mx-auto pt-24 px-4 pb-10">
         <div className="max-w-4xl mx-auto text-center mb-8">
-          <h1 className="text-3xl md:text-4xl font-bold text-soil-dark mb-2">Smart Agri Loans Guide</h1>
+          <h1 className="text-3xl md:text-4xl font-bold text-soil-dark mb-2">{t("loans-title")}</h1>
           <p className="text-gray-600 max-w-2xl mx-auto">
-            Discover official bank rates, compare loan options, and get guidance on government and private agricultural loans suited for your needs.
+            {t("loans-description")}
           </p>
         </div>
 

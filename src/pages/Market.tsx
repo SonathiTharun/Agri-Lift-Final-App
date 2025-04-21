@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Navbar } from "@/components/Navbar";
 import { WeatherWidget } from "@/components/WeatherWidget";
@@ -6,6 +5,7 @@ import { Link } from "react-router-dom";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ShoppingCart, Leaf, Sprout, FlaskConical, Flower } from "lucide-react";
+import { useLanguage } from "@/components/LanguageContext";
 
 type ProductCategory = {
   id: string;
@@ -48,8 +48,8 @@ const categories: ProductCategory[] = [
 
 export default function Market() {
   const [pageLoaded, setPageLoaded] = useState(false);
+  const { t } = useLanguage();
 
-  // Fixed: Changed useState to useEffect for page loading simulation
   useEffect(() => {
     setTimeout(() => setPageLoaded(true), 100);
   }, []);
@@ -63,9 +63,9 @@ export default function Market() {
       
       <main className="container mx-auto pt-20 px-4 pb-10">
         <div className="max-w-5xl mx-auto text-center mb-8 animate-fade-in">
-          <h1 className="text-3xl md:text-4xl font-bold text-soil-dark mb-2">AgriLift Market</h1>
+          <h1 className="text-3xl md:text-4xl font-bold text-soil-dark mb-2">{t("market-title")}</h1>
           <p className="text-gray-600 max-w-2xl mx-auto">
-            Explore our range of high-quality agricultural products to boost your farm's productivity
+            {t("market-description")}
           </p>
         </div>
         
