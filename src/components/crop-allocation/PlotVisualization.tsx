@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -17,6 +16,7 @@ import {
   Legend
 } from 'chart.js';
 import { Bar, Pie, Line } from 'react-chartjs-2';
+import Field3D from "./Field3D";
 
 // Register Chart.js components
 ChartJS.register(
@@ -172,65 +172,8 @@ const PlotVisualization = ({
       <div className="grid md:grid-cols-3 gap-6">
         {/* 3D Plot Visualization */}
         <div className="md:col-span-2 space-y-4">
-          <div className="bg-gray-50 border rounded-lg h-80 relative overflow-hidden">
-            <div 
-              ref={canvasRef}
-              className="absolute inset-0 transition-transform duration-200 ease-linear"
-              style={{
-                perspective: "1000px",
-                transformStyle: "preserve-3d"
-              }}
-            >
-              {/* Mock 3D visualization for demo purposes */}
-              <div className="absolute inset-0 bg-green-200/30 border-2 border-foliage/30 rounded-lg">
-                {/* Crop Areas */}
-                {selectedCrops.map((crop, index) => {
-                  const cropColor = cropColors[crop.id as keyof typeof cropColors] || "#AED581";
-                  const width = Math.sqrt(crop.percentage) * 3;
-                  const height = Math.sqrt(crop.percentage) * 3;
-                  const left = 15 + (index * 20) % 60;
-                  const top = 15 + Math.floor((index * 20) / 60) * 20;
-                  
-                  return (
-                    <div
-                      key={crop.id}
-                      className="absolute border-2 border-white/50 rounded-md flex items-center justify-center text-xs font-bold shadow-lg"
-                      style={{
-                        backgroundColor: cropColor,
-                        width: `${width}%`,
-                        height: `${height}%`,
-                        left: `${left}%`,
-                        top: `${top}%`,
-                        color: "#333",
-                        transform: `translateZ(${index + 2}px)`
-                      }}
-                    >
-                      {crop.name}
-                    </div>
-                  );
-                })}
-                
-                {/* Water channels */}
-                <div className="absolute h-1 bg-blue-400/70 rounded-full" style={{ width: '70%', top: '30%', left: '15%', transform: 'translateZ(10px)' }}></div>
-                <div className="absolute h-1 bg-blue-400/70 rounded-full" style={{ width: '1%', height: '40%', top: '30%', left: '60%', transform: 'translateZ(10px)' }}></div>
-                
-                {/* Fertilizer zones */}
-                <div className="absolute w-16 h-16 rounded-full bg-yellow-200/30 border border-yellow-400/50" style={{ top: '20%', left: '20%', transform: 'translateZ(1px)' }}></div>
-                <div className="absolute w-24 h-24 rounded-full bg-yellow-200/30 border border-yellow-400/50" style={{ top: '50%', left: '60%', transform: 'translateZ(1px)' }}></div>
-              </div>
-            </div>
-            
-            <div className="absolute bottom-4 right-4 space-x-2">
-              <Button size="sm" variant="outline" className="bg-white" onClick={() => setRotationEnabled(!rotationEnabled)}>
-                {rotationEnabled ? 'Pause' : 'Rotate'}
-              </Button>
-            </div>
-            
-            <div className="absolute top-4 left-4">
-              <div className="text-sm font-medium text-gray-700">Plot: {landDetails.plotNumber}</div>
-              <div className="text-xs text-gray-500">{landDetails.location}</div>
-            </div>
-          </div>
+          {/* -- New 3D Field visualization -- */}
+          <Field3D crops={selectedCrops} rotationEnabled={rotationEnabled} />
           
           <div className="grid grid-cols-2 gap-4">
             <div className="bg-white p-4 border rounded-lg shadow-sm">
