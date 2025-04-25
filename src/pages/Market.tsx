@@ -22,28 +22,28 @@ const categories: ProductCategory[] = [
     name: "Lab Grown Plants",
     description: "High-yield, disease-resistant plants grown using advanced lab techniques",
     icon: <Sprout className="h-6 w-6" />,
-    image: "https://images.unsplash.com/photo-1611843467160-25afb8df1074?q=80&w=2940&auto=format&fit=crop"
+    image: "https://plus.unsplash.com/premium_photo-1679436184527-74af0573db60?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTd8fGxhYiUyMGdyb3duJTIwcGxhbnRzJTIwcGxhbnRpbmclMjBpbiUyMGZlaWxkc3xlbnwwfHwwfHx8MA%3D%3D"
   },
   {
     id: "seeds",
     name: "Seeds",
     description: "Premium quality seeds with high germination rates for various crops",
     icon: <Leaf className="h-6 w-6" />,
-    image: "https://images.unsplash.com/photo-1599533987883-8c40198b470e?q=80&w=2787&auto=format&fit=crop"
+    image: "https://media.istockphoto.com/id/1190855168/photo/young-woman-sowing-seeds-in-soil.webp?a=1&b=1&s=612x612&w=0&k=20&c=t_wtHjJmkLfuFa6NPdkbxUD6Rf-lfbYpniHGAORITO0="
   },
   {
     id: "fertilizers",
     name: "Fertilizers",
     description: "Organic and chemical fertilizers for enhanced crop growth",
     icon: <FlaskConical className="h-6 w-6" />,
-    image: "https://images.unsplash.com/photo-1599942598277-2a99b937846d?q=80&w=2940&auto=format&fit=crop"
+    image: "https://media.istockphoto.com/id/522391502/photo/farmer-spreading-fertilizer-in-the-field-wheat.webp?a=1&b=1&s=612x612&w=0&k=20&c=uAfPuR4JPwdlx-KADzSAVbEYeuPR8SkHXsCiXuyizAo="
   },
   {
     id: "pesticides",
     name: "Pesticides",
     description: "Effective pest control solutions for healthier crops",
     icon: <Flower className="h-6 w-6" />,
-    image: "https://images.unsplash.com/photo-1621206093794-d970288a732d?q=80&w=2940&auto=format&fit=crop"
+    image: "https://media.istockphoto.com/id/652966504/photo/watering-field.webp?a=1&b=1&s=612x612&w=0&k=20&c=e_d5LE1bDvairIeXHvviiWc_2__Ptn2eRS03GqEm8uw="
   }
 ];
 

@@ -9,22 +9,8 @@ import { Progress } from "@/components/ui/progress";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, AreaChart, Area } from 'recharts';
 import { useToast } from "@/hooks/use-toast";
 import {
-  Droplet,
-  Thermometer,
-  Leaf,
-  Wind,
-  Signal,
-  Gauge,
-  Cloud,
-  Flower,
-  Crop,
-  Fuel,
-  AlertTriangle,
-  Bell,
-  Eye,
-  ArrowUpRight,
-  Battery,
-  Satellite
+  Droplet, Thermometer, Leaf, Wind, Signal, Gauge, Cloud, Flower,
+  Crop, Fuel, AlertTriangle, Bell, Eye, ArrowUpRight, Battery, Satellite
 } from "lucide-react";
 
 const soilMoistureData = [
@@ -180,102 +166,120 @@ const Monitoring = () => {
   return (
     <Layout>
       <div className="container mx-auto px-4 py-8">
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex justify-between items-center mb-6 animate-fade-in">
           <div>
-            <h1 className="text-3xl font-bold text-foliage-dark">Farm Monitoring System</h1>
+            <h1 className="text-3xl font-bold text-foliage-dark hover:text-foliage transition-colors">
+              Farm Monitoring System
+            </h1>
             <p className="text-gray-600">Monitor and manage all your farming operations in real-time</p>
           </div>
           <div className="flex gap-3">
-            <Button variant="outline" className="flex gap-2 items-center">
-              <Bell size={16} />
+            <Button 
+              variant="outline" 
+              className="flex gap-2 items-center hover:scale-105 transition-transform duration-200"
+            >
+              <Bell size={16} className="animate-pulse" />
               <span className="bg-red-500 text-white rounded-full h-5 w-5 flex items-center justify-center text-xs">
                 {alertsData.filter(a => a.severity === 'critical').length}
               </span>
             </Button>
-            <Button className="bg-foliage hover:bg-foliage-dark">Refresh Data</Button>
+            <Button 
+              className="bg-foliage hover:bg-foliage-dark transition-colors duration-300 hover:scale-105 transform"
+            >
+              Refresh Data
+            </Button>
           </div>
         </div>
 
         <Tabs defaultValue="overview" className="w-full" onValueChange={setActiveTab}>
-          <TabsList className="grid grid-cols-7 mb-8">
-            <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="soil">Soil Sensors</TabsTrigger>
-            <TabsTrigger value="weather">Weather</TabsTrigger>
-            <TabsTrigger value="crops">Crops & Fields</TabsTrigger>
-            <TabsTrigger value="irrigation">Water & Irrigation</TabsTrigger>
-            <TabsTrigger value="machinery">Machinery</TabsTrigger>
-            <TabsTrigger value="livestock">Livestock</TabsTrigger>
+          <TabsList className="grid grid-cols-7 mb-8 animate-fade-in">
+            {["overview", "soil", "weather", "crops", "irrigation", "machinery", "livestock"].map((tab) => (
+              <TabsTrigger 
+                key={tab} 
+                value={tab}
+                className="hover:scale-105 transition-transform duration-200"
+              >
+                {tab.charAt(0).toUpperCase() + tab.slice(1)}
+              </TabsTrigger>
+            ))}
           </TabsList>
           
-          <TabsContent value="overview">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-              <Card>
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-lg font-medium">Field Health</CardTitle>
-                  <CardDescription>Average crop health across all fields</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-4xl font-bold text-foliage-dark">
-                    {Math.round(fieldData.reduce((sum, field) => sum + field.health, 0) / fieldData.length)}%
-                  </div>
-                  <Progress 
-                    value={Math.round(fieldData.reduce((sum, field) => sum + field.health, 0) / fieldData.length)} 
-                    className="h-2 mt-2" 
-                  />
-                </CardContent>
-              </Card>
-              
-              <Card>
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-lg font-medium">Active Alerts</CardTitle>
-                  <CardDescription>Issues requiring attention</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-4xl font-bold text-amber-500">
-                    {alertsData.length}
-                  </div>
-                  <div className="flex gap-2 mt-2">
-                    <Badge className="bg-red-500">
-                      {alertsData.filter(a => a.severity === 'critical').length} Critical
-                    </Badge>
-                    <Badge className="bg-yellow-500">
-                      {alertsData.filter(a => a.severity === 'warning').length} Warnings
-                    </Badge>
-                    <Badge className="bg-blue-500">
-                      {alertsData.filter(a => a.severity === 'info').length} Info
-                    </Badge>
-                  </div>
-                </CardContent>
-              </Card>
-              
-              <Card>
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-lg font-medium">Weather Forecast</CardTitle>
-                  <CardDescription>Today's conditions</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <div className="text-4xl font-bold">26°C</div>
-                      <div className="text-gray-600">Partly Cloudy</div>
-                    </div>
-                    <div className="text-right">
-                      <div className="flex items-center justify-end gap-1 text-blue-500">
-                        <Droplet size={16} />
-                        <span>20% Chance of Rain</span>
+          <TabsContent value="overview" className="space-y-6 animate-fade-in">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {[
+                {
+                  title: "Field Health",
+                  description: "Average crop health across all fields",
+                  content: (
+                    <>
+                      <div className="text-4xl font-bold text-foliage-dark transition-all hover:scale-105">
+                        {Math.round(fieldData.reduce((sum, field) => sum + field.health, 0) / fieldData.length)}%
                       </div>
-                      <div className="flex items-center justify-end gap-1 text-gray-600 mt-1">
-                        <Wind size={16} />
-                        <span>8 km/h NE</span>
+                      <Progress 
+                        value={Math.round(fieldData.reduce((sum, field) => sum + field.health, 0) / fieldData.length)} 
+                        className="h-2 mt-2 transition-all duration-500" 
+                      />
+                    </>
+                  )
+                },
+                {
+                  title: "Active Alerts",
+                  description: "Issues requiring attention",
+                  content: (
+                    <>
+                      <div className="text-4xl font-bold text-amber-500 transition-all hover:scale-105">
+                        {alertsData.length}
+                      </div>
+                      <div className="flex gap-2 mt-2">
+                        {['critical', 'warning', 'info'].map((severity) => (
+                          <Badge 
+                            key={severity}
+                            className={`${getSeverityColor(severity)} transform hover:scale-110 transition-transform cursor-pointer`}
+                          >
+                            {alertsData.filter(a => a.severity === severity).length} {severity.charAt(0).toUpperCase() + severity.slice(1)}
+                          </Badge>
+                        ))}
+                      </div>
+                    </>
+                  )
+                },
+                {
+                  title: "Weather Forecast",
+                  description: "Today's conditions",
+                  content: (
+                    <div className="flex justify-between items-center">
+                      <div className="transition-all hover:scale-105">
+                        <div className="text-4xl font-bold">26°C</div>
+                        <div className="text-gray-600">Partly Cloudy</div>
+                      </div>
+                      <div className="text-right space-y-2">
+                        <div className="flex items-center justify-end gap-1 text-blue-500 transition-all hover:scale-105">
+                          <Droplet size={16} className="animate-bounce" />
+                          <span>20% Chance of Rain</span>
+                        </div>
+                        <div className="flex items-center justify-end gap-1 text-gray-600 transition-all hover:scale-105">
+                          <Wind size={16} className="animate-pulse" />
+                          <span>8 km/h NE</span>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
+                  )
+                }
+              ].map((item, index) => (
+                <Card key={index} className="transform hover:scale-[1.02] transition-all duration-300 hover:shadow-lg">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-lg font-medium">{item.title}</CardTitle>
+                    <CardDescription>{item.description}</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    {item.content}
+                  </CardContent>
+                </Card>
+              ))}
             </div>
-            
+
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-              <Card>
+              <Card className="transform hover:shadow-lg transition-all duration-300">
                 <CardHeader>
                   <CardTitle>Recent Alerts</CardTitle>
                   <CardDescription>Issues requiring your attention</CardDescription>
@@ -305,7 +309,7 @@ const Monitoring = () => {
                 </CardFooter>
               </Card>
               
-              <Card>
+              <Card className="transform hover:shadow-lg transition-all duration-300">
                 <CardHeader>
                   <CardTitle>Soil Moisture Trends</CardTitle>
                   <CardDescription>Average across all fields</CardDescription>
@@ -330,7 +334,7 @@ const Monitoring = () => {
               </Card>
             </div>
             
-            <Card>
+            <Card className="transform hover:shadow-lg transition-all duration-300">
               <CardHeader>
                 <CardTitle>Field Status</CardTitle>
                 <CardDescription>Current condition of your fields</CardDescription>
@@ -340,7 +344,11 @@ const Monitoring = () => {
                   {fieldData.map(field => (
                     <div 
                       key={field.id} 
-                      className={`border rounded-lg p-4 cursor-pointer transition-all ${selectedField.id === field.id ? 'border-foliage bg-foliage/5' : 'hover:border-gray-300'}`}
+                      className={`border rounded-lg p-4 cursor-pointer transition-all duration-300 transform hover:scale-105 ${
+                        selectedField.id === field.id 
+                          ? 'border-foliage bg-foliage/5 shadow-lg' 
+                          : 'hover:border-gray-300 hover:shadow-md'
+                      }`}
                       onClick={() => setSelectedField(field)}
                     >
                       <div className="flex justify-between items-start">
@@ -387,7 +395,7 @@ const Monitoring = () => {
                 </div>
                 
                 {selectedField && (
-                  <div className="mt-8 border-t pt-6">
+                  <div className="mt-8 border-t pt-6 animate-fade-in">
                     <div className="flex justify-between items-start mb-6">
                       <div>
                         <h3 className="text-xl font-semibold">{selectedField.name} Details</h3>
@@ -801,147 +809,946 @@ const Monitoring = () => {
                   </CardContent>
                 </Card>
               </div>
+              
+              <div>
+                <Card className="mb-6">
+                  <CardHeader>
+                    <CardTitle>Satellite View</CardTitle>
+                    <CardDescription>Cloud cover over your farm</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="aspect-video bg-gray-100 rounded flex items-center justify-center">
+                      <div className="flex flex-col items-center gap-2">
+                        <Satellite className="h-10 w-10 text-gray-400" />
+                        <span className="text-sm text-gray-500">Satellite imagery</span>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+                
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Weekly Forecast</CardTitle>
+                    <CardDescription>7-day prediction</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-center">
+                        <span>Today</span>
+                        <div className="flex items-center gap-1">
+                          <Cloud className="h-4 w-4" />
+                          <span>26°C</span>
+                        </div>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span>Tomorrow</span>
+                        <div className="flex items-center gap-1">
+                          <Droplet className="h-4 w-4" />
+                          <span>24°C</span>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
             </div>
           </TabsContent>
           
           <TabsContent value="crops">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Crop Diversity</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-lg font-semibold mb-2">Wheat, Corn, Soybeans, Rice</div>
-                  <div className="text-gray-700 text-sm">Rotational cropping in different fields enhances soil health and productivity.</div>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader>
-                  <CardTitle>Growth Stages</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <ul className="text-sm space-y-1">
-                    <li>North Field: Heading (Wheat)</li>
-                    <li>East Field: Pollination (Corn)</li>
-                    <li>South Field: Pod Fill (Soybeans)</li>
-                    <li>West Field: Tillering (Rice)</li>
-                  </ul>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader>
-                  <CardTitle>Crop Health Alerts</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <ul className="text-red-600 text-sm space-y-1">
-                    <li>Rice: Pest risk detected</li>
-                    <li>Corn: Low nitrogen in East Field</li>
-                  </ul>
-                </CardContent>
-              </Card>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="lg:col-span-2">
+                <Card className="mb-6">
+                  <CardHeader>
+                    <CardTitle>Crop Health Dashboard</CardTitle>
+                    <CardDescription>Real-time crop data from your fields</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                      <div className="bg-blue-50 p-4 rounded-lg flex items-center gap-3">
+                        <div className="bg-blue-100 p-3 rounded-lg">
+                          <Droplet className="h-6 w-6 text-blue-600" />
+                        </div>
+                        <div>
+                          <p className="text-sm text-gray-600">Average Crop Health</p>
+                          <p className="text-2xl font-semibold">92%</p>
+                        </div>
+                      </div>
+                      
+                      <div className="bg-amber-50 p-4 rounded-lg flex items-center gap-3">
+                        <div className="bg-amber-100 p-3 rounded-lg">
+                          <Leaf className="h-6 w-6 text-amber-600" />
+                        </div>
+                        <div>
+                          <p className="text-sm text-gray-600">Crop Yield</p>
+                          <p className="text-2xl font-semibold">650 kg/ha</p>
+                        </div>
+                      </div>
+                      
+                      <div className="bg-green-50 p-4 rounded-lg flex items-center gap-3">
+                        <div className="bg-green-100 p-3 rounded-lg">
+                          <Thermometer className="h-6 w-6 text-green-600" />
+                        </div>
+                        <div>
+                          <p className="text-sm text-gray-600">Crop Growth Rate</p>
+                          <p className="text-2xl font-semibold">10% per week</p>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="h-[300px]">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <LineChart data={temperatureData}>
+                          <CartesianGrid strokeDasharray="3 3" />
+                          <XAxis dataKey="time" />
+                          <YAxis />
+                          <Tooltip />
+                          <Legend />
+                          <Line type="monotone" dataKey="temp" stroke="#3b82f6" strokeWidth={2} />
+                        </LineChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </CardContent>
+                </Card>
+                
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Crop Nutrient Levels</CardTitle>
+                    <CardDescription>Nutrient composition across fields</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                      <div>
+                        <h4 className="font-medium mb-3">Nitrogen (N)</h4>
+                        <div className="space-y-4">
+                          <div>
+                            <div className="flex justify-between text-sm mb-1">
+                              <span>North Field</span>
+                              <span>65%</span>
+                            </div>
+                            <Progress value={65} className="h-2" />
+                          </div>
+                          <div>
+                            <div className="flex justify-between text-sm mb-1">
+                              <span>East Field</span>
+                              <span>42%</span>
+                            </div>
+                            <Progress value={42} className="h-2" />
+                          </div>
+                          <div>
+                            <div className="flex justify-between text-sm mb-1">
+                              <span>West Field</span>
+                              <span>78%</span>
+                            </div>
+                            <Progress value={78} className="h-2" />
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <h4 className="font-medium mb-3">Phosphorus (P)</h4>
+                        <div className="space-y-4">
+                          <div>
+                            <div className="flex justify-between text-sm mb-1">
+                              <span>North Field</span>
+                              <span>56%</span>
+                            </div>
+                            <Progress value={56} className="h-2" />
+                          </div>
+                          <div>
+                            <div className="flex justify-between text-sm mb-1">
+                              <span>East Field</span>
+                              <span>49%</span>
+                            </div>
+                            <Progress value={49} className="h-2" />
+                          </div>
+                          <div>
+                            <div className="flex justify-between text-sm mb-1">
+                              <span>West Field</span>
+                              <span>62%</span>
+                            </div>
+                            <Progress value={62} className="h-2" />
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <h4 className="font-medium mb-3">Potassium (K)</h4>
+                        <div className="space-y-4">
+                          <div>
+                            <div className="flex justify-between text-sm mb-1">
+                              <span>North Field</span>
+                              <span>72%</span>
+                            </div>
+                            <Progress value={72} className="h-2" />
+                          </div>
+                          <div>
+                            <div className="flex justify-between text-sm mb-1">
+                              <span>East Field</span>
+                              <span>68%</span>
+                            </div>
+                            <Progress value={68} className="h-2" />
+                          </div>
+                          <div>
+                            <div className="flex justify-between text-sm mb-1">
+                              <span>West Field</span>
+                              <span>51%</span>
+                            </div>
+                            <Progress value={51} className="h-2" />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+              
+              <div>
+                <Card className="mb-6">
+                  <CardHeader>
+                    <CardTitle>Crop Sensors Status</CardTitle>
+                    <CardDescription>Health and battery status</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <div className="flex items-center gap-3">
+                          <div className="bg-green-100 p-2 rounded-full">
+                            <Gauge className="h-4 w-4 text-green-600" />
+                          </div>
+                          <div>
+                            <p className="font-medium">Moisture Sensor</p>
+                            <p className="text-sm text-gray-500">North Field</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Battery className="h-4 w-4 text-green-600" />
+                          <span className="text-sm">92%</span>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <div className="flex items-center gap-3">
+                          <div className="bg-green-100 p-2 rounded-full">
+                            <Gauge className="h-4 w-4 text-green-600" />
+                          </div>
+                          <div>
+                            <p className="font-medium">pH Sensor</p>
+                            <p className="text-sm text-gray-500">East Field</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Battery className="h-4 w-4 text-yellow-600" />
+                          <span className="text-sm">45%</span>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <div className="flex items-center gap-3">
+                          <div className="bg-green-100 p-2 rounded-full">
+                            <Gauge className="h-4 w-4 text-green-600" />
+                          </div>
+                          <div>
+                            <p className="font-medium">EC Sensor</p>
+                            <p className="text-sm text-gray-500">West Field</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Battery className="h-4 w-4 text-green-600" />
+                          <span className="text-sm">88%</span>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <div className="flex items-center gap-3">
+                          <div className="bg-red-100 p-2 rounded-full">
+                            <Gauge className="h-4 w-4 text-red-600" />
+                          </div>
+                          <div>
+                            <p className="font-medium">Temperature Sensor</p>
+                            <p className="text-sm text-gray-500">South Field</p>
+                          </div>
+                        </div>
+                        <div>
+                          <Badge variant="destructive">Offline</Badge>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                  <CardFooter>
+                    <Button className="w-full" onClick={() => handleSensorCalibration('crops')}>
+                      Calibrate Sensors
+                    </Button>
+                  </CardFooter>
+                </Card>
+                
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Recommendations</CardTitle>
+                    <CardDescription>Based on crop analysis</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      <div className="p-3 bg-blue-50 rounded-lg">
+                        <div className="flex items-center gap-2 text-blue-800 font-medium mb-1">
+                          <div className="bg-blue-200 p-1 rounded-full">
+                            <Droplet className="h-3 w-3 text-blue-700" />
+                          </div>
+                          Irrigation
+                        </div>
+                        <p className="text-sm text-blue-800">Consider increasing irrigation by 15% in East Field due to low soil moisture readings.</p>
+                      </div>
+                      
+                      <div className="p-3 bg-green-50 rounded-lg">
+                        <div className="flex items-center gap-2 text-green-800 font-medium mb-1">
+                          <div className="bg-green-200 p-1 rounded-full">
+                            <Leaf className="h-3 w-3 text-green-700" />
+                          </div>
+                          Fertilizer
+                        </div>
+                        <p className="text-sm text-green-800">Apply nitrogen-rich fertilizer to West Field in the next 7 days to optimize nutrient levels.</p>
+                      </div>
+                      
+                      <div className="p-3 bg-amber-50 rounded-lg">
+                        <div className="flex items-center gap-2 text-amber-800 font-medium mb-1">
+                          <div className="bg-amber-200 p-1 rounded-full">
+                            <Gauge className="h-3 w-3 text-amber-700" />
+                          </div>
+                          Maintenance
+                        </div>
+                        <p className="text-sm text-amber-800">South Field temperature sensor requires maintenance or replacement.</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
             </div>
           </TabsContent>
           
           <TabsContent value="irrigation">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Irrigation Overview</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex items-center gap-3">
-                    <span className="font-medium">North Field:</span>
-                    <span className="text-green-600">Auto drip (21mm)</span>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <span className="font-medium">East Field:</span>
-                    <span className="text-yellow-600">Scheduled (morning/evening)</span>
-                  </div>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader>
-                  <CardTitle>Water Quality Status</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div>
-                    <span className="block text-gray-700 mb-1">pH: <span className="text-foliage-dark">7.0</span></span>
-                    <span className="block text-gray-700 mb-1">EC: <span className="text-blue-600">0.34 dS/m</span></span>
-                    <span className="block text-gray-700">Dissolved Oxygen: <span className="text-green-500">Good</span></span>
-                  </div>
-                </CardContent>
-              </Card>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="lg:col-span-2">
+                <Card className="mb-6">
+                  <CardHeader>
+                    <CardTitle>Irrigation Status</CardTitle>
+                    <CardDescription>Current irrigation schedules</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                      <div>
+                        <h4 className="font-medium mb-3">North Field</h4>
+                        <div className="space-y-4">
+                          <div>
+                            <div className="flex justify-between text-sm mb-1">
+                              <span>Start Time</span>
+                              <span>08:00 AM</span>
+                            </div>
+                            <Progress value={70} className="h-2" />
+                          </div>
+                          <div>
+                            <div className="flex justify-between text-sm mb-1">
+                              <span>End Time</span>
+                              <span>10:00 AM</span>
+                            </div>
+                            <Progress value={80} className="h-2" />
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <h4 className="font-medium mb-3">East Field</h4>
+                        <div className="space-y-4">
+                          <div>
+                            <div className="flex justify-between text-sm mb-1">
+                              <span>Start Time</span>
+                              <span>09:00 AM</span>
+                            </div>
+                            <Progress value={60} className="h-2" />
+                          </div>
+                          <div>
+                            <div className="flex justify-between text-sm mb-1">
+                              <span>End Time</span>
+                              <span>11:00 AM</span>
+                            </div>
+                            <Progress value={70} className="h-2" />
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <h4 className="font-medium mb-3">West Field</h4>
+                        <div className="space-y-4">
+                          <div>
+                            <div className="flex justify-between text-sm mb-1">
+                              <span>Start Time</span>
+                              <span>10:00 AM</span>
+                            </div>
+                            <Progress value={50} className="h-2" />
+                          </div>
+                          <div>
+                            <div className="flex justify-between text-sm mb-1">
+                              <span>End Time</span>
+                              <span>12:00 PM</span>
+                            </div>
+                            <Progress value={60} className="h-2" />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="h-[300px]">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <LineChart data={rainfallData}>
+                          <CartesianGrid strokeDasharray="3 3" />
+                          <XAxis dataKey="month" />
+                          <YAxis />
+                          <Tooltip />
+                          <Legend />
+                          <Line type="monotone" dataKey="amount" stroke="#3b82f6" strokeWidth={2} />
+                        </LineChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </CardContent>
+                </Card>
+                
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Irrigation Alerts</CardTitle>
+                    <CardDescription>Upcoming irrigation schedules</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      <div className="p-3 bg-yellow-50 rounded-lg">
+                        <div className="flex gap-2 text-yellow-800 font-medium">
+                          <AlertTriangle className="h-5 w-5" />
+                          <span>Low Irrigation Water</span>
+                        </div>
+                        <p className="text-sm text-yellow-800 mt-1">Irrigation water levels are low in East Field. Consider increasing water supply.</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+              
+              <div>
+                <Card className="mb-6">
+                  <CardHeader>
+                    <CardTitle>Irrigation History</CardTitle>
+                    <CardDescription>Previous irrigation schedules</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div>
+                        <h4 className="font-medium mb-3">North Field</h4>
+                        <div className="space-y-4">
+                          <div>
+                            <div className="flex justify-between text-sm mb-1">
+                              <span>Start Time</span>
+                              <span>08:00 AM</span>
+                            </div>
+                            <Progress value={70} className="h-2" />
+                          </div>
+                          <div>
+                            <div className="flex justify-between text-sm mb-1">
+                              <span>End Time</span>
+                              <span>10:00 AM</span>
+                            </div>
+                            <Progress value={80} className="h-2" />
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <h4 className="font-medium mb-3">East Field</h4>
+                        <div className="space-y-4">
+                          <div>
+                            <div className="flex justify-between text-sm mb-1">
+                              <span>Start Time</span>
+                              <span>09:00 AM</span>
+                            </div>
+                            <Progress value={60} className="h-2" />
+                          </div>
+                          <div>
+                            <div className="flex justify-between text-sm mb-1">
+                              <span>End Time</span>
+                              <span>11:00 AM</span>
+                            </div>
+                            <Progress value={70} className="h-2" />
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <h4 className="font-medium mb-3">West Field</h4>
+                        <div className="space-y-4">
+                          <div>
+                            <div className="flex justify-between text-sm mb-1">
+                              <span>Start Time</span>
+                              <span>10:00 AM</span>
+                            </div>
+                            <Progress value={50} className="h-2" />
+                          </div>
+                          <div>
+                            <div className="flex justify-between text-sm mb-1">
+                              <span>End Time</span>
+                              <span>12:00 PM</span>
+                            </div>
+                            <Progress value={60} className="h-2" />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
             </div>
           </TabsContent>
           
           <TabsContent value="machinery">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Active Machines</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div>3 machines in use: John Deere Tractor, Case IH Harvester, Sprayer Drone</div>
-                  <div className="text-sm text-gray-600 mt-2">Next scheduled maintenance: 2024-06-15</div>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader>
-                  <CardTitle>Fuel & Power</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <ul className="text-sm">
-                    <li>Tractor fuel: 78%</li>
-                    <li>Harvester fuel: 45% (maintenance required)</li>
-                    <li>Sprayer Drone battery: 95%</li>
-                  </ul>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader>
-                  <CardTitle>Alert & Status</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div>
-                    <span className="text-red-600">Harvester scheduled for maintenance!</span>
-                  </div>
-                </CardContent>
-              </Card>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="lg:col-span-2">
+                <Card className="mb-6">
+                  <CardHeader>
+                    <CardTitle>Machinery Status</CardTitle>
+                    <CardDescription>Current status of your machinery</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                      <div>
+                        <h4 className="font-medium mb-3">John Deere 8R Tractor</h4>
+                        <div className="space-y-4">
+                          <div>
+                            <div className="flex justify-between text-sm mb-1">
+                              <span>Status</span>
+                              <span>Active</span>
+                            </div>
+                            <Progress value={92} className="h-2" />
+                          </div>
+                          <div>
+                            <div className="flex justify-between text-sm mb-1">
+                              <span>Fuel</span>
+                              <span>78%</span>
+                            </div>
+                            <Progress value={78} className="h-2" />
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <h4 className="font-medium mb-3">Case IH Harvester</h4>
+                        <div className="space-y-4">
+                          <div>
+                            <div className="flex justify-between text-sm mb-1">
+                              <span>Status</span>
+                              <span>Maintenance</span>
+                            </div>
+                            <Progress value={68} className="h-2" />
+                          </div>
+                          <div>
+                            <div className="flex justify-between text-sm mb-1">
+                              <span>Fuel</span>
+                              <span>45%</span>
+                            </div>
+                            <Progress value={45} className="h-2" />
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <h4 className="font-medium mb-3">Sprayer Drone</h4>
+                        <div className="space-y-4">
+                          <div>
+                            <div className="flex justify-between text-sm mb-1">
+                              <span>Status</span>
+                              <span>Charging</span>
+                            </div>
+                            <Progress value={88} className="h-2" />
+                          </div>
+                          <div>
+                            <div className="flex justify-between text-sm mb-1">
+                              <span>Fuel</span>
+                              <span>95%</span>
+                            </div>
+                            <Progress value={95} className="h-2" />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="h-[300px]">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <LineChart data={machinesData}>
+                          <CartesianGrid strokeDasharray="3 3" />
+                          <XAxis dataKey="name" />
+                          <YAxis />
+                          <Tooltip />
+                          <Legend />
+                          <Line type="monotone" dataKey="health" stroke="#3b82f6" strokeWidth={2} />
+                        </LineChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </CardContent>
+                </Card>
+                
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Machinery Alerts</CardTitle>
+                    <CardDescription>Upcoming maintenance schedules</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      <div className="p-3 bg-yellow-50 rounded-lg">
+                        <div className="flex gap-2 text-yellow-800 font-medium">
+                          <AlertTriangle className="h-5 w-5" />
+                          <span>Harvester Maintenance</span>
+                        </div>
+                        <p className="text-sm text-yellow-800 mt-1">Harvester maintenance is due in 5 days.</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+              
+              <div>
+                <Card className="mb-6">
+                  <CardHeader>
+                    <CardTitle>Machinery History</CardTitle>
+                    <CardDescription>Previous maintenance schedules</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div>
+                        <h4 className="font-medium mb-3">John Deere 8R Tractor</h4>
+                        <div className="space-y-4">
+                          <div>
+                            <div className="flex justify-between text-sm mb-1">
+                              <span>Status</span>
+                              <span>Active</span>
+                            </div>
+                            <Progress value={92} className="h-2" />
+                          </div>
+                          <div>
+                            <div className="flex justify-between text-sm mb-1">
+                              <span>Fuel</span>
+                              <span>78%</span>
+                            </div>
+                            <Progress value={78} className="h-2" />
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <h4 className="font-medium mb-3">Case IH Harvester</h4>
+                        <div className="space-y-4">
+                          <div>
+                            <div className="flex justify-between text-sm mb-1">
+                              <span>Status</span>
+                              <span>Maintenance</span>
+                            </div>
+                            <Progress value={68} className="h-2" />
+                          </div>
+                          <div>
+                            <div className="flex justify-between text-sm mb-1">
+                              <span>Fuel</span>
+                              <span>45%</span>
+                            </div>
+                            <Progress value={45} className="h-2" />
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <h4 className="font-medium mb-3">Sprayer Drone</h4>
+                        <div className="space-y-4">
+                          <div>
+                            <div className="flex justify-between text-sm mb-1">
+                              <span>Status</span>
+                              <span>Charging</span>
+                            </div>
+                            <Progress value={88} className="h-2" />
+                          </div>
+                          <div>
+                            <div className="flex justify-between text-sm mb-1">
+                              <span>Fuel</span>
+                              <span>95%</span>
+                            </div>
+                            <Progress value={95} className="h-2" />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
             </div>
           </TabsContent>
           
           <TabsContent value="livestock">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Dairy Herd</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="mb-2">Cows: 38</div>
-                  <ul className="text-sm">
-                    <li>Avg. Milk Yield: <span className="text-green-700">19.5L/day</span></li>
-                    <li>2 cows showing fever (action required)</li>
-                  </ul>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader>
-                  <CardTitle>Poultry</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div>Broiler Chickens: 1200</div>
-                  <ul className="text-sm"><li>Eggs per day: <span className="text-amber-700">924</span></li></ul>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader>
-                  <CardTitle>Bee Hives</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div>Active Hives: 8</div>
-                  <ul className="text-sm"><li>Honey yield: <span className="text-yellow-600">11.2kg/week</span></li></ul>
-                </CardContent>
-              </Card>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="lg:col-span-2">
+                <Card className="mb-6">
+                  <CardHeader>
+                    <CardTitle>Livestock Health Dashboard</CardTitle>
+                    <CardDescription>Real-time livestock data from your fields</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                      <div className="bg-blue-50 p-4 rounded-lg flex items-center gap-3">
+                        <div className="bg-blue-100 p-3 rounded-lg">
+                          <Droplet className="h-6 w-6 text-blue-600" />
+                        </div>
+                        <div>
+                          <p className="text-sm text-gray-600">Average Livestock Health</p>
+                          <p className="text-2xl font-semibold">92%</p>
+                        </div>
+                      </div>
+                      
+                      <div className="bg-amber-50 p-4 rounded-lg flex items-center gap-3">
+                        <div className="bg-amber-100 p-3 rounded-lg">
+                          <Leaf className="h-6 w-6 text-amber-600" />
+                        </div>
+                        <div>
+                          <p className="text-sm text-gray-600">Livestock Yield</p>
+                          <p className="text-2xl font-semibold">650 kg/ha</p>
+                        </div>
+                      </div>
+                      
+                      <div className="bg-green-50 p-4 rounded-lg flex items-center gap-3">
+                        <div className="bg-green-100 p-3 rounded-lg">
+                          <Thermometer className="h-6 w-6 text-green-600" />
+                        </div>
+                        <div>
+                          <p className="text-sm text-gray-600">Livestock Growth Rate</p>
+                          <p className="text-2xl font-semibold">10% per week</p>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="h-[300px]">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <LineChart data={temperatureData}>
+                          <CartesianGrid strokeDasharray="3 3" />
+                          <XAxis dataKey="time" />
+                          <YAxis />
+                          <Tooltip />
+                          <Legend />
+                          <Line type="monotone" dataKey="temp" stroke="#3b82f6" strokeWidth={2} />
+                        </LineChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </CardContent>
+                </Card>
+                
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Livestock Nutrient Levels</CardTitle>
+                    <CardDescription>Nutrient composition across fields</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                      <div>
+                        <h4 className="font-medium mb-3">Nitrogen (N)</h4>
+                        <div className="space-y-4">
+                          <div>
+                            <div className="flex justify-between text-sm mb-1">
+                              <span>North Field</span>
+                              <span>65%</span>
+                            </div>
+                            <Progress value={65} className="h-2" />
+                          </div>
+                          <div>
+                            <div className="flex justify-between text-sm mb-1">
+                              <span>East Field</span>
+                              <span>42%</span>
+                            </div>
+                            <Progress value={42} className="h-2" />
+                          </div>
+                          <div>
+                            <div className="flex justify-between text-sm mb-1">
+                              <span>West Field</span>
+                              <span>78%</span>
+                            </div>
+                            <Progress value={78} className="h-2" />
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <h4 className="font-medium mb-3">Phosphorus (P)</h4>
+                        <div className="space-y-4">
+                          <div>
+                            <div className="flex justify-between text-sm mb-1">
+                              <span>North Field</span>
+                              <span>56%</span>
+                            </div>
+                            <Progress value={56} className="h-2" />
+                          </div>
+                          <div>
+                            <div className="flex justify-between text-sm mb-1">
+                              <span>East Field</span>
+                              <span>49%</span>
+                            </div>
+                            <Progress value={49} className="h-2" />
+                          </div>
+                          <div>
+                            <div className="flex justify-between text-sm mb-1">
+                              <span>West Field</span>
+                              <span>62%</span>
+                            </div>
+                            <Progress value={62} className="h-2" />
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <h4 className="font-medium mb-3">Potassium (K)</h4>
+                        <div className="space-y-4">
+                          <div>
+                            <div className="flex justify-between text-sm mb-1">
+                              <span>North Field</span>
+                              <span>72%</span>
+                            </div>
+                            <Progress value={72} className="h-2" />
+                          </div>
+                          <div>
+                            <div className="flex justify-between text-sm mb-1">
+                              <span>East Field</span>
+                              <span>68%</span>
+                            </div>
+                            <Progress value={68} className="h-2" />
+                          </div>
+                          <div>
+                            <div className="flex justify-between text-sm mb-1">
+                              <span>West Field</span>
+                              <span>51%</span>
+                            </div>
+                            <Progress value={51} className="h-2" />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+              
+              <div>
+                <Card className="mb-6">
+                  <CardHeader>
+                    <CardTitle>Livestock Sensors Status</CardTitle>
+                    <CardDescription>Health and battery status</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <div className="flex items-center gap-3">
+                          <div className="bg-green-100 p-2 rounded-full">
+                            <Gauge className="h-4 w-4 text-green-600" />
+                          </div>
+                          <div>
+                            <p className="font-medium">Moisture Sensor</p>
+                            <p className="text-sm text-gray-500">North Field</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Battery className="h-4 w-4 text-green-600" />
+                          <span className="text-sm">92%</span>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <div className="flex items-center gap-3">
+                          <div className="bg-green-100 p-2 rounded-full">
+                            <Gauge className="h-4 w-4 text-green-600" />
+                          </div>
+                          <div>
+                            <p className="font-medium">pH Sensor</p>
+                            <p className="text-sm text-gray-500">East Field</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Battery className="h-4 w-4 text-yellow-600" />
+                          <span className="text-sm">45%</span>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <div className="flex items-center gap-3">
+                          <div className="bg-green-100 p-2 rounded-full">
+                            <Gauge className="h-4 w-4 text-green-600" />
+                          </div>
+                          <div>
+                            <p className="font-medium">EC Sensor</p>
+                            <p className="text-sm text-gray-500">West Field</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Battery className="h-4 w-4 text-green-600" />
+                          <span className="text-sm">88%</span>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <div className="flex items-center gap-3">
+                          <div className="bg-red-100 p-2 rounded-full">
+                            <Gauge className="h-4 w-4 text-red-600" />
+                          </div>
+                          <div>
+                            <p className="font-medium">Temperature Sensor</p>
+                            <p className="text-sm text-gray-500">South Field</p>
+                          </div>
+                        </div>
+                        <div>
+                          <Badge variant="destructive">Offline</Badge>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                  <CardFooter>
+                    <Button className="w-full" onClick={() => handleSensorCalibration('livestock')}>
+                      Calibrate Sensors
+                    </Button>
+                  </CardFooter>
+                </Card>
+                
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Recommendations</CardTitle>
+                    <CardDescription>Based on livestock analysis</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      <div className="p-3 bg-blue-50 rounded-lg">
+                        <div className="flex items-center gap-2 text-blue-800 font-medium mb-1">
+                          <div className="bg-blue-200 p-1 rounded-full">
+                            <Droplet className="h-3 w-3 text-blue-700" />
+                          </div>
+                          Irrigation
+                        </div>
+                        <p className="text-sm text-blue-800">Consider increasing irrigation by 15% in East Field due to low soil moisture readings.</p>
+                      </div>
+                      
+                      <div className="p-3 bg-green-50 rounded-lg">
+                        <div className="flex items-center gap-2 text-green-800 font-medium mb-1">
+                          <div className="bg-green-200 p-1 rounded-full">
+                            <Leaf className="h-3 w-3 text-green-700" />
+                          </div>
+                          Fertilizer
+                        </div>
+                        <p className="text-sm text-green-800">Apply nitrogen-rich fertilizer to West Field in the next 7 days to optimize nutrient levels.</p>
+                      </div>
+                      
+                      <div className="p-3 bg-amber-50 rounded-lg">
+                        <div className="flex items-center gap-2 text-amber-800 font-medium mb-1">
+                          <div className="bg-amber-200 p-1 rounded-full">
+                            <Gauge className="h-3 w-3 text-amber-700" />
+                          </div>
+                          Maintenance
+                        </div>
+                        <p className="text-sm text-amber-800">South Field temperature sensor requires maintenance or replacement.</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
             </div>
           </TabsContent>
         </Tabs>
