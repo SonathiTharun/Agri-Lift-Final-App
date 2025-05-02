@@ -1,5 +1,6 @@
 
 import { Pie } from 'react-chartjs-2';
+import { ChartPie } from 'lucide-react';
 
 interface SelectedCrop {
   id: string;
@@ -34,7 +35,7 @@ const PieChartArea = ({ selectedCrops }: PieChartAreaProps) => {
   return (
     <div className="bg-white p-4 border rounded-lg shadow-sm">
       <h3 className="text-sm font-medium mb-2 flex items-center text-gray-700">
-        <PieChart size={16} className="mr-1 text-foliage-dark" />
+        <ChartPie size={16} className="mr-1 text-foliage-dark" />
         Area Distribution
       </h3>
       <div className="h-40">

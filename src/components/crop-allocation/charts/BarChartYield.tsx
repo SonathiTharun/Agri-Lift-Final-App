@@ -1,5 +1,6 @@
 
 import { Bar } from 'react-chartjs-2';
+import { ChartBar } from 'lucide-react';
 
 interface SelectedCrop {
   id: string;
@@ -30,7 +31,7 @@ const BarChartYield = ({ selectedCrops }: BarChartYieldProps) => {
   return (
     <div className="bg-white p-4 border rounded-lg shadow-sm">
       <h3 className="text-sm font-medium mb-2 flex items-center text-gray-700">
-        <BarChart size={16} className="mr-1 text-foliage-dark" />
+        <ChartBar size={16} className="mr-1 text-foliage-dark" />
         Yield Projection
       </h3>
       <div className="h-40">

@@ -1,5 +1,6 @@
 
 import { Line } from 'react-chartjs-2';
+import { ChartLine } from 'lucide-react';
 
 const LineChartRevenue = () => {
   const monthlyRevenueData = {

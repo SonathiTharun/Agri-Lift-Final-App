@@ -1,5 +1,5 @@
 
-import { LineChart } from "lucide-react";
+import { ChartLine } from "lucide-react";
 import LineChartRevenue from "../charts/LineChartRevenue";
 
 interface LandDetails {
@@ -47,7 +47,7 @@ const InsightsTab = ({ landDetails, selectedCrops }: InsightsTabProps) => {
       
       <div className="bg-white p-4 border rounded-lg shadow-sm">
         <h3 className="font-medium mb-2 flex items-center">
-          <LineChart size={16} className="mr-1 text-foliage-dark" />
+          <ChartLine size={16} className="mr-1 text-foliage-dark" />
           Revenue Projection
         </h3>
         <LineChartRevenue />
