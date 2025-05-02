@@ -1,8 +1,8 @@
-import { useState, useEffect, useRef } from "react";
+
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowRight, ChevronLeft, BarChart, FileText, PieChart, LineChart } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import { ChevronLeft, BarChart, PieChart, LineChart } from "lucide-react";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -15,8 +15,9 @@ import {
   Tooltip,
   Legend
 } from 'chart.js';
-import { Bar, Pie, Line } from 'react-chartjs-2';
-import Field3D from "./Field3D";
+import VisualizationArea from "./VisualizationArea";
+import SummaryTab from "./tabs/SummaryTab";
+import InsightsTab from "./tabs/InsightsTab";
 
 // Register Chart.js components
 ChartJS.register(
@@ -65,144 +66,16 @@ const PlotVisualization = ({
 }: PlotVisualizationProps) => {
   const [activeTab, setActiveTab] = useState<string>("summary");
   const [rotationEnabled, setRotationEnabled] = useState(true);
-  const canvasRef = useRef<HTMLDivElement>(null);
-  const { toast } = useToast();
   
-  // Sample data for charts
-  const pieChartData = {
-    labels: selectedCrops.map(crop => crop.name),
-    datasets: [
-      {
-        data: selectedCrops.map(crop => crop.percentage),
-        backgroundColor: [
-          'rgba(76, 175, 80, 0.7)',
-          'rgba(33, 150, 243, 0.7)',
-          'rgba(255, 193, 7, 0.7)',
-          'rgba(156, 39, 176, 0.7)',
-          'rgba(233, 30, 99, 0.7)'
-        ],
-        borderWidth: 1,
-      },
-    ],
-  };
-
-  const yieldChartData = {
-    labels: selectedCrops.map(crop => crop.name),
-    datasets: [
-      {
-        label: 'Estimated Yield (tons)',
-        data: selectedCrops.map(crop => crop.estimatedYield),
-        backgroundColor: 'rgba(76, 175, 80, 0.5)',
-        borderColor: 'rgba(76, 175, 80, 1)',
-        borderWidth: 1,
-      },
-    ],
-  };
-
-  const monthlyRevenueData = {
-    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-    datasets: [
-      {
-        label: 'Projected Revenue (₹ thousands)',
-        data: Array(12).fill(0).map(() => Math.random() * 50 + 50),
-        borderColor: 'rgba(76, 175, 80, 1)',
-        backgroundColor: 'rgba(76, 175, 80, 0.1)',
-        tension: 0.4,
-        fill: true,
-      },
-    ],
-  };
-
-  useEffect(() => {
-    // Mock 3D visualization setup
-    if (canvasRef.current) {
-      const mockRotation = () => {
-        if (!rotationEnabled || !canvasRef.current) return;
-        
-        // Simulate slow rotation animation
-        const mockCanvas = canvasRef.current;
-        const currentRotation = parseFloat(mockCanvas.dataset.rotation || "0");
-        const newRotation = (currentRotation + 0.5) % 360;
-        mockCanvas.dataset.rotation = newRotation.toString();
-        
-        // Use CSS 3D transforms to rotate the mock canvas
-        mockCanvas.style.transform = `rotateY(${newRotation}deg) rotateX(20deg)`;
-        
-        requestAnimationFrame(mockRotation);
-      };
-      
-      const animationId = requestAnimationFrame(mockRotation);
-      
-      // Clean up on unmount
-      return () => cancelAnimationFrame(animationId);
-    }
-  }, [rotationEnabled]);
-
-  // Simulated crop color assignments
-  const cropColors = {
-    wheat: "#F5DEB3",
-    rice: "#CDBA96",
-    corn: "#F8DE7E",
-    potato: "#CD853F",
-    tomato: "#FF6347",
-    cotton: "#F0FFFF",
-    soybean: "#90EE90",
-    sugarcane: "#87CEFA"
-  };
-
-  const handleExport = () => {
-    toast({
-      title: "Export initiated",
-      description: "Your allocation plan is being prepared for export"
-    });
-    
-    // In a real app, this would download a PDF or spreadsheet
-    setTimeout(() => {
-      toast({
-        title: "Export complete",
-        description: "Crop allocation plan has been saved to your downloads"
-      });
-    }, 1500);
-  };
-
   return (
     <div>
       <h2 className="text-xl font-semibold mb-6">Step 3: Visualization & Allocation</h2>
       
       <div className="grid md:grid-cols-3 gap-6">
-        {/* 3D Plot Visualization */}
-        <div className="md:col-span-2 space-y-4">
-          {/* -- New 3D Field visualization -- */}
-          <Field3D crops={selectedCrops} rotationEnabled={rotationEnabled} />
-          
-          <div className="grid grid-cols-2 gap-4">
-            <div className="bg-white p-4 border rounded-lg shadow-sm">
-              <h3 className="text-sm font-medium mb-2 flex items-center text-gray-700">
-                <PieChart size={16} className="mr-1 text-foliage-dark" />
-                Area Distribution
-              </h3>
-              <div className="h-40">
-                <Pie data={pieChartData} options={{ maintainAspectRatio: false }} />
-              </div>
-            </div>
-            
-            <div className="bg-white p-4 border rounded-lg shadow-sm">
-              <h3 className="text-sm font-medium mb-2 flex items-center text-gray-700">
-                <BarChart size={16} className="mr-1 text-foliage-dark" />
-                Yield Projection
-              </h3>
-              <div className="h-40">
-                <Bar 
-                  data={yieldChartData} 
-                  options={{ 
-                    maintainAspectRatio: false,
-                    scales: { y: { beginAtZero: true } }
-                  }} 
-                />
-              </div>
-            </div>
-          </div>
-        </div>
+        <VisualizationArea 
+          selectedCrops={selectedCrops}
+          rotationEnabled={rotationEnabled}
+        />
         
         {/* Info and Controls */}
         <div>
@@ -212,122 +85,20 @@ const PlotVisualization = ({
               <TabsTrigger value="insights">Insights</TabsTrigger>
             </TabsList>
             
-            <TabsContent value="summary" className="space-y-4">
-              <div className="bg-white p-4 border rounded-lg shadow-sm">
-                <h3 className="font-medium mb-3 flex items-center">
-                  <FileText size={16} className="mr-1 text-foliage-dark" />
-                  Allocation Summary
-                </h3>
-                
-                <div className="space-y-2">
-                  {selectedCrops.map(crop => (
-                    <div key={crop.id} className="flex justify-between items-center text-sm border-b pb-1">
-                      <span>{crop.name}</span>
-                      <div className="flex items-center space-x-4">
-                        <span className="text-gray-600">{crop.area.toFixed(1)} acres</span>
-                        <span className="text-gray-600 w-12 text-right">{crop.percentage.toFixed(0)}%</span>
-                      </div>
-                    </div>
-                  ))}
-                  
-                  <div className="font-medium flex justify-between pt-1">
-                    <span>Total</span>
-                    <span>{landDetails.totalArea.toFixed(1)} acres</span>
-                  </div>
-                </div>
-                
-                <div className="mt-4 space-y-2">
-                  <Button onClick={handleExport} size="sm" variant="outline" className="w-full">
-                    Export to PDF/Excel
-                  </Button>
-                  
-                  <Button size="sm" className="w-full bg-foliage hover:bg-foliage-dark" onClick={onSubmit} disabled={isSubmitting}>
-                    {isSubmitting ? 'Saving...' : 'Save Plan'}
-                  </Button>
-                </div>
-              </div>
-              
-              <div className="bg-white p-4 border rounded-lg shadow-sm">
-                <h3 className="font-medium mb-2">Land Details</h3>
-                
-                <div className="space-y-1 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Location:</span>
-                    <span>{landDetails.location}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Plot Number:</span>
-                    <span>{landDetails.plotNumber}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Total Area:</span>
-                    <span>{landDetails.totalArea.toFixed(1)} acres</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Soil Type:</span>
-                    <span>{landDetails.soilType}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Climate:</span>
-                    <span>{landDetails.climateType}</span>
-                  </div>
-                </div>
-              </div>
+            <TabsContent value="summary">
+              <SummaryTab 
+                landDetails={landDetails}
+                selectedCrops={selectedCrops}
+                onSubmit={onSubmit}
+                isSubmitting={isSubmitting}
+              />
             </TabsContent>
             
-            <TabsContent value="insights" className="space-y-4">
-              <div className="bg-white p-4 border rounded-lg shadow-sm">
-                <h3 className="font-medium mb-3">Key Insights</h3>
-                
-                <div className="space-y-2 text-sm">
-                  <div className="p-2 bg-foliage/10 border-l-2 border-foliage rounded-sm">
-                    <strong>Soil Analysis:</strong> Your {landDetails.soilType} soil is well-suited for {selectedCrops[0]?.name}.
-                  </div>
-                  
-                  <div className="p-2 bg-blue-50 border-l-2 border-blue-400 rounded-sm">
-                    <strong>Water Efficiency:</strong> Consider installing drip irrigation for optimal water usage.
-                  </div>
-                  
-                  <div className="p-2 bg-yellow-50 border-l-2 border-yellow-400 rounded-sm">
-                    <strong>Market Trend:</strong> {selectedCrops[0]?.name} prices expected to rise by 15% next season.
-                  </div>
-                </div>
-              </div>
-              
-              <div className="bg-white p-4 border rounded-lg shadow-sm">
-                <h3 className="font-medium mb-2 flex items-center">
-                  <LineChart size={16} className="mr-1 text-foliage-dark" />
-                  Revenue Projection
-                </h3>
-                <div className="h-40">
-                  <Line 
-                    data={monthlyRevenueData} 
-                    options={{ 
-                      maintainAspectRatio: false,
-                      scales: { y: { beginAtZero: true } }
-                    }} 
-                  />
-                </div>
-              </div>
-              
-              <div className="bg-white p-4 border rounded-lg shadow-sm">
-                <h3 className="font-medium mb-2">Recommendations</h3>
-                
-                <ul className="space-y-1 text-sm">
-                  <li className="flex items-start">
-                    <span className="text-foliage mr-1">•</span>
-                    <span>Schedule soil testing in 3 months for nutrient monitoring</span>
-                  </li>
-                  <li className="flex items-start">
-                    <span className="text-foliage mr-1">•</span>
-                    <span>Consider crop rotation for plots growing {selectedCrops[0]?.name} next season</span>
-                  </li>
-                  <li className="flex items-start">
-                    <span className="text-foliage mr-1">•</span>
-                    <span>Install moisture sensors for optimal irrigation scheduling</span>
-                  </li>
-                </ul>
-              </div>
+            <TabsContent value="insights">
+              <InsightsTab 
+                landDetails={landDetails}
+                selectedCrops={selectedCrops}
+              />
             </TabsContent>
           </Tabs>
         </div>
