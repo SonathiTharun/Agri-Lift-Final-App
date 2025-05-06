@@ -15,12 +15,28 @@ import {
 } from "@/components/ui/carousel";
 import { productsByCategory } from "@/data/marketData";
 
+// Define a proper type for the product
+interface Product {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  rating: number;
+  stock: number;
+  image: string;
+  images?: string[];
+  discount?: number;
+  specifications?: Record<string, string>;
+  benefits?: string[];
+  categoryId?: string;
+}
+
 // Main component
 export default function ProductDetail() {
   const { categoryId, productId } = useParams<{ categoryId: string; productId: string }>();
   const navigate = useNavigate();
   const [quantity, setQuantity] = useState(1);
-  const [product, setProduct] = useState<any | null>(null);
+  const [product, setProduct] = useState<Product | null>(null);
   const [selectedImage, setSelectedImage] = useState(0);
   const [activeTab, setActiveTab] = useState("description");
 
@@ -102,7 +118,7 @@ export default function ProductDetail() {
   // Get related products excluding current one
   const relatedProducts = categoryId 
     ? productsByCategory[categoryId]
-        .filter(p => p.id !== product.id)
+        .filter(p => p.id !== product?.id)
         .slice(0, 4)
     : [];
 
@@ -248,7 +264,7 @@ export default function ProductDetail() {
                         {Object.entries(product.specifications).map(([key, value]) => (
                           <div key={key} className="border-b pb-2">
                             <span className="font-medium text-sm text-gray-600">{key}: </span>
-                            <span className="text-sm">{value}</span>
+                            <span className="text-sm">{value as string}</span>
                           </div>
                         ))}
                       </div>
