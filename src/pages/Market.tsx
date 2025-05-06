@@ -10,6 +10,11 @@ import {
   Filter,
   ChevronRight,
   Star,
+  Leaf,
+  Sprout,
+  FlaskConical,
+  Flower,
+  Shovel
 } from "lucide-react";
 import { useLanguage } from "@/components/LanguageContext";
 import { 
@@ -20,6 +25,24 @@ import {
   CarouselPrevious 
 } from "@/components/ui/carousel";
 import { categories, featuredProducts } from "@/data/marketData";
+
+// Helper function to render the correct icon based on icon name
+const renderIcon = (iconName: string) => {
+  switch (iconName) {
+    case "Sprout":
+      return <Sprout className="h-6 w-6" />;
+    case "Leaf":
+      return <Leaf className="h-6 w-6" />;
+    case "FlaskConical":
+      return <FlaskConical className="h-6 w-6" />;
+    case "Flower":
+      return <Flower className="h-6 w-6" />;
+    case "Shovel":
+      return <Shovel className="h-6 w-6" />;
+    default:
+      return <Leaf className="h-6 w-6" />; // Default icon as fallback
+  }
+};
 
 export default function Market() {
   const [pageLoaded, setPageLoaded] = useState(false);
@@ -164,7 +187,9 @@ export default function Market() {
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
                   <div className="absolute bottom-4 left-4 z-20 flex items-center gap-2 text-white">
-                    <div className="p-2 bg-foliage rounded-full">{category.icon}</div>
+                    <div className="p-2 bg-foliage rounded-full">
+                      {renderIcon(category.icon)}
+                    </div>
                     <h3 className="text-xl font-semibold">{category.name}</h3>
                   </div>
                 </div>
@@ -201,7 +226,7 @@ export default function Market() {
             </div>
             <div className="p-4 hover:bg-white/20 rounded-md transition-colors">
               <div className="bg-foliage text-white p-3 rounded-full w-12 h-12 flex items-center justify-center mx-auto mb-3">
-                {categories[0].icon}
+                {renderIcon(categories[0].icon)}
               </div>
               <h3 className="font-semibold text-lg mb-2">Expert Support</h3>
               <p className="text-gray-600">Our agricultural experts are available to guide you on best practices</p>

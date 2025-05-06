@@ -1,18 +1,10 @@
-
 import { ReactNode } from "react";
-import { 
-  Leaf, 
-  Sprout, 
-  FlaskConical, 
-  Flower,
-  Shovel
-} from "lucide-react";
 
 export type ProductCategory = {
   id: string;
   name: string;
   description: string;
-  icon: ReactNode;
+  icon: string;
   image: string;
 };
 
@@ -46,42 +38,42 @@ export const categories: ProductCategory[] = [
     id: "lab-grown-plants",
     name: "Lab Grown Plants",
     description: "High-yield, disease-resistant plants grown using advanced lab techniques",
-    icon: <Sprout className="h-6 w-6" />,
+    icon: "Sprout",
     image: "https://plus.unsplash.com/premium_photo-1679436184527-74af0573db60?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTd8fGxhYiUyMGdyb3duJTIwcGxhbnRzJTIwcGxhbnRpbmclMjBpbiUyMGZlaWxkc3xlbnwwfHwwfHx8MA%3D%3D"
   },
   {
     id: "seeds",
     name: "Seeds",
     description: "Premium quality seeds with high germination rates for various crops",
-    icon: <Leaf className="h-6 w-6" />,
+    icon: "Leaf",
     image: "https://media.istockphoto.com/id/1190855168/photo/young-woman-sowing-seeds-in-soil.webp?a=1&b=1&s=612x612&w=0&k=20&c=t_wtHjJmkLfuFa6NPdkbxUD6Rf-lfbYpniHGAORITO0="
   },
   {
     id: "fertilizers",
     name: "Fertilizers",
     description: "Organic and chemical fertilizers for enhanced crop growth",
-    icon: <FlaskConical className="h-6 w-6" />,
+    icon: "FlaskConical",
     image: "https://media.istockphoto.com/id/522391502/photo/farmer-spreading-fertilizer-in-the-field-wheat.webp?a=1&b=1&s=612x612&w=0&k=20&c=uAfPuR4JPwdlx-KADzSAVbEYeuPR8SkHXsCiXuyizAo="
   },
   {
     id: "pesticides",
     name: "Pesticides",
     description: "Effective pest control solutions for healthier crops",
-    icon: <Flower className="h-6 w-6" />,
+    icon: "Flower",
     image: "https://media.istockphoto.com/id/652966504/photo/watering-field.webp?a=1&b=1&s=612x612&w=0&k=20&c=e_d5LE1bDvairIeXHvviiWc_2__Ptn2eRS03GqEm8ueM="
   },
   {
     id: "farming-tools",
     name: "Farming Tools",
     description: "Essential hand tools and equipment for efficient farming operations",
-    icon: <Shovel className="h-6 w-6" />,
+    icon: "Shovel",
     image: "https://media.istockphoto.com/id/1271469823/photo/gardening-tools-on-a-green-background-top-view-farming.jpg?s=612x612&w=0&k=20&c=UBrbD-SqT3O-jOnSd-wRiU0SdCgKC23ji8HyBb6GVME="
   },
   {
     id: "irrigation",
     name: "Irrigation",
     description: "Advanced irrigation systems for optimal water usage",
-    icon: <Leaf className="h-6 w-6" />,
+    icon: "Leaf",
     image: "https://media.istockphoto.com/id/1146633438/photo/irrigation-system-watering-agricultural-field-with-young-plants-and-sprinkler-system.webp?a=1&b=1&s=612x612&w=0&k=20&c=Ig2HJvkkAJ8ijC0N06wwKKdFTQRORFcDZoBcpahyw84="
   }
 ];
