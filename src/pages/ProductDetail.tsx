@@ -4,8 +4,15 @@ import { Layout } from "@/components/Layout";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ShoppingCart, ArrowLeft } from "lucide-react";
+import { ShoppingCart, ArrowLeft, Star } from "lucide-react";
 import { toast } from "@/components/ui/use-toast";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 
 type Product = {
   id: string;
@@ -15,6 +22,10 @@ type Product = {
   image: string;
   rating: number;
   stock: number;
+  discount?: number;
+  images?: string[];
+  specifications?: Record<string, string>;
+  benefits?: string[];
 };
 
 // Mock data for products in each category
@@ -23,11 +34,29 @@ const productsByCategory: Record<string, Product[]> = {
     {
       id: "lg-plant-1",
       name: "High-Yield Rice Seedling",
-      description: "Lab-grown rice seedlings with 30% higher yield potential",
+      description: "Lab-grown rice seedlings with 30% higher yield potential. These genetically optimized seedlings are designed to maximize output while maintaining resistance to common diseases that affect rice crops.",
       price: 199,
       image: "https://media.istockphoto.com/id/2199060174/photo/lush-green-rice-fields-in-taiwan-during-the-growing-season.webp?a=1&b=1&s=612x612&w=0&k=20&c=E5jYkLX3rLbd4JjNQHAwZSENqQKdE0-FYgBCWN6rcec=",
       rating: 4.7,
-      stock: 120
+      stock: 120,
+      discount: 15,
+      images: [
+        "https://media.istockphoto.com/id/2199060174/photo/lush-green-rice-fields-in-taiwan-during-the-growing-season.webp?a=1&b=1&s=612x612&w=0&k=20&c=E5jYkLX3rLbd4JjNQHAwZSENqQKdE0-FYgBCWN6rcec=",
+        "https://media.istockphoto.com/id/1282569924/photo/rice-field-at-sunset.webp?a=1&b=1&s=612x612&w=0&k=20&c=JjsJe_lYF-3qC_Z9MFy0FbYaWGJxhHRpH1F8-4F2GGU=",
+        "https://media.istockphoto.com/id/1056248814/photo/farmer-planting-rice-seedlings-in-rice-field.webp?a=1&b=1&s=612x612&w=0&k=20&c=oDzDICxikxUgnO6moFpcTaXHwOVR2iBSzqj3hH6-MiE="
+      ],
+      specifications: {
+        "Growth Rate": "30% faster than traditional varieties",
+        "Disease Resistance": "High resistance to blast and bacterial blight",
+        "Water Requirements": "20% less than traditional varieties",
+        "Expected Yield": "8-10 tons per hectare"
+      },
+      benefits: [
+        "Higher yield potential compared to traditional varieties",
+        "Reduced need for pesticides due to enhanced disease resistance",
+        "Greater tolerance to environmental stress factors",
+        "More efficient water usage"
+      ]
     },
     {
       id: "lg-plant-2",
@@ -36,7 +65,8 @@ const productsByCategory: Record<string, Product[]> = {
       price: 249,
       image: "https://media.istockphoto.com/id/983287672/photo/close-up-on-ripe-wheat-ears-on-reaping-time-in-middle-june.webp?a=1&b=1&s=612x612&w=0&k=20&c=ie2OOz5kDNy75bXzurOf1nu9WlXhHmfD8MQCe2jJ-wk=",
       rating: 4.5,
-      stock: 85
+      stock: 85,
+      discount: 10
     },
     {
       id: "lg-plant-3",
@@ -101,7 +131,8 @@ const productsByCategory: Record<string, Product[]> = {
       price: 99,
       image: "https://plus.unsplash.com/premium_photo-1723568420145-4b3f90ef6c02?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8T3JnYW5pYyUyMFRvbWF0byUyMFNlZWRzfGVufDB8fDB8fHww",
       rating: 4.6,
-      stock: 200
+      stock: 200,
+      discount: 5
     },
     {
       id: "seed-2",
@@ -115,9 +146,9 @@ const productsByCategory: Record<string, Product[]> = {
     {
       id: "seed-3",
       name: "Organic Bottleguard Seeds",
-      description: "High-quality organic tomato seeds for healthy farming",
+      description: "High-quality organic gourd seeds for healthy farming",
       price: 99,
-      image: "data:image/jpeg;base64,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",
+      image: "https://media.istockphoto.com/id/502490988/photo/bottle-gourd-plant-with-young-fruit.webp?a=1&b=1&s=612x612&w=0&k=20&c=MxnSAJYrNkoeKQyieI-dp9UDQDX_oWwZNeT2R-ncpl8=",
       rating: 4.5,
       stock: 200
     },
@@ -129,6 +160,144 @@ const productsByCategory: Record<string, Product[]> = {
       image: "https://media.istockphoto.com/id/1345650890/photo/wheat-and-grain-in-hand-wheat-grain-kernel.jpg?s=612x612&w=0&k=20&c=KpOkbRUbFC5vD2e_X0DZ1KXBmnJzzIPDHnfCAhDB1x0=",
       rating: 4.8,
       stock: 180
+    },
+    {
+      id: "seed-5",
+      name: "Premium Carrot Seeds",
+      description: "High-germination carrot seeds for abundant harvests",
+      price: 79,
+      image: "https://media.istockphoto.com/id/1431027073/photo/carrot-seeds-in-hand.webp?a=1&b=1&s=612x612&w=0&k=20&c=YXJ-pnLj-ulMR9KVpCq6eQoAw_GyWQb6pWUrKCbPzVU=",
+      rating: 4.7,
+      stock: 220
+    },
+    {
+      id: "seed-6",
+      name: "Organic Lettuce Seed Mix",
+      description: "A blend of premium organic lettuce varieties",
+      price: 89,
+      image: "https://media.istockphoto.com/id/172875087/photo/lettuce-seedlings.webp?a=1&b=1&s=612x612&w=0&k=20&c=VDoD6YkTLVZzjbwYqd9XoTdhJU8ElgleFPKPd0MUMtk=",
+      rating: 4.6,
+      stock: 150
+    }
+  ],
+  "fertilizers": [
+    {
+      id: "fert-1",
+      name: "Premium Organic Compost",
+      description: "Nutrient-rich organic compost for all your farming needs",
+      price: 149,
+      image: "https://media.istockphoto.com/id/1198255281/photo/professional-gardener-adds-compost-to-the-soil-in-the-garden.webp?a=1&b=1&s=612x612&w=0&k=20&c=1KLUuAP1w_kEzQ7aCKSz6WRtC3AW8eSXIHi_5xpHtKc=",
+      rating: 4.9,
+      stock: 300
+    },
+    {
+      id: "fert-2",
+      name: "NPK Fertilizer Blend",
+      description: "Balanced nitrogen, phosphorus, and potassium for optimal growth",
+      price: 199,
+      image: "https://media.istockphoto.com/id/927499422/photo/organic-fertilizer-in-a-wooden-bowl-on-dark-background-alternative-resource-of-fertilizer-for.webp?a=1&b=1&s=612x612&w=0&k=20&c=XViyaUlbE_AFT1JuhfDo4yWzXuMnYr1et9mZqV97DCA=",
+      rating: 4.7,
+      stock: 250,
+      discount: 10
+    },
+    {
+      id: "fert-3",
+      name: "Organic Bone Meal",
+      description: "Slow-release fertilizer perfect for root development",
+      price: 129,
+      image: "https://media.istockphoto.com/id/1414162899/photo/bone-meal-organic-fertilizer-in-packaging-on-wooden-background.webp?a=1&b=1&s=612x612&w=0&k=20&c=LQF4dxjpCjpnM-1EUIv8X-5EHc8C5NGjM8Vl_78R28s=",
+      rating: 4.6,
+      stock: 175
+    },
+    {
+      id: "fert-4",
+      name: "Liquid Seaweed Fertilizer",
+      description: "Nutrient-rich seaweed extract for boosting plant health",
+      price: 109,
+      image: "https://media.istockphoto.com/id/1314115085/photo/organic-liquid-fertilizers.webp?a=1&b=1&s=612x612&w=0&k=20&c=R4rPu9TbJQ8FO05Re3zI0wkyPMeZFTwWCxN7poLkCrQ=",
+      rating: 4.8,
+      stock: 200
+    }
+  ],
+  "pesticides": [
+    {
+      id: "pest-1",
+      name: "Organic Pest Control Spray",
+      description: "Natural formula to control common plant pests",
+      price: 89,
+      image: "https://media.istockphoto.com/id/1217779052/photo/farmer-spraying-vegetables-with-chemicals-in-the-garden.webp?a=1&b=1&s=612x612&w=0&k=20&c=r7Mfptx_suxSOkL5PhVcqBGdCTax1_Qvkr7aHWCeVFc=",
+      rating: 4.5,
+      stock: 150
+    },
+    {
+      id: "pest-2",
+      name: "Neem Oil Concentrate",
+      description: "Organic solution for pest and fungal control",
+      price: 69,
+      image: "https://media.istockphoto.com/id/1398630956/photo/neem-oil-extract-in-bottle-on-wooden-surface-selective-focus-ayurvedic-medicine.webp?a=1&b=1&s=612x612&w=0&k=20&c=4i6gVZdHeWSPwdkcpzLzjsGSp9NByPFflgRSPtJJ4o8=",
+      rating: 4.7,
+      stock: 200,
+      discount: 15
+    },
+    {
+      id: "pest-3",
+      name: "Insect Barrier Mesh",
+      description: "Physical protection against flying pests",
+      price: 129,
+      image: "https://media.istockphoto.com/id/1371333320/photo/pigeons-and-other-birds-control-net-installed-in-balcony-celling.webp?a=1&b=1&s=612x612&w=0&k=20&c=yISvzG7xjVeyZEiQuE8H0iWv1Y8PWDbvRF7VotW-z2c=",
+      rating: 4.6,
+      stock: 80
+    }
+  ],
+  "irrigation": [
+    {
+      id: "irrig-1",
+      name: "Smart Drip Irrigation Kit",
+      description: "Water-saving drip irrigation system with smart controls",
+      price: 299,
+      image: "https://media.istockphoto.com/id/1270064595/photo/watering-field.webp?a=1&b=1&s=612x612&w=0&k=20&c=vzZ6GrpFj8RLNW8wvXEiWQzGDt91m0ASuFeiS-Eee2M=",
+      rating: 4.8,
+      stock: 50,
+      discount: 20
+    },
+    {
+      id: "irrig-2",
+      name: "Sprinkler System - Pro",
+      description: "Professional-grade sprinkler system for even coverage",
+      price: 349,
+      image: "https://media.istockphoto.com/id/1249603614/photo/sprinkler-head-watering-in-the-garden.webp?a=1&b=1&s=612x612&w=0&k=20&c=7XzfBxS68YoGX5AbDZPX7hQQ-gUgg0w9fqwx_QT5jC8=",
+      rating: 4.7,
+      stock: 35
+    },
+    {
+      id: "irrig-3",
+      name: "Smart Moisture Sensors",
+      description: "IoT-enabled sensors to optimize watering schedules",
+      price: 179,
+      image: "https://media.istockphoto.com/id/1137813603/photo/hand-check-the-soil-moisture-with-the-mete.webp?a=1&b=1&s=612x612&w=0&k=20&c=x30Sl4TdjYF2bKtodXXoTisJ67UbTnzODRXR7Km9dWo=",
+      rating: 4.9,
+      stock: 75
+    }
+  ],
+  "machinery": [
+    {
+      id: "mach-1",
+      name: "Mini Tiller - Electric",
+      description: "Compact electric tiller for small to medium gardens",
+      price: 499,
+      image: "https://media.istockphoto.com/id/1409689575/photo/farmer-plows-the-field-with-a-motor-cultivator.webp?a=1&b=1&s=612x612&w=0&k=20&c=kPo8LVYosclZLFJie7eXTRWHK90J01wEAlVCsEaYmQU=",
+      rating: 4.6,
+      stock: 20,
+      discount: 10
+    },
+    {
+      id: "mach-2",
+      name: "Seed Planter - Precision",
+      description: "Accurate seed planter for efficient sowing",
+      price: 659,
+      image: "https://media.istockphoto.com/id/1299978359/photo/tractor-with-a-mounted-precision-seed-drill-seeder-in-a-field-sunset-time.webp?a=1&b=1&s=612x612&w=0&k=20&c=s05dTgmErTDiWIfYL1LasYEkA6mLdfr8cGYy5QADr1U=",
+      rating: 4.8,
+      stock: 15
     }
   ]
 };
@@ -139,12 +308,23 @@ export default function ProductDetail() {
   const navigate = useNavigate();
   const [quantity, setQuantity] = useState(1);
   const [product, setProduct] = useState<Product | null>(null);
+  const [selectedImage, setSelectedImage] = useState(0);
+  const [activeTab, setActiveTab] = useState("description");
 
   useEffect(() => {
-    if (categoryId && productId) {
-      const foundProduct = productsByCategory[categoryId]?.find(p => p.id === productId);
+    if (categoryId && productsByCategory[categoryId]) {
+      const products = productsByCategory[categoryId];
+      const foundProduct = productId 
+        ? products.find(p => p.id === productId) 
+        : products[0];
+      
       setProduct(foundProduct || null);
     }
+    
+    // Reset state when product changes
+    setQuantity(1);
+    setSelectedImage(0);
+    setActiveTab("description");
   }, [categoryId, productId]);
 
   const handleAddToCart = () => {
@@ -154,6 +334,17 @@ export default function ProductDetail() {
         title: "Added to Cart",
         description: `${quantity} ${product.name} added to your cart`,
       });
+    }
+  };
+
+  const handleBuyNow = () => {
+    // Here you would handle direct checkout
+    if (product) {
+      toast({
+        title: "Proceeding to Checkout",
+        description: `${quantity} ${product.name} added for immediate purchase`,
+      });
+      navigate("/checkout");
     }
   };
 
@@ -182,30 +373,79 @@ export default function ProductDetail() {
     );
   }
 
+  // Get category name for display
+  const getCategoryName = (catId: string) => {
+    const categoryMap: Record<string, string> = {
+      "lab-grown-plants": "Lab Grown Plants",
+      "seeds": "Seeds",
+      "fertilizers": "Fertilizers",
+      "pesticides": "Pesticides",
+      "irrigation": "Irrigation",
+      "machinery": "Machinery"
+    };
+    return categoryMap[catId] || catId;
+  };
+
+  // Get related products excluding current one
+  const relatedProducts = categoryId 
+    ? productsByCategory[categoryId]
+        .filter(p => p.id !== product.id)
+        .slice(0, 4)
+    : [];
+
   return (
     <Layout>
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-6xl mx-auto">
-          <div className="flex items-center mb-8">
+          <div className="flex items-center mb-8 animate-fade-in">
             <Button 
               variant="ghost" 
               onClick={() => navigate(`/market/${categoryId}`)} 
               className="hover:bg-gray-100 transition-colors"
             >
-              <ArrowLeft className="mr-2" /> Back to {categoryId === "lab-grown-plants" ? "Lab Grown Plants" : "Seeds"}
+              <ArrowLeft className="mr-2" /> Back to {getCategoryName(categoryId || '')}
             </Button>
           </div>
 
           <div className="grid md:grid-cols-2 gap-8 animate-fade-in">
-            {/* Product Image */}
+            {/* Product Images */}
             <div className="rounded-lg overflow-hidden bg-white shadow-sm border">
-              <div className="aspect-square w-full overflow-hidden">
-                <img 
-                  src={product.image} 
-                  alt={product.name} 
-                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
-                />
-              </div>
+              {product.images && product.images.length > 1 ? (
+                <div className="space-y-4">
+                  <div className="aspect-square w-full overflow-hidden">
+                    <img 
+                      src={product.images[selectedImage]} 
+                      alt={product.name} 
+                      className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                    />
+                  </div>
+                  <div className="flex gap-2 overflow-x-auto pb-2">
+                    {product.images.map((img, i) => (
+                      <div 
+                        key={i} 
+                        className={`w-20 h-20 flex-shrink-0 cursor-pointer border-2 overflow-hidden rounded ${
+                          selectedImage === i ? "border-foliage" : "border-transparent"
+                        }`}
+                        onClick={() => setSelectedImage(i)}
+                      >
+                        <img 
+                          src={img} 
+                          alt={`${product.name} - View ${i+1}`} 
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <div className="aspect-square w-full overflow-hidden">
+                  <img 
+                    src={product.image} 
+                    alt={product.name} 
+                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                  />
+                </div>
+              )}
             </div>
 
             {/* Product Details */}
@@ -216,14 +456,10 @@ export default function ProductDetail() {
                   <div className="flex items-center mt-2">
                     <div className="flex items-center">
                       {[...Array(5)].map((_, i) => (
-                        <svg 
+                        <Star 
                           key={i} 
-                          className={`w-5 h-5 ${i < Math.floor(product.rating) ? "text-yellow-400" : "text-gray-300"}`} 
-                          fill="currentColor" 
-                          viewBox="0 0 20 20"
-                        >
-                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                        </svg>
+                          className={`w-5 h-5 ${i < Math.floor(product.rating) ? "text-yellow-400 fill-yellow-400" : "text-gray-300"}`} 
+                        />
                       ))}
                       <span className="ml-2 text-gray-600">{product.rating.toFixed(1)}</span>
                     </div>
@@ -234,14 +470,84 @@ export default function ProductDetail() {
                 
                 <CardContent className="space-y-6">
                   <div>
-                    <h3 className="text-2xl md:text-3xl font-bold text-foliage-dark">
+                    <h3 className="text-2xl md:text-3xl font-bold text-foliage-dark flex items-center">
                       ${product.price}
+                      {product.discount && (
+                        <>
+                          <span className="text-gray-400 text-lg line-through ml-2">
+                            ${Math.round(product.price * (1 + product.discount / 100))}
+                          </span>
+                          <span className="ml-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+                            {product.discount}% OFF
+                          </span>
+                        </>
+                      )}
                     </h3>
                   </div>
                   
-                  <div>
-                    <h4 className="font-medium mb-2">Description</h4>
-                    <p className="text-gray-600">{product.description}</p>
+                  {/* Tabs for Description, Specifications, etc. */}
+                  <div className="border-b border-gray-200">
+                    <nav className="flex space-x-8">
+                      <button
+                        onClick={() => setActiveTab("description")}
+                        className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                          activeTab === "description"
+                            ? "border-foliage text-foliage"
+                            : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                        }`}
+                      >
+                        Description
+                      </button>
+                      {product.specifications && (
+                        <button
+                          onClick={() => setActiveTab("specifications")}
+                          className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                            activeTab === "specifications"
+                              ? "border-foliage text-foliage"
+                              : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                          }`}
+                        >
+                          Specifications
+                        </button>
+                      )}
+                      {product.benefits && (
+                        <button
+                          onClick={() => setActiveTab("benefits")}
+                          className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                            activeTab === "benefits"
+                              ? "border-foliage text-foliage"
+                              : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                          }`}
+                        >
+                          Benefits
+                        </button>
+                      )}
+                    </nav>
+                  </div>
+                  
+                  <div className="pt-2 min-h-[120px]">
+                    {activeTab === "description" && (
+                      <p className="text-gray-600">{product.description}</p>
+                    )}
+                    
+                    {activeTab === "specifications" && product.specifications && (
+                      <div className="grid grid-cols-2 gap-2">
+                        {Object.entries(product.specifications).map(([key, value]) => (
+                          <div key={key} className="border-b pb-2">
+                            <span className="font-medium text-sm text-gray-600">{key}: </span>
+                            <span className="text-sm">{value}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    
+                    {activeTab === "benefits" && product.benefits && (
+                      <ul className="list-disc pl-5 space-y-1">
+                        {product.benefits.map((benefit, index) => (
+                          <li key={index} className="text-gray-600">{benefit}</li>
+                        ))}
+                      </ul>
+                    )}
                   </div>
                   
                   <div>
@@ -268,12 +574,19 @@ export default function ProductDetail() {
                   </div>
                 </CardContent>
                 
-                <CardFooter>
+                <CardFooter className="flex flex-col sm:flex-row gap-3">
                   <Button 
                     className="w-full bg-foliage hover:bg-foliage-dark transition-colors" 
                     onClick={handleAddToCart}
                   >
                     <ShoppingCart className="mr-2 h-5 w-5" /> Add to Cart
+                  </Button>
+                  <Button 
+                    variant="outline"
+                    className="w-full border-foliage text-foliage hover:bg-foliage hover:text-white transition-colors" 
+                    onClick={handleBuyNow}
+                  >
+                    Buy Now
                   </Button>
                 </CardFooter>
               </Card>
@@ -282,38 +595,66 @@ export default function ProductDetail() {
 
           {/* Related Products */}
           <div className="mt-16 animate-fade-in">
-            <h3 className="text-2xl font-semibold mb-6">Related Products</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {productsByCategory[categoryId || '']?.
-                filter(p => p.id !== product.id)
-                .slice(0, 4)
-                .map(relatedProduct => (
-                  <Link 
-                    key={relatedProduct.id}
-                    to={`/market/${categoryId}/${relatedProduct.id}`}
-                    className="group"
-                  >
-                    <Card className="h-full hover:shadow-md transition-shadow duration-300 hover:border-foliage">
-                      <div className="aspect-square overflow-hidden">
-                        <img 
-                          src={relatedProduct.image} 
-                          alt={relatedProduct.name}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
-                        />
-                      </div>
-                      <CardContent className="p-4">
-                        <h4 className="font-semibold text-soil-dark truncate">{relatedProduct.name}</h4>
-                        <p className="text-foliage-dark font-bold mt-1">${relatedProduct.price}</p>
-                      </CardContent>
-                    </Card>
-                  </Link>
-                ))
-              }
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-2xl font-semibold">Related Products</h3>
+              <Link 
+                to={`/market/${categoryId}`} 
+                className="text-foliage hover:underline flex items-center"
+              >
+                View all <ChevronRight className="h-4 w-4" />
+              </Link>
             </div>
+
+            {relatedProducts.length > 0 ? (
+              <Carousel
+                opts={{
+                  align: "start",
+                  loop: relatedProducts.length > 3,
+                }}
+                className="w-full"
+              >
+                <CarouselContent>
+                  {relatedProducts.map((relatedProduct) => (
+                    <CarouselItem key={relatedProduct.id} className="sm:basis-1/2 md:basis-1/3 lg:basis-1/4">
+                      <Link to={`/market/${categoryId}/${relatedProduct.id}`}>
+                        <Card className="h-full overflow-hidden hover:shadow-md transition-shadow duration-300 hover:border-foliage">
+                          <div className="aspect-square overflow-hidden">
+                            <img 
+                              src={relatedProduct.image} 
+                              alt={relatedProduct.name}
+                              className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" 
+                            />
+                          </div>
+                          <CardContent className="p-4">
+                            <h4 className="font-semibold text-soil-dark truncate">{relatedProduct.name}</h4>
+                            <div className="flex items-center mt-1">
+                              {[...Array(5)].map((_, i) => (
+                                <Star
+                                  key={i}
+                                  size={14}
+                                  className={`${
+                                    i < Math.floor(relatedProduct.rating) ? "text-yellow-400 fill-yellow-400" : "text-gray-300"
+                                  }`}
+                                />
+                              ))}
+                              <span className="text-xs ml-1 text-gray-500">{relatedProduct.rating}</span>
+                            </div>
+                            <p className="text-foliage-dark font-bold mt-1">${relatedProduct.price}</p>
+                          </CardContent>
+                        </Card>
+                      </Link>
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+                <CarouselPrevious className="-left-4" />
+                <CarouselNext className="-right-4" />
+              </Carousel>
+            ) : (
+              <p className="text-center text-gray-500 py-8">No related products found</p>
+            )}
           </div>
         </div>
       </div>
     </Layout>
   );
 }
-
