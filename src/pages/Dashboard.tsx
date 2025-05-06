@@ -3,9 +3,6 @@ import { WeatherWidget } from "@/components/WeatherWidget";
 import { SoilAnalysis } from "@/components/SoilAnalysis";
 import { useState } from "react";
 import { Layout } from "@/components/Layout";
-import { Link } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { ArrowRight } from "lucide-react";
 
 const Dashboard = () => {
   const [pageLoaded, setPageLoaded] = useState(false);
@@ -27,19 +24,6 @@ const Dashboard = () => {
             Welcome to your personalized agriculture dashboard. Access your soil insights, farm progress tracking, 
             and get recommendations based on your farming activities.
           </p>
-        </div>
-        
-        {/* Farming Type Selection Card */}
-        <div className="mb-6 bg-white p-6 rounded-lg shadow-md animate-fade-in" style={{ animationDelay: '0.2s' }}>
-          <h2 className="text-2xl font-semibold text-emerald-700 mb-4">Select Your Farming Type</h2>
-          <p className="text-gray-600 mb-6">
-            Access specialized content, tools, and resources tailored to your specific farming activity.
-          </p>
-          <Link to="/farming-type" className="inline-flex items-center">
-            <Button className="bg-emerald-600 hover:bg-emerald-700">
-              Explore Farming Types <ArrowRight className="ml-2 h-4 w-4" />
-            </Button>
-          </Link>
         </div>
         
         {/* Crop Allocation Card */}
