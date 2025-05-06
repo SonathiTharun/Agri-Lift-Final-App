@@ -3,6 +3,9 @@ import { WeatherWidget } from "@/components/WeatherWidget";
 import { SoilAnalysis } from "@/components/SoilAnalysis";
 import { useState } from "react";
 import { Layout } from "@/components/Layout";
+import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { ArrowRight } from "lucide-react";
 
 const Dashboard = () => {
   const [pageLoaded, setPageLoaded] = useState(false);
