@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Layout } from '@/components/Layout';
 import { WeatherWidget } from '@/components/WeatherWidget';
@@ -53,7 +52,8 @@ const Settings = () => {
     });
   };
   
-  const handleChangeLanguage = (lang: string) => {
+  // Fix: Explicitly type the lang parameter as Language type
+  const handleChangeLanguage = (lang: 'en' | 'hi' | 'ta' | 'te') => {
     setLanguage(lang);
     
     toast({
