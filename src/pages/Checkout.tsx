@@ -1,6 +1,6 @@
 
-import { useState, useEffect } from "react";
-import { Navbar } from "@/components/Navbar";
+import { useState } from "react";
+import { Layout } from "@/components/Layout";
 import { WeatherWidget } from "@/components/WeatherWidget";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,40 +9,12 @@ import { ArrowLeft, Trash2, CreditCard, ShoppingCart, IndianRupee } from "lucide
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/components/ui/use-toast";
-
-type CartItem = {
-  id: string;
-  name: string;
-  price: number;
-  image: string;
-  quantity: number;
-  category: string;
-};
-
-// Combined product catalog
-const allProducts: Record<string, any> = {
-  "lg-plant-1": { name: "High-Yield Rice Seedling", price: 199, image: "https://images.unsplash.com/photo-1628684582941-abfbf5732f0e?q=80&w=2080&auto=format&fit=crop", category: "lab-grown-plants" },
-  "lg-plant-2": { name: "Disease-Resistant Wheat", price: 249, image: "https://images.unsplash.com/photo-1536704515403-0b54f32be3aa?q=80&w=2069&auto=format&fit=crop", category: "lab-grown-plants" },
-  "lg-plant-3": { name: "Drought-Tolerant Corn", price: 279, image: "https://images.unsplash.com/photo-1601329378636-b2f48bb6de76?q=80&w=2078&auto=format&fit=crop", category: "lab-grown-plants" },
-  "lg-plant-4": { name: "Fast-Growing Vegetable Set", price: 349, image: "https://images.unsplash.com/photo-1528825539566-2bcb5882445c?q=80&w=2070&auto=format&fit=crop", category: "lab-grown-plants" },
-  "seeds-1": { name: "Premium Hybrid Tomato Seeds", price: 89, image: "https://images.unsplash.com/photo-1582284540020-8acbe03f4924?q=80&w=2070&auto=format&fit=crop", category: "seeds" },
-  "seeds-2": { name: "Organic Carrot Seeds", price: 59, image: "https://images.unsplash.com/photo-1445282768818-728615cc910a?q=80&w=2070&auto=format&fit=crop", category: "seeds" },
-  "seeds-3": { name: "Watermelon Seed Mix", price: 99, image: "https://images.unsplash.com/photo-1589927986089-35812388d1f4?q=80&w=2070&auto=format&fit=crop", category: "seeds" },
-  "seeds-4": { name: "Herb Garden Seed Kit", price: 129, image: "https://images.unsplash.com/photo-1619542402805-a6fff4407b9f?q=80&w=1932&auto=format&fit=crop", category: "seeds" },
-  "fert-1": { name: "All-Purpose Organic Fertilizer", price: 299, image: "https://images.unsplash.com/photo-1615412704911-55d589229864?q=80&w=2070&auto=format&fit=crop", category: "fertilizers" },
-  "fert-2": { name: "Slow-Release Granular Fertilizer", price: 399, image: "https://images.unsplash.com/photo-1562690868-60bbe7293e94?q=80&w=2070&auto=format&fit=crop", category: "fertilizers" },
-  "fert-3": { name: "Liquid Seaweed Fertilizer", price: 179, image: "https://images.unsplash.com/photo-1576158114254-3b8ac9df9adf?q=80&w=2080&auto=format&fit=crop", category: "fertilizers" },
-  "fert-4": { name: "Specialized Fruit Tree Fertilizer", price: 349, image: "https://images.unsplash.com/photo-1658490858699-ea28503c7d4b?q=80&w=2069&auto=format&fit=crop", category: "fertilizers" },
-  "pest-1": { name: "Organic Insect Spray", price: 159, image: "https://images.unsplash.com/photo-1527367888476-abf53aaf7bf1?q=80&w=2070&auto=format&fit=crop", category: "pesticides" },
-  "pest-2": { name: "Fungicide Solution", price: 219, image: "https://images.unsplash.com/photo-1603256811365-19a4ccc3beb0?q=80&w=2071&auto=format&fit=crop", category: "pesticides" },
-  "pest-3": { name: "Weed Control Concentrate", price: 289, image: "https://images.unsplash.com/photo-1560806853-c492a5d166b4?q=80&w=2017&auto=format&fit=crop", category: "pesticides" },
-  "pest-4": { name: "Rodent Repellent", price: 199, image: "https://images.unsplash.com/photo-1605000797499-95a51c5269ae?q=80&w=2071&auto=format&fit=crop", category: "pesticides" },
-};
+import { useCart } from "@/context/CartContext";
 
 export default function Checkout() {
   const navigate = useNavigate();
-  const [cart, setCart] = useState<Record<string, number>>({});
-  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const { cartItems, updateQuantity, removeFromCart, clearCart, getCartTotal } = useCart();
+  
   const [isProcessing, setIsProcessing] = useState(false);
   const [paymentDetails, setPaymentDetails] = useState({
     cardNumber: "",
@@ -60,76 +32,12 @@ export default function Checkout() {
   });
   const [step, setStep] = useState<"cart" | "shipping" | "payment">("cart");
   
-  // Load cart from localStorage
-  useEffect(() => {
-    const savedCart = localStorage.getItem('agrilift-cart');
-    if (savedCart) {
-      const parsedCart = JSON.parse(savedCart);
-      setCart(parsedCart);
-      
-      // Convert cart object to array of items with product details
-      const items: CartItem[] = Object.entries(parsedCart).map(([id, quantity]) => {
-        const product = allProducts[id];
-        return {
-          id,
-          name: product.name,
-          price: product.price,
-          image: product.image,
-          quantity: quantity as number,
-          category: product.category
-        };
-      });
-      
-      setCartItems(items);
-    }
-  }, []);
-  
-  const updateQuantity = (id: string, newQuantity: number) => {
-    if (newQuantity < 1) {
-      removeItem(id);
-      return;
-    }
-    
-    setCart(prevCart => {
-      const newCart = { ...prevCart, [id]: newQuantity };
-      localStorage.setItem('agrilift-cart', JSON.stringify(newCart));
-      return newCart;
-    });
-    
-    setCartItems(prevItems => 
-      prevItems.map(item => 
-        item.id === id ? { ...item, quantity: newQuantity } : item
-      )
-    );
-  };
-  
-  const removeItem = (id: string) => {
-    setCart(prevCart => {
-      const newCart = { ...prevCart };
-      delete newCart[id];
-      localStorage.setItem('agrilift-cart', JSON.stringify(newCart));
-      return newCart;
-    });
-    
-    setCartItems(prevItems => prevItems.filter(item => item.id !== id));
-  };
-  
-  const clearCart = () => {
-    setCart({});
-    setCartItems([]);
-    localStorage.removeItem('agrilift-cart');
-  };
-  
-  const getSubtotal = () => {
-    return cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-  };
-  
   const getShipping = () => {
-    return getSubtotal() > 1000 ? 0 : 99;
+    return getCartTotal() > 1000 ? 0 : 99;
   };
   
-  const getTotal = () => {
-    return getSubtotal() + getShipping();
+  const getTotalWithShipping = () => {
+    return getCartTotal() + getShipping();
   };
   
   const handleShippingChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -192,34 +100,32 @@ export default function Checkout() {
         description: `Thank you for your purchase. Your order #${Math.floor(Math.random() * 10000)} has been placed.`,
       });
       
-      // Clear cart and navigate to home
+      // Clear cart and navigate to orders
       clearCart();
-      navigate('/');
+      navigate('/orders');
     }, 2000);
   };
   
   return (
-    <div className="min-h-screen bg-gradient-to-br from-soil-light/10 to-foliage-light/10">
-      <Navbar />
-      
+    <Layout>
       {/* Weather Widget (Draggable) */}
       <WeatherWidget />
       
-      <main className="container mx-auto pt-20 px-4 pb-10">
+      <main className="container mx-auto pt-6 px-4 pb-10">
         <div className="max-w-5xl mx-auto">
           <Button 
             variant="outline" 
             size="sm" 
             onClick={() => navigate(-1)}
-            className="mb-4"
+            className="mb-4 animate-fade-in"
           >
             <ArrowLeft className="mr-2 h-4 w-4" /> Back
           </Button>
           
-          <h1 className="text-3xl font-bold text-soil-dark mb-6">Checkout</h1>
+          <h1 className="text-3xl font-bold text-soil-dark mb-6 animate-fade-in">Checkout</h1>
           
           {/* Checkout Steps */}
-          <div className="flex justify-center mb-8">
+          <div className="flex justify-center mb-8 animate-fade-in" style={{animationDelay: '0.1s'}}>
             <div className="flex items-center space-x-2">
               <div className={`h-8 w-8 rounded-full flex items-center justify-center ${step === "cart" ? "bg-foliage text-white" : "bg-foliage/50 text-white"}`}>
                 1
@@ -243,7 +149,7 @@ export default function Checkout() {
           </div>
           
           {cartItems.length === 0 ? (
-            <Card className="text-center p-8">
+            <Card className="text-center p-8 animate-fade-in" style={{animationDelay: '0.2s'}}>
               <div className="flex flex-col items-center gap-4">
                 <ShoppingCart className="h-16 w-16 text-gray-400" />
                 <CardTitle>Your cart is empty</CardTitle>
@@ -254,11 +160,11 @@ export default function Checkout() {
               </div>
             </Card>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-fade-in" style={{animationDelay: '0.2s'}}>
               {/* Main Content */}
               <div className="md:col-span-2">
                 {step === "cart" && (
-                  <Card>
+                  <Card className="animate-fade-in">
                     <CardHeader>
                       <CardTitle>Your Cart ({cartItems.length} items)</CardTitle>
                     </CardHeader>
@@ -295,7 +201,7 @@ export default function Checkout() {
                                 <div className="flex items-center gap-4">
                                   <span className="font-medium">₹{item.price * item.quantity}</span>
                                   <button 
-                                    onClick={() => removeItem(item.id)}
+                                    onClick={() => removeFromCart(item.id)}
                                     className="text-red-500 hover:text-red-700"
                                   >
                                     <Trash2 className="h-4 w-4" />
@@ -319,7 +225,7 @@ export default function Checkout() {
                 )}
                 
                 {step === "shipping" && (
-                  <Card>
+                  <Card className="animate-fade-in">
                     <CardHeader>
                       <CardTitle>Shipping Details</CardTitle>
                     </CardHeader>
@@ -399,7 +305,7 @@ export default function Checkout() {
                 )}
                 
                 {step === "payment" && (
-                  <Card>
+                  <Card className="animate-fade-in">
                     <CardHeader>
                       <CardTitle>Payment Details</CardTitle>
                     </CardHeader>
@@ -483,7 +389,7 @@ export default function Checkout() {
                         disabled={isProcessing}
                         className="bg-foliage hover:bg-foliage-dark"
                       >
-                        {isProcessing ? "Processing..." : <>Pay <IndianRupee className="ml-1 h-4 w-4" /> {getTotal()}</>}
+                        {isProcessing ? "Processing..." : <>Pay <IndianRupee className="ml-1 h-4 w-4" /> {getTotalWithShipping()}</>}
                       </Button>
                     </CardFooter>
                   </Card>
@@ -492,7 +398,7 @@ export default function Checkout() {
               
               {/* Order Summary */}
               <div>
-                <Card>
+                <Card className="animate-fade-in">
                   <CardHeader>
                     <CardTitle>Order Summary</CardTitle>
                   </CardHeader>
@@ -500,7 +406,7 @@ export default function Checkout() {
                     <div className="space-y-4">
                       <div className="flex justify-between">
                         <span>Subtotal</span>
-                        <span>₹{getSubtotal()}</span>
+                        <span>₹{getCartTotal()}</span>
                       </div>
                       <div className="flex justify-between">
                         <span>Shipping</span>
@@ -509,7 +415,7 @@ export default function Checkout() {
                       <div className="border-t pt-2 mt-2">
                         <div className="flex justify-between font-medium">
                           <span>Total</span>
-                          <span>₹{getTotal()}</span>
+                          <span>₹{getTotalWithShipping()}</span>
                         </div>
                         <div className="text-xs text-gray-500 mt-1">
                           {getShipping() === 0 ? "Free shipping on orders above ₹1000" : ""}
@@ -519,7 +425,7 @@ export default function Checkout() {
                   </CardContent>
                 </Card>
                 
-                <div className="mt-4 bg-foliage-light/30 rounded-lg p-3 text-xs text-gray-600">
+                <div className="mt-4 bg-foliage-light/30 rounded-lg p-3 text-xs text-gray-600 animate-fade-in" style={{animationDelay: '0.2s'}}>
                   <p className="font-medium mb-1">Secure Checkout</p>
                   <p>All transactions are secure and encrypted. Your payment information is never stored.</p>
                 </div>
@@ -528,6 +434,6 @@ export default function Checkout() {
           )}
         </div>
       </main>
-    </div>
+    </Layout>
   );
 }
