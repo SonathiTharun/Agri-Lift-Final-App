@@ -50,25 +50,45 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
 
   // Load cart from localStorage on mount
   useEffect(() => {
-    const savedCart = localStorage.getItem('agrilift-cart');
-    if (savedCart) {
-      const parsedCart = JSON.parse(savedCart);
-      setCart(parsedCart);
-      
-      // Convert cart object to array of items with product details
-      const items: CartItem[] = Object.entries(parsedCart).map(([id, quantity]) => {
-        const product = allProducts[id];
-        return {
-          id,
-          name: product.name,
-          price: product.price,
-          image: product.image,
-          quantity: quantity as number,
-          category: product.category
-        };
-      });
-      
-      setCartItems(items);
+    try {
+      const savedCart = localStorage.getItem('agrilift-cart');
+      if (savedCart) {
+        const parsedCart = JSON.parse(savedCart);
+        setCart(parsedCart);
+        
+        // Convert cart object to array of items with product details
+        const items: CartItem[] = Object.entries(parsedCart)
+          .filter(([id]) => allProducts[id] !== undefined) // Filter out products that don't exist
+          .map(([id, quantity]) => {
+            const product = allProducts[id];
+            return {
+              id,
+              name: product.name,
+              price: product.price,
+              image: product.image,
+              quantity: quantity as number,
+              category: product.category
+            };
+          });
+        
+        // If any items were filtered out, update the stored cart
+        if (items.length !== Object.keys(parsedCart).length) {
+          const validCart = items.reduce((acc, item) => {
+            acc[item.id] = item.quantity;
+            return acc;
+          }, {} as Record<string, number>);
+          localStorage.setItem('agrilift-cart', JSON.stringify(validCart));
+          setCart(validCart);
+        }
+        
+        setCartItems(items);
+      }
+    } catch (error) {
+      console.error("Error loading cart from localStorage:", error);
+      // Reset cart if there's an error
+      localStorage.removeItem('agrilift-cart');
+      setCart({});
+      setCartItems([]);
     }
   }, []);
 
