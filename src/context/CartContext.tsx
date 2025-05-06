@@ -1,6 +1,7 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { toast } from '@/components/ui/use-toast';
+import { categories, productsByCategory } from '@/data/marketData';
 
 export type CartItem = {
   id: string;
@@ -22,25 +23,27 @@ type CartContextType = {
   getCartCount: () => number;
 };
 
-// Combined product catalog (copied from Checkout.tsx to be accessible globally)
-export const allProducts: Record<string, any> = {
-  "lg-plant-1": { name: "High-Yield Rice Seedling", price: 199, image: "https://images.unsplash.com/photo-1628684582941-abfbf5732f0e?q=80&w=2080&auto=format&fit=crop", category: "lab-grown-plants" },
-  "lg-plant-2": { name: "Disease-Resistant Wheat", price: 249, image: "https://images.unsplash.com/photo-1536704515403-0b54f32be3aa?q=80&w=2069&auto=format&fit=crop", category: "lab-grown-plants" },
-  "lg-plant-3": { name: "Drought-Tolerant Corn", price: 279, image: "https://images.unsplash.com/photo-1601329378636-b2f48bb6de76?q=80&w=2078&auto=format&fit=crop", category: "lab-grown-plants" },
-  "lg-plant-4": { name: "Fast-Growing Vegetable Set", price: 349, image: "https://images.unsplash.com/photo-1528825539566-2bcb5882445c?q=80&w=2070&auto=format&fit=crop", category: "lab-grown-plants" },
-  "seeds-1": { name: "Premium Hybrid Tomato Seeds", price: 89, image: "https://images.unsplash.com/photo-1582284540020-8acbe03f4924?q=80&w=2070&auto=format&fit=crop", category: "seeds" },
-  "seeds-2": { name: "Organic Carrot Seeds", price: 59, image: "https://images.unsplash.com/photo-1445282768818-728615cc910a?q=80&w=2070&auto=format&fit=crop", category: "seeds" },
-  "seeds-3": { name: "Watermelon Seed Mix", price: 99, image: "https://images.unsplash.com/photo-1589927986089-35812388d1f4?q=80&w=2070&auto=format&fit=crop", category: "seeds" },
-  "seeds-4": { name: "Herb Garden Seed Kit", price: 129, image: "https://images.unsplash.com/photo-1619542402805-a6fff4407b9f?q=80&w=1932&auto=format&fit=crop", category: "seeds" },
-  "fert-1": { name: "All-Purpose Organic Fertilizer", price: 299, image: "https://images.unsplash.com/photo-1615412704911-55d589229864?q=80&w=2070&auto=format&fit=crop", category: "fertilizers" },
-  "fert-2": { name: "Slow-Release Granular Fertilizer", price: 399, image: "https://images.unsplash.com/photo-1562690868-60bbe7293e94?q=80&w=2070&auto=format&fit=crop", category: "fertilizers" },
-  "fert-3": { name: "Liquid Seaweed Fertilizer", price: 179, image: "https://images.unsplash.com/photo-1576158114254-3b8ac9df9adf?q=80&w=2080&auto=format&fit=crop", category: "fertilizers" },
-  "fert-4": { name: "Specialized Fruit Tree Fertilizer", price: 349, image: "https://images.unsplash.com/photo-1658490858699-ea28503c7d4b?q=80&w=2069&auto=format&fit=crop", category: "fertilizers" },
-  "pest-1": { name: "Organic Insect Spray", price: 159, image: "https://images.unsplash.com/photo-1527367888476-abf53aaf7bf1?q=80&w=2070&auto=format&fit=crop", category: "pesticides" },
-  "pest-2": { name: "Fungicide Solution", price: 219, image: "https://images.unsplash.com/photo-1603256811365-19a4ccc3beb0?q=80&w=2071&auto=format&fit=crop", category: "pesticides" },
-  "pest-3": { name: "Weed Control Concentrate", price: 289, image: "https://images.unsplash.com/photo-1560806853-c492a5d166b4?q=80&w=2017&auto=format&fit=crop", category: "pesticides" },
-  "pest-4": { name: "Rodent Repellent", price: 199, image: "https://images.unsplash.com/photo-1605000797499-95a51c5269ae?q=80&w=2071&auto=format&fit=crop", category: "pesticides" },
+// Create a comprehensive product catalog from all categories in marketData
+const buildProductCatalog = (): Record<string, any> => {
+  const catalog: Record<string, any> = {};
+  
+  // Add all products from each category to the catalog
+  Object.entries(productsByCategory).forEach(([category, products]) => {
+    products.forEach(product => {
+      catalog[product.id] = {
+        name: product.name,
+        price: product.price,
+        image: product.image,
+        category: category
+      };
+    });
+  });
+  
+  return catalog;
 };
+
+// Combined product catalog with all products from all categories
+export const allProducts: Record<string, any> = buildProductCatalog();
 
 const CartContext = createContext<CartContextType | null>(null);
 
@@ -93,6 +96,12 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   const addToCart = (id: string, name: string, price: number, image: string, category: string, quantity = 1) => {
+    // Verify the product exists in our catalog, if not add it temporarily
+    if (!allProducts[id]) {
+      console.log(`Product ${id} not found in catalog, adding temporarily`);
+      allProducts[id] = { name, price, image, category };
+    }
+    
     setCart(prevCart => {
       const newQuantity = (prevCart[id] || 0) + quantity;
       const newCart = { ...prevCart, [id]: newQuantity };
