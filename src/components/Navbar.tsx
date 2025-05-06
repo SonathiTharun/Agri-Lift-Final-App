@@ -4,7 +4,7 @@ import { Link, useLocation } from "react-router-dom";
 import { useLanguage } from "./LanguageContext";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Globe, Menu, User, Settings, Farm, Package } from "lucide-react";
+import { Globe, Menu, User, Settings, Tractor, Package } from "lucide-react";
 import { Drawer, DrawerContent, DrawerTrigger, DrawerClose } from "@/components/ui/drawer";
 
 export function Navbar() {
@@ -55,7 +55,7 @@ export function Navbar() {
 
   // Side menu items
   const sideMenuItems = [
-    { id: "farming", label: "Diverse Farming", path: "/farming-type", icon: Farm },
+    { id: "farming", label: "Diverse Farming", path: "/farming-type", icon: Tractor },
     { id: "profile", label: "Profile", path: "/profile", icon: User },
     { id: "settings", label: "Settings", path: "/settings", icon: Settings },
     { id: "orders", label: "Orders", path: "/orders", icon: Package },
