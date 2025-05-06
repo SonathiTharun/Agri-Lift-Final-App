@@ -4,7 +4,7 @@ import { Layout } from "@/components/Layout";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ShoppingCart, ArrowLeft, Star } from "lucide-react";
+import { ShoppingCart, ArrowLeft, Star, ChevronRight } from "lucide-react";
 import { toast } from "@/components/ui/use-toast";
 import {
   Carousel,
