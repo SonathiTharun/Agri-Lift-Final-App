@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Navbar } from "@/components/Navbar";
 import { WeatherWidget } from "@/components/WeatherWidget";
@@ -12,7 +13,8 @@ import {
   Flower,
   Filter,
   ChevronRight,
-  Star 
+  Star,
+  Shovel
 } from "lucide-react";
 import { useLanguage } from "@/components/LanguageContext";
 import { 
@@ -72,11 +74,11 @@ const categories: ProductCategory[] = [
     image: "https://media.istockphoto.com/id/652966504/photo/watering-field.webp?a=1&b=1&s=612x612&w=0&k=20&c=e_d5LE1bDvairIeXHvviiWc_2__Ptn2eRS03GqEm8ueM="
   },
   {
-    id: "machinery",
-    name: "Machinery",
-    description: "Modern agricultural equipment for efficient farming",
-    icon: <Sprout className="h-6 w-6" />,
-    image: "https://media.istockphoto.com/id/506164764/photo/combine-harvester.webp?a=1&b=1&s=612x612&w=0&k=20&c=a3_5qSETGhygEPRdtfgm_36n-tQ21h4Y2iQIVcIbVl8="
+    id: "farming-tools",
+    name: "Farming Tools",
+    description: "Essential hand tools and equipment for efficient farming operations",
+    icon: <Shovel className="h-6 w-6" />,
+    image: "https://media.istockphoto.com/id/1271469823/photo/gardening-tools-on-a-green-background-top-view-farming.jpg?s=612x612&w=0&k=20&c=UBrbD-SqT3O-jOnSd-wRiU0SdCgKC23ji8HyBb6GVME="
   },
   {
     id: "irrigation",
@@ -119,11 +121,11 @@ const featuredProducts: FeaturedProduct[] = [
   },
   {
     id: "featured-4",
-    categoryId: "irrigation",
-    name: "Smart Drip Irrigation Kit",
-    description: "Water-saving drip irrigation system with smart controls",
-    price: 299,
-    image: "https://media.istockphoto.com/id/1270064595/photo/watering-field.webp?a=1&b=1&s=612x612&w=0&k=20&c=vzZ6GrpFj8RLNW8wvXEiWQzGDt91m0ASuFeiS-Eee2M=",
+    categoryId: "farming-tools",
+    name: "Premium Garden Tool Set",
+    description: "Complete set of essential farming tools for everyday use",
+    price: 129,
+    image: "https://media.istockphoto.com/id/621356882/photo/gardening-tools-and-flowers-in-pots.jpg?s=612x612&w=0&k=20&c=CR-w4NJNLsQSJoK00tRWCzwfXQ_VPOaSTQecYSs_tCE=",
     rating: 4.8,
     discount: 20
   }
@@ -144,7 +146,8 @@ export default function Market() {
     { id: "plants", label: "Plants" },
     { id: "seeds", label: "Seeds" },
     { id: "fertilizers", label: "Fertilizers" },
-    { id: "pesticides", label: "Pesticides" }
+    { id: "pesticides", label: "Pesticides" },
+    { id: "tools", label: "Tools" }
   ];
 
   return (
