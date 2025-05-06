@@ -64,7 +64,7 @@ const translations = {
     "land-testing-desc": "उन्नत AI-चालित मिट्टी विश्लेषण और फसल सिफारिशें",
     "loan-services": "ऋण सेवाएँ",
     "loan-services-desc": "सरकारी और निजी कृषि ऋणों तक सरल पहुँच",
-    "market": "बाज़ार",
+    "market": "बाज़ा���",
     "market-desc": "विश्वसनीय आपूर्तिकर्ताओं से गुणवत्तापूर्ण बीज और उत्पाद",
     "machinery-options": "मशीनरी विकल्प",
     "machinery-options-desc": "लचीली जुताई और कटाई मशीनरी किराये पर",
@@ -97,20 +97,20 @@ const translations = {
     "loan-services": "கடன் சேவைகள்",
     "loan-services-desc": "அரசு மற்றும் தனியார் விவசாய கடன்களுக்கான எளிமையான அணுகல்",
     "market": "சந்தை",
-    "market-desc": "நம்பகமான விநியோகஸ்தர்களிடமிருந்து தரமான விதைகள் மற்றும் பொருட்கள்",
+    "market-desc": "நம்பகமான விநியோகஸ்தர்களிடமிருந்து தரமான விதைகள் மற்றும் உత్పత్తుల்",
     "machinery-options": "இயந்திர விருப்பங்கள்",
     "machinery-options-desc": "நெகிழ்வான உழவு மற்றும் அறுவடை இயந்திர வாடகை",
     "labor-management": "தொழிலாளர் மேலாண்மை",
     "labor-management-desc": "திறமையான நடவு தொழிலாளர்கள் மற்றும் பண்ணை மேலாளர்களுடன் இணைக்கவும்",
     "weather-forecasts": "வானிலை முன்னறிவிப்புகள்",
     "weather-forecasts-desc": "துல்லியமான திட்டமிடலுக்கான உள்ளூர், நிகழ்நேர வானிலை புதுப்பிப்புகள்",
-    "diverse-farming": "பல்வேறு விவசாயம்",
+    "diverse-farming": "விவேறு விவசாயம்",
     "diverse-farming-desc": "கோழி வளர்ப்பு, பால் பண்ணை மற்றும் மீன் வளர்ப்பு செயல்பாடுகளுக்கு ஆதரவு",
     "market-connections": "ஏற்றுமதி",
     "market-connections-desc": "விவசாயி லாபத்தை அதிகரிக்க நேரடி பயிர் விற்பனை தளம்",
     "footer-title": "அக்ரிலிஃப்ட் - உங்கள் விவசாய பங்காளர்",
-    "footer-description": "தொழில்நுட்பம் மற்றும் நிலையான தீர்வுகள் மூலம் விவசாயத்தில் புதுமை",
-    "privacy-policy": "தனியுரிமை கொள்கை",
+    "footer-description": "సాంకేతిక పరిజ్ఞానం మరియు స్థిరమైన పరిష్కారాల ద్వారా వ్యవసాయంలో వినూత్నత",
+    "privacy-policy": "తனியுரிமை கொள்கை",
     "terms-of-service": "சேவை விதிமுறைகள்",
     "support": "ஆதரவு",
     "copyright": "© 2025 அக்ரிலிஃப்ட். அனைத்து உரிமைகளும் பாதுகாக்கப்பட்டவை.",
@@ -133,7 +133,7 @@ const translations = {
     "machinery-options": "యంత్రాల ఎంపికలు",
     "machinery-options-desc": "సౌకర్యవంతమైన దున్నడం మరియు పంట కోయడం యంత్రాల అద్దె",
     "labor-management": "కార్మిక నిర్వహణ",
-    "labor-management-desc": "నైపుణ్యం గల నాటు కార్మికులు మరియు వ్యవసాయ నిర్వాహకులతో కనెక్ట్ అవ్వండి",
+    "labor-management-desc": "నైపుణ్యం గల నాటు కార్మికులు మరియు వ్యవసాయ నిర్వాహకులతో కనెక్ట్ అవ్వ��డి",
     "weather-forecasts": "వాతావరణ సూచనలు",
     "weather-forecasts-desc": "ఖచ్చితమైన ప్రణాళిక కోసం స్థానిక, రియల్-టైమ్ వాతావరణ నవీకరణలు",
     "diverse-farming": "వైవిధ్యమైన వ్యవసాయం",
@@ -263,7 +263,7 @@ const Welcome = () => {
                   variant="outline" 
                   className="w-full bg-white/10 hover:bg-white/20 text-white border-white/30"
                 >
-                  {t('farmer-register')}
+                  Register as Executive
                 </Button>
               </div>
             </div>
