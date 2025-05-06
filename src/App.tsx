@@ -7,10 +7,11 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { LanguageProvider } from "./components/LanguageContext";
 
 import Welcome from "./pages/Welcome";
-import Dashboard from "./pages/Dashboard"; // Renamed from Index to Dashboard
+import Dashboard from "./pages/Dashboard"; 
 import NotFound from "./pages/NotFound";
 import Loans from "./pages/Loans";
 import Market from "./pages/Market";
+import ProductCategory from "./pages/ProductCategory";
 import ProductDetail from "./pages/ProductDetail";
 import Checkout from "./pages/Checkout";
 import Labour from "./pages/Labour";
@@ -19,8 +20,8 @@ import Export from "./pages/Export";
 import Monitoring from "./pages/Monitoring";
 import Services from "./pages/Services";
 import Contact from "./pages/Contact";
-import FarmingType from "./pages/FarmingType"; // New page for farming type selection
-import CropAllocation from "./pages/CropAllocation"; // New page for crop allocation
+import FarmingType from "./pages/FarmingType"; 
+import CropAllocation from "./pages/CropAllocation"; 
 
 const queryClient = new QueryClient();
 
@@ -38,7 +39,8 @@ const App = () => (
             <Route path="/crop-allocation" element={<CropAllocation />} />
             <Route path="/loans" element={<Loans />} />
             <Route path="/market" element={<Market />} />
-            <Route path="/market/:category" element={<ProductDetail />} />
+            <Route path="/market/:categoryId" element={<ProductCategory />} />
+            <Route path="/market/:categoryId/:productId" element={<ProductDetail />} />
             <Route path="/checkout" element={<Checkout />} />
             <Route path="/labour" element={<Labour />} />
             <Route path="/machinery" element={<Machinery />} />

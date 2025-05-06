@@ -7,14 +7,9 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Button } from "@/components/ui/button";
 import {
   ShoppingCart, 
-  Leaf, 
-  Sprout, 
-  FlaskConical, 
-  Flower,
   Filter,
   ChevronRight,
   Star,
-  Shovel
 } from "lucide-react";
 import { useLanguage } from "@/components/LanguageContext";
 import { 
@@ -24,112 +19,7 @@ import {
   CarouselNext, 
   CarouselPrevious 
 } from "@/components/ui/carousel";
-
-type ProductCategory = {
-  id: string;
-  name: string;
-  description: string;
-  icon: React.ReactNode;
-  image: string;
-};
-
-type FeaturedProduct = {
-  id: string;
-  categoryId: string;
-  name: string;
-  description: string;
-  price: number;
-  image: string;
-  rating: number;
-  discount?: number;
-};
-
-const categories: ProductCategory[] = [
-  {
-    id: "lab-grown-plants",
-    name: "Lab Grown Plants",
-    description: "High-yield, disease-resistant plants grown using advanced lab techniques",
-    icon: <Sprout className="h-6 w-6" />,
-    image: "https://plus.unsplash.com/premium_photo-1679436184527-74af0573db60?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTd8fGxhYiUyMGdyb3duJTIwcGxhbnRzJTIwcGxhbnRpbmclMjBpbiUyMGZlaWxkc3xlbnwwfHwwfHx8MA%3D%3D"
-  },
-  {
-    id: "seeds",
-    name: "Seeds",
-    description: "Premium quality seeds with high germination rates for various crops",
-    icon: <Leaf className="h-6 w-6" />,
-    image: "https://media.istockphoto.com/id/1190855168/photo/young-woman-sowing-seeds-in-soil.webp?a=1&b=1&s=612x612&w=0&k=20&c=t_wtHjJmkLfuFa6NPdkbxUD6Rf-lfbYpniHGAORITO0="
-  },
-  {
-    id: "fertilizers",
-    name: "Fertilizers",
-    description: "Organic and chemical fertilizers for enhanced crop growth",
-    icon: <FlaskConical className="h-6 w-6" />,
-    image: "https://media.istockphoto.com/id/522391502/photo/farmer-spreading-fertilizer-in-the-field-wheat.webp?a=1&b=1&s=612x612&w=0&k=20&c=uAfPuR4JPwdlx-KADzSAVbEYeuPR8SkHXsCiXuyizAo="
-  },
-  {
-    id: "pesticides",
-    name: "Pesticides",
-    description: "Effective pest control solutions for healthier crops",
-    icon: <Flower className="h-6 w-6" />,
-    image: "https://media.istockphoto.com/id/652966504/photo/watering-field.webp?a=1&b=1&s=612x612&w=0&k=20&c=e_d5LE1bDvairIeXHvviiWc_2__Ptn2eRS03GqEm8ueM="
-  },
-  {
-    id: "farming-tools",
-    name: "Farming Tools",
-    description: "Essential hand tools and equipment for efficient farming operations",
-    icon: <Shovel className="h-6 w-6" />,
-    image: "https://media.istockphoto.com/id/1271469823/photo/gardening-tools-on-a-green-background-top-view-farming.jpg?s=612x612&w=0&k=20&c=UBrbD-SqT3O-jOnSd-wRiU0SdCgKC23ji8HyBb6GVME="
-  },
-  {
-    id: "irrigation",
-    name: "Irrigation",
-    description: "Advanced irrigation systems for optimal water usage",
-    icon: <Leaf className="h-6 w-6" />,
-    image: "https://media.istockphoto.com/id/1146633438/photo/irrigation-system-watering-agricultural-field-with-young-plants-and-sprinkler-system.webp?a=1&b=1&s=612x612&w=0&k=20&c=Ig2HJvkkAJ8ijC0N06wwKKdFTQRORFcDZoBcpahyw84="
-  }
-];
-
-const featuredProducts: FeaturedProduct[] = [
-  {
-    id: "featured-1",
-    categoryId: "lab-grown-plants",
-    name: "High-Yield Rice Seedling",
-    description: "Lab-grown rice seedlings with 30% higher yield potential",
-    price: 199,
-    image: "https://media.istockphoto.com/id/2199060174/photo/lush-green-rice-fields-in-taiwan-during-the-growing-season.webp?a=1&b=1&s=612x612&w=0&k=20&c=E5jYkLX3rLbd4JjNQHAwZSENqQKdE0-FYgBCWN6rcec=",
-    rating: 4.7,
-    discount: 15
-  },
-  {
-    id: "featured-2",
-    categoryId: "seeds",
-    name: "Organic Tomato Seeds",
-    description: "High-quality organic tomato seeds for your garden",
-    price: 99,
-    image: "https://plus.unsplash.com/premium_photo-1723568420145-4b3f90ef6c02?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8T3JnYW5pYyUyMFRvbWF0byUyMFNlZWRzfGVufDB8fDB8fHww",
-    rating: 4.6,
-    discount: 10
-  },
-  {
-    id: "featured-3",
-    categoryId: "fertilizers",
-    name: "Premium Organic Compost",
-    description: "Nutrient-rich organic compost for all your farming needs",
-    price: 149,
-    image: "https://media.istockphoto.com/id/1198255281/photo/professional-gardener-adds-compost-to-the-soil-in-the-garden.webp?a=1&b=1&s=612x612&w=0&k=20&c=1KLUuAP1w_kEzQ7aCKSz6WRtC3AW8eSXIHi_5xpHtKc=",
-    rating: 4.9
-  },
-  {
-    id: "featured-4",
-    categoryId: "farming-tools",
-    name: "Premium Garden Tool Set",
-    description: "Complete set of essential farming tools for everyday use",
-    price: 129,
-    image: "https://media.istockphoto.com/id/621356882/photo/gardening-tools-and-flowers-in-pots.jpg?s=612x612&w=0&k=20&c=CR-w4NJNLsQSJoK00tRWCzwfXQ_VPOaSTQecYSs_tCE=",
-    rating: 4.8,
-    discount: 20
-  }
-];
+import { categories, featuredProducts } from "@/data/marketData";
 
 export default function Market() {
   const [pageLoaded, setPageLoaded] = useState(false);
@@ -143,11 +33,11 @@ export default function Market() {
 
   const filterButtons = [
     { id: "all", label: "All" },
-    { id: "plants", label: "Plants" },
+    { id: "lab-grown-plants", label: "Plants" },
     { id: "seeds", label: "Seeds" },
     { id: "fertilizers", label: "Fertilizers" },
     { id: "pesticides", label: "Pesticides" },
-    { id: "tools", label: "Tools" }
+    { id: "farming-tools", label: "Tools" }
   ];
 
   return (
@@ -272,6 +162,7 @@ export default function Market() {
                     alt={category.name} 
                     className="w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-110" 
                   />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
                   <div className="absolute bottom-4 left-4 z-20 flex items-center gap-2 text-white">
                     <div className="p-2 bg-foliage rounded-full">{category.icon}</div>
                     <h3 className="text-xl font-semibold">{category.name}</h3>
@@ -310,7 +201,7 @@ export default function Market() {
             </div>
             <div className="p-4 hover:bg-white/20 rounded-md transition-colors">
               <div className="bg-foliage text-white p-3 rounded-full w-12 h-12 flex items-center justify-center mx-auto mb-3">
-                <Sprout className="h-6 w-6" />
+                {categories[0].icon}
               </div>
               <h3 className="font-semibold text-lg mb-2">Expert Support</h3>
               <p className="text-gray-600">Our agricultural experts are available to guide you on best practices</p>
