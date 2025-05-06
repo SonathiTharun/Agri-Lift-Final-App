@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Navbar } from "@/components/Navbar";
 import { WeatherWidget } from "@/components/WeatherWidget";
@@ -70,7 +69,7 @@ const categories: ProductCategory[] = [
     name: "Pesticides",
     description: "Effective pest control solutions for healthier crops",
     icon: <Flower className="h-6 w-6" />,
-    image: "https://media.istockphoto.com/id/652966504/photo/watering-field.webp?a=1&b=1&s=612x612&w=0&k=20&c=e_d5LE1bDvairIeXHvviiWc_2__Ptn2eRS03GqEm8uw="
+    image: "https://media.istockphoto.com/id/652966504/photo/watering-field.webp?a=1&b=1&s=612x612&w=0&k=20&c=e_d5LE1bDvairIeXHvviiWc_2__Ptn2eRS03GqEm8ueM="
   },
   {
     id: "machinery",
@@ -265,7 +264,6 @@ export default function Market() {
             <Link key={category.id} to={`/market/${category.id}`} className="group">
               <Card className="overflow-hidden border-2 border-transparent hover:border-foliage transition-all duration-300 hover:shadow-lg h-full">
                 <div className="h-48 overflow-hidden relative">
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent z-10" />
                   <img 
                     src={category.image} 
                     alt={category.name} 
