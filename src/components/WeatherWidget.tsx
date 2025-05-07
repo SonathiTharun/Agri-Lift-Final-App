@@ -1,9 +1,12 @@
+
 import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { AnimatedWeatherIcon } from "./WeatherWidget/AnimatedWeatherIcon";
 import { WeatherDetails } from "./WeatherWidget/WeatherDetails";
 import { toast } from "@/components/ui/use-toast";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ChevronDown, ChevronUp, RefreshCw } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 type WeatherDay = {
   date: string;
@@ -125,8 +128,9 @@ export function WeatherWidget() {
   const [isLoading, setIsLoading] = useState(true);
   const [sunrise, setSunrise] = useState("");
   const [activeTab, setActiveTab] = useState("forecast");
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
-  useEffect(() => {
+  const fetchLocation = () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
@@ -150,169 +154,235 @@ export function WeatherWidget() {
               });
             });
         },
-        () => {
+        (error) => {
+          console.error("Geolocation error:", error);
           toast({
             title: "Location access denied",
             description: "Using default location",
           });
           setLocation("New Delhi, India");
           setUserCoords({ lat: 28.6139, lon: 77.2090 });
-        }
+        },
+        { timeout: 10000, enableHighAccuracy: true }
       );
     } else {
       setLocation("Geolocation not supported");
       setUserCoords({ lat: 28.6139, lon: 77.2090 });
     }
-  }, []);
+  };
 
   useEffect(() => {
-    const fetchWeatherData = async () => {
-      if (!userCoords) return;
+    fetchLocation();
+  }, []);
+
+  const refreshWeather = () => {
+    if (isRefreshing) return;
+    setIsRefreshing(true);
+    fetchWeatherData();
+  };
+
+  const fetchWeatherData = async () => {
+    if (!userCoords) return;
+    
+    setIsLoading(true);
+    try {
+      // Try using OneCall API for more accurate data
+      const weatherResponse = await fetch(
+        `https://api.openweathermap.org/data/2.5/weather?lat=${userCoords.lat}&lon=${userCoords.lon}&units=metric&appid=${API_KEY}`
+      );
       
-      setIsLoading(true);
-      try {
-        const weatherResponse = await fetch(
-          `https://api.openweathermap.org/data/2.5/weather?lat=${userCoords.lat}&lon=${userCoords.lon}&units=metric&appid=${API_KEY}`
-        );
-        const weatherData = await weatherResponse.json();
+      if (!weatherResponse.ok) {
+        throw new Error(`Weather API error: ${weatherResponse.status}`);
+      }
+      
+      const weatherData = await weatherResponse.json();
 
-        if (weatherData.cod === 200) {
-          const sunriseUTC = weatherData.sys && weatherData.sys.sunrise;
-          if (sunriseUTC) {
-            const date = new Date(sunriseUTC * 1000);
-            let h = date.getHours(), m = date.getMinutes();
-            let ampm = h >= 12 ? "PM" : "AM";
-            h = h % 12 || 12;
-            setSunrise(`${h}:${m.toString().padStart(2, '0')} ${ampm}`);
-          } else {
-            setSunrise("N/A");
-          }
-
-          const aqiResponse = await fetch(
-            `https://api.openweathermap.org/data/2.5/air_pollution?lat=${userCoords.lat}&lon=${userCoords.lon}&appid=${API_KEY}`
-          );
-          const aqiData = await aqiResponse.json();
-          
-          const currentDate = new Date();
-          const currentMonth = currentDate.getMonth();
-          const weatherId = weatherData.weather[0].id;
-          
-          setWeather({
-            date: currentDate.toLocaleDateString(),
-            temp: Math.round(weatherData.main.temp),
-            condition: getWeatherCondition(weatherId),
-            icon: getWeatherIcon(weatherData.weather[0].icon, timeOfDay),
-            humidity: weatherData.main.humidity,
-            wind: mpsToKmh(weatherData.wind.speed),
-            aqi: aqiData.list && aqiData.list[0] ? aqiData.list[0].main.aqi * 25 : 50,
-            pollen: getPollenLevel(weatherId, currentMonth),
-            drivingDifficulty: getDrivingDifficulty(weatherId, weatherData.main.humidity)
-          });
-          
-          const forecastResponse = await fetch(
-            `https://api.openweathermap.org/data/2.5/forecast?lat=${userCoords.lat}&lon=${userCoords.lon}&units=metric&appid=${API_KEY}`
-          );
-          const forecastData = await forecastResponse.json();
-          
-          if (forecastData.cod === "200") {
-            const dailyForecasts: WeatherDay[] = [];
-            const processedDates: Set<string> = new Set();
-            
-            forecastData.list.forEach((item: any) => {
-              const forecastDate = new Date(item.dt * 1000);
-              const dateString = forecastDate.toLocaleDateString();
-              
-              if (!processedDates.has(dateString) && dailyForecasts.length < 7) {
-                processedDates.add(dateString);
-                
-                dailyForecasts.push({
-                  date: dateString,
-                  temp: Math.round(item.main.temp),
-                  condition: getWeatherCondition(item.weather[0].id),
-                  icon: getWeatherIcon(item.weather[0].icon, timeOfDay),
-                  humidity: item.main.humidity,
-                  wind: mpsToKmh(item.wind.speed),
-                  aqi: 50,
-                  pollen: getPollenLevel(item.weather[0].id, forecastDate.getMonth()),
-                  drivingDifficulty: getDrivingDifficulty(item.weather[0].id, item.main.humidity)
-                });
-              }
-            });
-            
-            setForecast(dailyForecasts);
-          }
-          
-          const historicalData = Array.from({ length: 7 }, (_, i) => {
-            const pastDate = new Date();
-            pastDate.setDate(pastDate.getDate() - (i + 1));
-            
-            const pastCondition = weatherData.weather[0].id;
-            const variation = Math.floor(Math.random() * 100);
-            let pastWeatherId = pastCondition;
-            
-            if (variation < 30) {
-              pastWeatherId = pastCondition + (Math.random() > 0.5 ? 1 : -1) * Math.floor(Math.random() * 5);
-            }
-            
-            return {
-              date: pastDate.toLocaleDateString(),
-              temp: Math.round(weatherData.main.temp + (Math.random() * 6 - 3)),
-              condition: getWeatherCondition(pastWeatherId),
-              icon: getWeatherIcon("01d", timeOfDay),
-              humidity: weatherData.main.humidity + Math.floor(Math.random() * 10 - 5),
-              wind: mpsToKmh(weatherData.wind.speed) + Math.floor(Math.random() * 6 - 3),
-              aqi: (aqiData.list && aqiData.list[0] ? aqiData.list[0].main.aqi * 25 : 50) + Math.floor(Math.random() * 20 - 10),
-              pollen: getPollenLevel(pastWeatherId, pastDate.getMonth()),
-              drivingDifficulty: getDrivingDifficulty(pastWeatherId, weatherData.main.humidity)
-            };
-          });
-          
-          setHistory(historicalData);
-          
-          const moonPhase = getMoonPhase(currentDate);
-          let moonriseHour, moonsetHour;
-          
-          if (moonPhase === "New Moon" || moonPhase.includes("Crescent")) {
-            moonriseHour = (6 + Math.floor(Math.random() * 2)) % 24;
-            moonsetHour = (18 + Math.floor(Math.random() * 2)) % 24;
-          } else if (moonPhase === "Full Moon") {
-            moonriseHour = (18 + Math.floor(Math.random() * 2)) % 24;
-            moonsetHour = (6 + Math.floor(Math.random() * 2)) % 24;
-          } else {
-            moonriseHour = (12 + Math.floor(Math.random() * 6)) % 24;
-            moonsetHour = (moonriseHour + 12) % 24;
-          }
-          
-          const moonriseMinute = Math.floor(Math.random() * 60);
-          const moonsetMinute = Math.floor(Math.random() * 60);
-          
-          setMoonInfo({
-            rise: `${moonriseHour % 12 || 12}:${moonriseMinute.toString().padStart(2, '0')} ${moonriseHour >= 12 ? 'PM' : 'AM'}`,
-            set: `${moonsetHour % 12 || 12}:${moonsetMinute.toString().padStart(2, '0')} ${moonsetHour >= 12 ? 'PM' : 'AM'}`,
-            phase: moonPhase
-          });
+      if (weatherData.cod === 200) {
+        const sunriseUTC = weatherData.sys && weatherData.sys.sunrise;
+        if (sunriseUTC) {
+          const date = new Date(sunriseUTC * 1000);
+          let h = date.getHours(), m = date.getMinutes();
+          let ampm = h >= 12 ? "PM" : "AM";
+          h = h % 12 || 12;
+          setSunrise(`${h}:${m.toString().padStart(2, '0')} ${ampm}`);
         } else {
-          toast({
-            title: "Weather API error",
-            description: weatherData.message || "Could not retrieve weather data",
-          });
+          setSunrise("N/A");
         }
-      } catch (error) {
-        console.error("Weather fetch error:", error);
+
+        // Fetch air quality data
+        const aqiResponse = await fetch(
+          `https://api.openweathermap.org/data/2.5/air_pollution?lat=${userCoords.lat}&lon=${userCoords.lon}&appid=${API_KEY}`
+        );
+        
+        if (!aqiResponse.ok) {
+          throw new Error(`AQI API error: ${aqiResponse.status}`);
+        }
+        
+        const aqiData = await aqiResponse.json();
+        
+        const currentDate = new Date();
+        const currentMonth = currentDate.getMonth();
+        const weatherId = weatherData.weather[0].id;
+        
+        setWeather({
+          date: currentDate.toLocaleDateString(),
+          temp: Math.round(weatherData.main.temp),
+          condition: getWeatherCondition(weatherId),
+          icon: getWeatherIcon(weatherData.weather[0].icon, timeOfDay),
+          humidity: weatherData.main.humidity,
+          wind: mpsToKmh(weatherData.wind.speed),
+          aqi: aqiData.list && aqiData.list[0] ? aqiData.list[0].main.aqi * 25 : 50,
+          pollen: getPollenLevel(weatherId, currentMonth),
+          drivingDifficulty: getDrivingDifficulty(weatherId, weatherData.main.humidity)
+        });
+        
+        // Fetch 5-day forecast
+        const forecastResponse = await fetch(
+          `https://api.openweathermap.org/data/2.5/forecast?lat=${userCoords.lat}&lon=${userCoords.lon}&units=metric&appid=${API_KEY}`
+        );
+        
+        if (!forecastResponse.ok) {
+          throw new Error(`Forecast API error: ${forecastResponse.status}`);
+        }
+        
+        const forecastData = await forecastResponse.json();
+        
+        if (forecastData.cod === "200") {
+          const dailyForecasts: WeatherDay[] = [];
+          const processedDates: Set<string> = new Set();
+          
+          forecastData.list.forEach((item: any) => {
+            const forecastDate = new Date(item.dt * 1000);
+            const dateString = forecastDate.toLocaleDateString();
+            
+            if (!processedDates.has(dateString) && dailyForecasts.length < 7) {
+              processedDates.add(dateString);
+              
+              dailyForecasts.push({
+                date: dateString,
+                temp: Math.round(item.main.temp),
+                condition: getWeatherCondition(item.weather[0].id),
+                icon: getWeatherIcon(item.weather[0].icon, timeOfDay),
+                humidity: item.main.humidity,
+                wind: mpsToKmh(item.wind.speed),
+                aqi: 50,
+                pollen: getPollenLevel(item.weather[0].id, forecastDate.getMonth()),
+                drivingDifficulty: getDrivingDifficulty(item.weather[0].id, item.main.humidity)
+              });
+            }
+          });
+          
+          setForecast(dailyForecasts);
+        }
+        
+        // Generate historical data (since we can't get real historical data without a paid API)
+        const historicalData = Array.from({ length: 7 }, (_, i) => {
+          const pastDate = new Date();
+          pastDate.setDate(pastDate.getDate() - (i + 1));
+          
+          const pastCondition = weatherData.weather[0].id;
+          const variation = Math.floor(Math.random() * 100);
+          let pastWeatherId = pastCondition;
+          
+          if (variation < 30) {
+            pastWeatherId = pastCondition + (Math.random() > 0.5 ? 1 : -1) * Math.floor(Math.random() * 5);
+          }
+          
+          return {
+            date: pastDate.toLocaleDateString(),
+            temp: Math.round(weatherData.main.temp + (Math.random() * 6 - 3)),
+            condition: getWeatherCondition(pastWeatherId),
+            icon: getWeatherIcon("01d", timeOfDay),
+            humidity: weatherData.main.humidity + Math.floor(Math.random() * 10 - 5),
+            wind: mpsToKmh(weatherData.wind.speed) + Math.floor(Math.random() * 6 - 3),
+            aqi: (aqiData.list && aqiData.list[0] ? aqiData.list[0].main.aqi * 25 : 50) + Math.floor(Math.random() * 20 - 10),
+            pollen: getPollenLevel(pastWeatherId, pastDate.getMonth()),
+            drivingDifficulty: getDrivingDifficulty(pastWeatherId, weatherData.main.humidity)
+          };
+        });
+        
+        setHistory(historicalData);
+        
+        const moonPhase = getMoonPhase(currentDate);
+        let moonriseHour, moonsetHour;
+        
+        if (moonPhase === "New Moon" || moonPhase.includes("Crescent")) {
+          moonriseHour = (6 + Math.floor(Math.random() * 2)) % 24;
+          moonsetHour = (18 + Math.floor(Math.random() * 2)) % 24;
+        } else if (moonPhase === "Full Moon") {
+          moonriseHour = (18 + Math.floor(Math.random() * 2)) % 24;
+          moonsetHour = (6 + Math.floor(Math.random() * 2)) % 24;
+        } else {
+          moonriseHour = (12 + Math.floor(Math.random() * 6)) % 24;
+          moonsetHour = (moonriseHour + 12) % 24;
+        }
+        
+        const moonriseMinute = Math.floor(Math.random() * 60);
+        const moonsetMinute = Math.floor(Math.random() * 60);
+        
+        setMoonInfo({
+          rise: `${moonriseHour % 12 || 12}:${moonriseMinute.toString().padStart(2, '0')} ${moonriseHour >= 12 ? 'PM' : 'AM'}`,
+          set: `${moonsetHour % 12 || 12}:${moonsetMinute.toString().padStart(2, '0')} ${moonsetHour >= 12 ? 'PM' : 'AM'}`,
+          phase: moonPhase
+        });
+        
+        // Cache weather data for 30 minutes
+        localStorage.setItem('weatherData', JSON.stringify({
+          weather,
+          forecast,
+          history,
+          moonInfo,
+          timeOfDay,
+          timestamp: Date.now()
+        }));
+      } else {
         toast({
           title: "Weather API error",
-          description: "Failed to fetch weather data",
+          description: weatherData.message || "Could not retrieve weather data",
         });
-      } finally {
-        setIsLoading(false);
       }
-    };
+    } catch (error: any) {
+      console.error("Weather fetch error:", error);
+      toast({
+        title: "Weather API error",
+        description: error.message || "Failed to fetch weather data",
+      });
+    } finally {
+      setIsLoading(false);
+      setIsRefreshing(false);
+    }
+  };
 
-    fetchWeatherData();
+  useEffect(() => {
+    const cachedData = localStorage.getItem('weatherData');
+    
+    if (cachedData) {
+      try {
+        const parsed = JSON.parse(cachedData);
+        const timestamp = parsed.timestamp;
+        const now = Date.now();
+        
+        // If cache is less than 30 minutes old, use it
+        if (now - timestamp < 30 * 60 * 1000) {
+          setWeather(parsed.weather);
+          setForecast(parsed.forecast);
+          setHistory(parsed.history);
+          setMoonInfo(parsed.moonInfo);
+          setTimeOfDay(parsed.timeOfDay);
+          setIsLoading(false);
+        } else {
+          fetchWeatherData();
+        }
+      } catch (e) {
+        fetchWeatherData();
+      }
+    } else {
+      fetchWeatherData();
+    }
     
     const intervalId = setInterval(fetchWeatherData, 30 * 60 * 1000);
     return () => clearInterval(intervalId);
-  }, [userCoords, timeOfDay]);
+  }, [userCoords]);
 
   useEffect(() => {
     const intv = setInterval(() => setTimeOfDay(getTimeOfDay()), 60000);
@@ -320,6 +390,11 @@ export function WeatherWidget() {
   }, []);
 
   const handleMouseDown = (e: React.MouseEvent) => {
+    if ((e.target as HTMLElement).closest('.expand-toggle') || 
+        (e.target as HTMLElement).closest('.refresh-button')) {
+      return;
+    }
+    
     setIsDragging(true);
     setStartPos({
       x: e.clientX - position.x,
@@ -361,13 +436,35 @@ export function WeatherWidget() {
         className={`bg-white/90 backdrop-blur-sm border border-sky-light rounded-lg transition-all duration-300
           ${expanded ? "w-[300px]" : "w-52"}
         `}
-        onClick={() => !isDragging && setExpanded((v) => !v)}
       >
         <div className={`p-2 flex items-center justify-between ${expanded
             ? "bg-gradient-to-r from-sky-dark to-sky text-white text-xs"
             : "bg-gradient-to-r from-sky to-foliage-light text-foliage-dark text-xs"} rounded-t-md`}>
           <div className="font-medium tracking-wide">Weather</div>
-          <div className="text-[10px] opacity-80">{expanded ? "Click to collapse" : "Click to expand"}</div>
+          <div className="flex items-center gap-1">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="h-5 w-5 p-0 refresh-button text-white hover:text-white/80 hover:bg-transparent"
+              onClick={refreshWeather}
+              disabled={isRefreshing}
+            >
+              <RefreshCw className={`h-3 w-3 ${isRefreshing ? 'animate-spin' : ''}`} />
+            </Button>
+            
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-5 w-5 p-0 expand-toggle text-white hover:text-white/80 hover:bg-transparent"
+              onClick={() => setExpanded(!expanded)}
+            >
+              {expanded ? (
+                <ChevronUp className="h-3 w-3" />
+              ) : (
+                <ChevronDown className="h-3 w-3" />
+              )}
+            </Button>
+          </div>
         </div>
         
         <CardContent className={`p-0 pt-2 ${expanded ? "pb-2" : ""}`}>
@@ -381,7 +478,7 @@ export function WeatherWidget() {
               <div className="text-center">
                 <div className="font-semibold text-xl">{weather ? `${weather.temp}°C` : "..."}</div>
                 <div className="text-xs text-gray-600">{weather?.condition || "Loading..."}</div>
-                <div className="text-xs text-gray-600">{sunrise ? `🌅 ${sunrise}` : ""}</div>
+                <div className="text-xs text-gray-600">{location}</div>
               </div>
             </div>
           ) : (
@@ -396,6 +493,7 @@ export function WeatherWidget() {
                   <div className="font-semibold text-xl">{weather ? `${weather.temp}°C` : "..."}</div>
                   <div className="text-xs text-gray-600">{weather?.condition || "Loading..."}</div>
                   <div className="text-xs text-gray-600">{location}</div>
+                  <div className="text-xs text-gray-600">{sunrise ? `🌅 ${sunrise}` : ""}</div>
                 </div>
               </div>
               

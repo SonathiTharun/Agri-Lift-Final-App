@@ -46,7 +46,7 @@ export function WeatherDetails({
 }: Props) {
   if (isLoading || !weather) {
     return (
-      <div className="h-20 flex items-center justify-center">
+      <div className="h-16 flex items-center justify-center">
         <div className="animate-pulse text-gray-400">Loading weather data...</div>
       </div>
     );
