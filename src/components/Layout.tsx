@@ -10,7 +10,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
-      <div className="pt-20 animate-fade-in">
+      <div className="pt-16 animate-fade-in"> {/* Reduced from pt-20 to pt-16 */}
         {children}
       </div>
     </div>

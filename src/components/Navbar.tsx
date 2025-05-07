@@ -71,7 +71,7 @@ export function Navbar() {
 
   return (
     <CartProvider>
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-[#2ecc71] py-2 px-4 shadow-md">
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-[#2ecc71] py-1 px-4 shadow-md"> {/* Reduced py-2 to py-1 */}
         <div className="container mx-auto flex justify-between items-center">
           <div className="flex items-center gap-2">
             {isMobile ? (
@@ -139,7 +139,7 @@ export function Navbar() {
             <Link to="/dashboard" className="flex items-center">
               <img 
                 alt="AgriLift Logo" 
-                className="h-20 w-auto" 
+                className="h-12 w-auto" /* Reduced from h-20 to h-12 */
                 src="/lovable-uploads/bad258d5-10ef-4d65-bb8b-35f2420c6caa.png" 
               />
             </Link>
