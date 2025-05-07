@@ -3,6 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { AnimatedWeatherIcon } from "./WeatherWidget/AnimatedWeatherIcon";
 import { WeatherDetails } from "./WeatherWidget/WeatherDetails";
 import { toast } from "@/components/ui/use-toast";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
 type WeatherDay = {
   date: string;
@@ -123,6 +124,7 @@ export function WeatherWidget() {
   const [userCoords, setUserCoords] = useState<{lat: number, lon: number} | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [sunrise, setSunrise] = useState("");
+  const [activeTab, setActiveTab] = useState("forecast");
 
   useEffect(() => {
     if (navigator.geolocation) {
@@ -357,7 +359,7 @@ export function WeatherWidget() {
     >
       <Card
         className={`bg-white/90 backdrop-blur-sm border border-sky-light rounded-lg transition-all duration-300
-          ${expanded ? "w-[340px] h-auto" : "w-56 p-0"}
+          ${expanded ? "w-[300px]" : "w-52"}
         `}
         onClick={() => !isDragging && setExpanded((v) => !v)}
       >
@@ -367,37 +369,55 @@ export function WeatherWidget() {
           <div className="font-medium tracking-wide">Weather</div>
           <div className="text-[10px] opacity-80">{expanded ? "Click to collapse" : "Click to expand"}</div>
         </div>
-        <CardContent className={`${expanded ? "p-3 animate-fade-in" : "p-2"}`}>
-          <div className={`flex flex-col justify-center items-center transition-all`}>
-            <AnimatedWeatherIcon
-              condition={weather?.condition || "Sunny"}
-              timeOfDay={timeOfDay}
-            />
-            <div className="my-1 text-center">
-              <div className="font-semibold text-xl">
-                {weather ? `${weather.temp}°C` : "..."}
-              </div>
-              <div className="text-xs text-gray-600">
-                {weather?.condition || "Loading..."}
-              </div>
-              <div className="text-xs text-gray-600 flex justify-center gap-1">
-                <span>Sunrise:</span>
-                <span>{sunrise || "..."}</span>
+        
+        <CardContent className={`p-0 pt-2 ${expanded ? "pb-2" : ""}`}>
+          {!expanded ? (
+            <div className="flex items-center justify-between px-2 pb-1">
+              <AnimatedWeatherIcon
+                condition={weather?.condition || "Sunny"}
+                timeOfDay={timeOfDay}
+                compact={true}
+              />
+              <div className="text-center">
+                <div className="font-semibold text-xl">{weather ? `${weather.temp}°C` : "..."}</div>
+                <div className="text-xs text-gray-600">{weather?.condition || "Loading..."}</div>
+                <div className="text-xs text-gray-600">{sunrise ? `🌅 ${sunrise}` : ""}</div>
               </div>
             </div>
-          </div>
-          {expanded && (
-            <div className="pt-2 animate-fade-in">
-              <WeatherDetails
-                weather={weather}
-                forecast={forecast}
-                history={history}
-                moonInfo={moonInfo}
-                timeOfDay={timeOfDay}
-                location={location}
-                isLoading={isLoading}
-                sunrise={sunrise}
-              />
+          ) : (
+            <div className="px-3 pt-1 animate-fade-in">
+              <div className="flex justify-between items-center mb-2">
+                <AnimatedWeatherIcon
+                  condition={weather?.condition || "Sunny"}
+                  timeOfDay={timeOfDay}
+                  compact={true}
+                />
+                <div className="text-center">
+                  <div className="font-semibold text-xl">{weather ? `${weather.temp}°C` : "..."}</div>
+                  <div className="text-xs text-gray-600">{weather?.condition || "Loading..."}</div>
+                  <div className="text-xs text-gray-600">{location}</div>
+                </div>
+              </div>
+              
+              <Tabs defaultValue="forecast" className="w-full" onValueChange={setActiveTab}>
+                <TabsList className="grid grid-cols-3 h-7 text-xs mb-2">
+                  <TabsTrigger value="forecast">Forecast</TabsTrigger>
+                  <TabsTrigger value="history">History</TabsTrigger>
+                  <TabsTrigger value="details">Details</TabsTrigger>
+                </TabsList>
+                
+                <WeatherDetails
+                  weather={weather}
+                  forecast={forecast}
+                  history={history}
+                  moonInfo={moonInfo}
+                  timeOfDay={timeOfDay}
+                  location={location}
+                  isLoading={isLoading}
+                  sunrise={sunrise}
+                  activeTab={activeTab}
+                />
+              </Tabs>
             </div>
           )}
         </CardContent>
