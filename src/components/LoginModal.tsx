@@ -1,26 +1,29 @@
 
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { UserCircle, Briefcase, Mail, Lock } from "lucide-react";
+import { useLanguage } from "./LanguageContext";
+import { Eye, EyeOff, User, Shield } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 interface LoginModalProps {
-  open: boolean;
-  setOpen: (open: boolean) => void;
-  userType: 'farmer' | 'executive';
-  lang: string;
-  t: (key: string) => string;
+  isOpen: boolean;
+  onClose: () => void;
+  onSuccess: () => void;
 }
 
-export function LoginModal({ open, setOpen, userType, lang, t }: LoginModalProps) {
+export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [userType, setUserType] = useState<'farmer' | 'executive'>('farmer');
   const { toast } = useToast();
+  const { t } = useLanguage();
   const navigate = useNavigate();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,97 +36,175 @@ export function LoginModal({ open, setOpen, userType, lang, t }: LoginModalProps
       });
       return;
     }
-    
-    // Simulate loading
-    setLoading(true);
-    
-    // Simulate API call
-    setTimeout(() => {
-      setLoading(false);
-      toast({
-        title: "Login successful",
-        description: `Welcome back ${userType === 'farmer' ? 'farmer' : 'executive'}!`,
-      });
-      setOpen(false);
-      setEmail('');
-      setPassword('');
-      
-      // Route based on user type
-      if (userType === 'executive') {
+
+    setIsLoading(true);
+
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 2000));
+
+      // Mock authentication logic
+      if (userType === 'executive' && email.includes('admin')) {
+        toast({
+          title: "Login Successful",
+          description: "Welcome to AgriLift Executive Portal!",
+        });
+        onClose();
         navigate('/executive-dashboard');
-      } else {
+      } else if (userType === 'farmer') {
+        toast({
+          title: "Login Successful", 
+          description: "Welcome to AgriLift!",
+        });
+        onSuccess();
+        onClose();
         navigate('/dashboard');
+      } else {
+        throw new Error('Invalid credentials for selected user type');
       }
-    }, 1500);
+    } catch (error) {
+      toast({
+        title: "Login Failed",
+        description: "Invalid credentials. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleDemoLogin = (type: 'farmer' | 'executive') => {
+    setUserType(type);
+    if (type === 'executive') {
+      setEmail('admin@agrilift.com');
+      setPassword('admin123');
+    } else {
+      setEmail('farmer@example.com');  
+      setPassword('farmer123');
+    }
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className="sm:max-w-[425px]">
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="sm:max-w-md animate-scale-in">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            {userType === 'farmer' ? (
-              <UserCircle className="h-5 w-5 text-blue-500" />
-            ) : (
-              <Briefcase className="h-5 w-5 text-foliage" />
-            )}
-            {userType === 'farmer' ? 'Farmer Login' : 'Executive Login'}
+          <DialogTitle className="text-2xl font-bold text-center animate-fade-in">
+            {t('login')}
           </DialogTitle>
-          <DialogDescription>
-            Enter your credentials to access your {userType} account
-          </DialogDescription>
         </DialogHeader>
         
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="space-y-6 animate-fade-in">
+          {/* User Type Selection */}
+          <div className="space-y-3">
+            <Label className="text-sm font-medium">Login As:</Label>
+            <div className="grid grid-cols-2 gap-3">
+              <Button
+                type="button"
+                variant={userType === 'farmer' ? 'default' : 'outline'}
+                onClick={() => setUserType('farmer')}
+                className="flex items-center gap-2 hover:scale-105 transition-transform"
+              >
+                <User className="h-4 w-4" />
+                Farmer
+              </Button>
+              <Button
+                type="button"
+                variant={userType === 'executive' ? 'default' : 'outline'}
+                onClick={() => setUserType('executive')}
+                className="flex items-center gap-2 hover:scale-105 transition-transform"
+              >
+                <Shield className="h-4 w-4" />
+                Executive
+              </Button>
+            </div>
+          </div>
+
+          {/* Demo Login Buttons */}
           <div className="space-y-2">
-            <div className="relative">
-              <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
+            <Label className="text-sm font-medium">Quick Demo Login:</Label>
+            <div className="grid grid-cols-1 gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => handleDemoLogin('farmer')}
+                className="text-sm hover:scale-105 transition-transform"
+                disabled={isLoading}
+              >
+                Demo Farmer Login
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => handleDemoLogin('executive')}
+                className="text-sm hover:scale-105 transition-transform"
+                disabled={isLoading}
+              >
+                Demo Executive Login
+              </Button>
+            </div>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="email">{t('email')}</Label>
               <Input
+                id="email"
                 type="email"
-                placeholder="Email"
-                className="pl-10"
+                placeholder={userType === 'executive' ? "admin@agrilift.com" : "farmer@example.com"}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                required
+                className="transition-all focus:scale-105"
+                disabled={isLoading}
               />
             </div>
-          </div>
-          
-          <div className="space-y-2">
-            <div className="relative">
-              <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
-              <Input
-                type="password"
-                placeholder="Password"
-                className="pl-10"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
+            
+            <div className="space-y-2">
+              <Label htmlFor="password">{t('password')}</Label>
+              <div className="relative">
+                <Input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Enter your password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="pr-10 transition-all focus:scale-105"
+                  disabled={isLoading}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                  disabled={isLoading}
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
             </div>
-          </div>
-          
-          <div className="flex justify-between items-center text-sm">
-            <label className="flex items-center gap-1.5">
-              <input type="checkbox" className="rounded text-primary focus:ring-primary" />
-              <span>Remember me</span>
-            </label>
-            <a href="#" className="text-primary hover:underline">Forgot password?</a>
-          </div>
-          
-          <Button 
-            type="submit" 
-            className={`w-full ${userType === 'farmer' ? 'bg-blue-600 hover:bg-blue-700' : 'bg-foliage hover:bg-foliage-dark'}`}
-            disabled={loading}
-          >
-            {loading ? 'Logging in...' : 'Login'}
-          </Button>
-          
-          <div className="text-center text-sm">
-            Don't have an account?{' '}
-            <a href="#" className="text-primary hover:underline">Register now</a>
-          </div>
-        </form>
+
+            <Button 
+              type="submit" 
+              className="w-full hover:scale-105 transition-transform" 
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  Logging in...
+                </div>
+              ) : (
+                t('login')
+              )}
+            </Button>
+          </form>
+
+          {userType === 'executive' && (
+            <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg animate-slide-in">
+              <p className="text-sm text-blue-800">
+                <strong>Executive Access:</strong> Use admin credentials to access the executive portal with full platform management capabilities.
+              </p>
+            </div>
+          )}
+        </div>
       </DialogContent>
     </Dialog>
   );
