@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -26,6 +25,11 @@ import CropAllocation from "./pages/CropAllocation";
 import Orders from "./pages/Orders";
 import Settings from "./pages/Settings";
 import ExecutiveDashboard from "./pages/ExecutiveDashboard";
+import ExecutiveFarmers from "./pages/ExecutiveFarmers";
+import ExecutiveAnalytics from "./pages/ExecutiveAnalytics";
+import ExecutiveFinancial from "./pages/ExecutiveFinancial";
+import ExecutiveOperations from "./pages/ExecutiveOperations";
+import ExecutiveCommunications from "./pages/ExecutiveCommunications";
 
 const queryClient = new QueryClient();
 
@@ -41,6 +45,11 @@ const App = () => (
               <Route path="/" element={<Welcome />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/executive-dashboard" element={<ExecutiveDashboard />} />
+              <Route path="/executive/farmers" element={<ExecutiveFarmers />} />
+              <Route path="/executive/analytics" element={<ExecutiveAnalytics />} />
+              <Route path="/executive/financial" element={<ExecutiveFinancial />} />
+              <Route path="/executive/operations" element={<ExecutiveOperations />} />
+              <Route path="/executive/communications" element={<ExecutiveCommunications />} />
               <Route path="/farming-type" element={<FarmingType />} />
               <Route path="/crop-allocation" element={<CropAllocation />} />
               <Route path="/loans" element={<Loans />} />

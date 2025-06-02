@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useLanguage } from "./LanguageContext";
@@ -19,7 +18,8 @@ export function ExecutiveNavbar() {
     if (path === "/executive/farmers") return "farmers";
     if (path === "/executive/analytics") return "analytics";
     if (path === "/executive/financial") return "financial";
-    if (path === "/executive/reports") return "reports";
+    if (path === "/executive/operations") return "operations";
+    if (path === "/executive/communications") return "communications";
     return "dashboard";
   });
 
@@ -29,7 +29,8 @@ export function ExecutiveNavbar() {
     else if (path === "/executive/farmers") setActiveItem("farmers");
     else if (path === "/executive/analytics") setActiveItem("analytics");
     else if (path === "/executive/financial") setActiveItem("financial");
-    else if (path === "/executive/reports") setActiveItem("reports");
+    else if (path === "/executive/operations") setActiveItem("operations");
+    else if (path === "/executive/communications") setActiveItem("communications");
   }, [location]);
 
   const navItems = [
@@ -37,7 +38,8 @@ export function ExecutiveNavbar() {
     { id: "farmers", label: "Farmers", path: "/executive/farmers" },
     { id: "analytics", label: "Analytics", path: "/executive/analytics" },
     { id: "financial", label: "Financial", path: "/executive/financial" },
-    { id: "reports", label: "Reports", path: "/executive/reports" },
+    { id: "operations", label: "Operations", path: "/executive/operations" },
+    { id: "communications", label: "Communications", path: "/executive/communications" },
   ];
   
   const menuItems = [
