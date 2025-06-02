@@ -48,12 +48,12 @@ const FieldDecorations: React.FC = () => {
           <meshStandardMaterial color="#FF4500" />
         </mesh>
         {/* Tractor wheels */}
-        <mesh position={[-0.3, -0.15, 0.2]} castShadow>
-          <cylinderGeometry args={[0.15, 0.15, 0.1, 8]} rotation={[0, 0, Math.PI/2]} />
+        <mesh position={[-0.3, -0.15, 0.2]} rotation={[0, 0, Math.PI/2]} castShadow>
+          <cylinderGeometry args={[0.15, 0.15, 0.1, 8]} />
           <meshStandardMaterial color="#2F4F4F" />
         </mesh>
-        <mesh position={[0.3, -0.15, 0.2]} castShadow>
-          <cylinderGeometry args={[0.15, 0.15, 0.1, 8]} rotation={[0, 0, Math.PI/2]} />
+        <mesh position={[0.3, -0.15, 0.2]} rotation={[0, 0, Math.PI/2]} castShadow>
+          <cylinderGeometry args={[0.15, 0.15, 0.1, 8]} />
           <meshStandardMaterial color="#2F4F4F" />
         </mesh>
       </group>
