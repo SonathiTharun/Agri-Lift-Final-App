@@ -1,12 +1,13 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Slider } from "@/components/ui/slider";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { Leaf, BarChart, PieChart, ChevronRight, ChevronLeft } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Leaf, BarChart, PieChart, ChevronRight, ChevronLeft, Search, Filter } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { CROPS_DATABASE, getCropRecommendationScore, type CropDetails } from "@/data/cropsDatabase";
 
 interface LandDetails {
   location: string;
@@ -15,20 +16,6 @@ interface LandDetails {
   totalArea: number;
   soilType: string;
   climateType: string;
-}
-
-interface Crop {
-  id: string;
-  name: string;
-  category: string;
-  soilCompatibility: string[];
-  climateCompatibility: string[];
-  waterUsage: "low" | "medium" | "high";
-  growthCycle: "short" | "medium" | "long";
-  roi: "low" | "medium" | "high";
-  description: string;
-  yieldPerAcre: number;
-  recommendation?: number;
 }
 
 interface SelectedCrop {
@@ -45,133 +32,47 @@ interface CropSelectionProps {
   onBack: () => void;
 }
 
-const SAMPLE_CROPS: Crop[] = [
-  {
-    id: "wheat",
-    name: "Wheat",
-    category: "Grain",
-    soilCompatibility: ["Loam", "Clay", "Silt"],
-    climateCompatibility: ["Temperate", "Continental"],
-    waterUsage: "medium",
-    growthCycle: "medium",
-    roi: "medium",
-    description: "A staple grain crop grown worldwide",
-    yieldPerAcre: 3.5
-  },
-  {
-    id: "rice",
-    name: "Rice",
-    category: "Grain",
-    soilCompatibility: ["Clay", "Loam"],
-    climateCompatibility: ["Tropical", "Temperate"],
-    waterUsage: "high",
-    growthCycle: "medium",
-    roi: "medium",
-    description: "Grown in flooded fields called rice paddies",
-    yieldPerAcre: 4.2
-  },
-  {
-    id: "corn",
-    name: "Corn",
-    category: "Grain",
-    soilCompatibility: ["Loam", "Silt"],
-    climateCompatibility: ["Temperate", "Tropical", "Continental"],
-    waterUsage: "medium",
-    growthCycle: "medium",
-    roi: "high",
-    description: "Versatile grain used for food, feed, and fuel",
-    yieldPerAcre: 5.8
-  },
-  {
-    id: "potato",
-    name: "Potato",
-    category: "Root Vegetable",
-    soilCompatibility: ["Loam", "Sandy"],
-    climateCompatibility: ["Temperate", "Continental"],
-    waterUsage: "medium",
-    growthCycle: "medium",
-    roi: "high",
-    description: "Tuberous root vegetable and world's fourth-largest food crop",
-    yieldPerAcre: 12
-  },
-  {
-    id: "tomato",
-    name: "Tomato",
-    category: "Vegetable",
-    soilCompatibility: ["Loam", "Sandy"],
-    climateCompatibility: ["Temperate", "Mediterranean"],
-    waterUsage: "medium",
-    growthCycle: "short",
-    roi: "high",
-    description: "Versatile fruit commonly used as a vegetable",
-    yieldPerAcre: 15
-  },
-  {
-    id: "cotton",
-    name: "Cotton",
-    category: "Fiber",
-    soilCompatibility: ["Loam", "Clay"],
-    climateCompatibility: ["Tropical", "Arid"],
-    waterUsage: "high",
-    growthCycle: "long",
-    roi: "medium",
-    description: "Major fiber crop used for textile production",
-    yieldPerAcre: 0.8
-  },
-  {
-    id: "soybean",
-    name: "Soybean",
-    category: "Legume",
-    soilCompatibility: ["Loam", "Clay", "Silt"],
-    climateCompatibility: ["Temperate", "Continental"],
-    waterUsage: "low",
-    growthCycle: "medium",
-    roi: "medium",
-    description: "Protein-rich legume used for oil, food, and animal feed",
-    yieldPerAcre: 2.5
-  },
-  {
-    id: "sugarcane",
-    name: "Sugarcane",
-    category: "Cash Crop",
-    soilCompatibility: ["Loam", "Clay"],
-    climateCompatibility: ["Tropical"],
-    waterUsage: "high",
-    growthCycle: "long",
-    roi: "high",
-    description: "Major source of sugar, grown in tropical regions",
-    yieldPerAcre: 35
-  }
-];
-
 const CropSelection = ({ landDetails, onSubmit, onBack }: CropSelectionProps) => {
   const [activeTab, setActiveTab] = useState<"manual" | "ai">("manual");
   const [selectedCrops, setSelectedCrops] = useState<SelectedCrop[]>([]);
   const [cropAllocations, setCropAllocations] = useState<Record<string, number>>({});
   const [availableArea, setAvailableArea] = useState<number>(landDetails.totalArea);
   const [activeFilters, setActiveFilters] = useState<string[]>([]);
-  const [cropsWithRecommendations, setCropsWithRecommendations] = useState<Crop[]>([...SAMPLE_CROPS]);
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [selectedCategory, setSelectedCategory] = useState<string>("all");
+  const [cropsWithRecommendations, setCropsWithRecommendations] = useState<(CropDetails & { recommendation?: number })[]>([...CROPS_DATABASE]);
   const [isLoadingRecommendations, setIsLoadingRecommendations] = useState(false);
   const { toast } = useToast();
 
   // Filter tags
   const filterTags = [
-    { id: "lowWater", label: "Low Water Usage", filter: (crop: Crop) => crop.waterUsage === "low" },
-    { id: "shortCycle", label: "Short Cycle", filter: (crop: Crop) => crop.growthCycle === "short" },
-    { id: "highROI", label: "High ROI", filter: (crop: Crop) => crop.roi === "high" },
-    { id: "soilMatch", label: "Soil Compatible", filter: (crop: Crop) => crop.soilCompatibility.includes(landDetails.soilType) }
+    { id: "lowWater", label: "Low Water Usage", filter: (crop: CropDetails) => crop.waterUsage === "low" },
+    { id: "shortCycle", label: "Short Cycle", filter: (crop: CropDetails) => crop.growthCycle === "short" },
+    { id: "highROI", label: "High ROI", filter: (crop: CropDetails) => crop.roi === "high" },
+    { id: "soilMatch", label: "Soil Compatible", filter: (crop: CropDetails) => crop.soilCompatibility.includes(landDetails.soilType) },
+    { id: "climateMatch", label: "Climate Compatible", filter: (crop: CropDetails) => crop.climateCompatibility.includes(landDetails.climateType) }
   ];
 
+  // Categories
+  const categories = ["all", ...Array.from(new Set(CROPS_DATABASE.map(crop => crop.category)))];
+
   // Check if a crop is compatible with the land's soil and climate
-  const isCropCompatible = (crop: Crop) => {
+  const isCropCompatible = (crop: CropDetails) => {
     return (
       crop.soilCompatibility.includes(landDetails.soilType) &&
       crop.climateCompatibility.includes(landDetails.climateType)
     );
   };
 
-  // Filter crops based on active filters
+  // Filter crops based on active filters, search term, and category
   const filteredCrops = cropsWithRecommendations.filter(crop => {
+    // Category filter
+    if (selectedCategory !== "all" && crop.category !== selectedCategory) return false;
+    
+    // Search filter
+    if (searchTerm && !crop.name.toLowerCase().includes(searchTerm.toLowerCase())) return false;
+    
+    // Active filters
     if (activeFilters.length === 0) return true;
     
     return activeFilters.some(filterId => {
@@ -186,33 +87,25 @@ const CropSelection = ({ landDetails, onSubmit, onBack }: CropSelectionProps) =>
     
     // Simulate API call for recommendations
     setTimeout(() => {
-      const recommendedCrops = SAMPLE_CROPS.map(crop => {
-        // Calculate a recommendation score based on soil/climate compatibility
-        const soilMatch = crop.soilCompatibility.includes(landDetails.soilType);
-        const climateMatch = crop.climateCompatibility.includes(landDetails.climateType);
-        
-        let recommendationScore = 0;
-        if (soilMatch && climateMatch) recommendationScore = 0.8 + Math.random() * 0.2;
-        else if (soilMatch || climateMatch) recommendationScore = 0.4 + Math.random() * 0.3;
-        else recommendationScore = Math.random() * 0.2;
-        
+      const recommendedCrops = CROPS_DATABASE.map(crop => {
+        const recommendationScore = getCropRecommendationScore(crop, landDetails.soilType, landDetails.climateType);
         return {
           ...crop,
-          recommendation: Math.round(recommendationScore * 100)
+          recommendation: recommendationScore
         };
       }).sort((a, b) => (b.recommendation || 0) - (a.recommendation || 0));
       
       setCropsWithRecommendations(recommendedCrops);
       
-      // Automatically select the top 3 crops for the AI tab
+      // Automatically select the top 3-4 crops for the AI tab
       if (activeTab === "ai") {
-        const topCrops = recommendedCrops.slice(0, 3);
-        const totalRecommendation = topCrops.reduce((sum, crop) => sum + (crop.recommendation || 0), 0);
+        const topCrops = recommendedCrops.slice(0, 4).filter(crop => (crop.recommendation || 0) > 60);
         
         const newAllocations: Record<string, number> = {};
         const newSelectedCrops: SelectedCrop[] = [];
         
         let remainingArea = landDetails.totalArea;
+        const totalRecommendation = topCrops.reduce((sum, crop) => sum + (crop.recommendation || 0), 0);
         
         topCrops.forEach((crop, index) => {
           if (index === topCrops.length - 1) {
@@ -222,8 +115,8 @@ const CropSelection = ({ landDetails, onSubmit, onBack }: CropSelectionProps) =>
             // Distribute by recommendation score
             const proportion = (crop.recommendation || 0) / totalRecommendation;
             const area = Math.round((landDetails.totalArea * proportion) * 10) / 10;
-            newAllocations[crop.id] = area;
-            remainingArea -= area;
+            newAllocations[crop.id] = Math.min(area, remainingArea);
+            remainingArea -= newAllocations[crop.id];
           }
           
           newSelectedCrops.push({
@@ -237,14 +130,14 @@ const CropSelection = ({ landDetails, onSubmit, onBack }: CropSelectionProps) =>
         
         setCropAllocations(newAllocations);
         setSelectedCrops(newSelectedCrops);
-        setAvailableArea(0);
+        setAvailableArea(Math.max(0, landDetails.totalArea - Object.values(newAllocations).reduce((a, b) => a + b, 0)));
       }
       
       setIsLoadingRecommendations(false);
       
       toast({
         title: "AI Recommendations Ready",
-        description: "Crop recommendations based on your land details are ready"
+        description: `Generated recommendations for ${landDetails.soilType} soil and ${landDetails.climateType} climate`
       });
     }, 2000);
   };
@@ -268,7 +161,7 @@ const CropSelection = ({ landDetails, onSubmit, onBack }: CropSelectionProps) =>
     if (areaDifference > availableArea && areaDifference > 0) {
       toast({
         title: "Allocation exceeds available area",
-        description: `You only have ${availableArea} acres available`,
+        description: `You only have ${availableArea.toFixed(1)} acres available`,
         variant: "destructive"
       });
       return;
@@ -283,7 +176,7 @@ const CropSelection = ({ landDetails, onSubmit, onBack }: CropSelectionProps) =>
   };
 
   // Add a crop to the selection
-  const addCrop = (crop: Crop) => {
+  const addCrop = (crop: CropDetails) => {
     if (availableArea <= 0) {
       toast({
         title: "No area available",
@@ -293,8 +186,8 @@ const CropSelection = ({ landDetails, onSubmit, onBack }: CropSelectionProps) =>
       return;
     }
     
-    // Start with a small allocation
-    const initialAllocation = Math.min(0.5, availableArea);
+    // Start with a reasonable allocation based on available area
+    const initialAllocation = Math.min(Math.max(0.5, availableArea * 0.2), availableArea);
     const newAllocations = { 
       ...cropAllocations, 
       [crop.id]: (cropAllocations[crop.id] || 0) + initialAllocation 
@@ -305,6 +198,11 @@ const CropSelection = ({ landDetails, onSubmit, onBack }: CropSelectionProps) =>
     
     // Update selected crops
     updateSelectedCrops(newAllocations);
+    
+    toast({
+      title: "Crop added",
+      description: `${crop.name} allocated ${initialAllocation.toFixed(1)} acres`
+    });
   };
 
   // Remove a crop from the selection
@@ -368,7 +266,7 @@ const CropSelection = ({ landDetails, onSubmit, onBack }: CropSelectionProps) =>
 
   return (
     <div>
-      <h2 className="text-xl font-semibold mb-6">Step 2: Crop Selection</h2>
+      <h2 className="text-xl font-semibold mb-6">Step 2: Crop Selection & Allocation</h2>
       
       <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as "manual" | "ai")} className="mb-6">
         <TabsList className="grid grid-cols-2">
@@ -377,25 +275,60 @@ const CropSelection = ({ landDetails, onSubmit, onBack }: CropSelectionProps) =>
         </TabsList>
         
         <TabsContent value="manual" className="space-y-6">
-          <div className="bg-gray-50 rounded-md p-4">
-            <h3 className="text-lg font-medium mb-2">Filter Crops</h3>
-            <div className="flex flex-wrap gap-2">
-              {filterTags.map(tag => (
-                <Badge 
-                  key={tag.id}
-                  variant={activeFilters.includes(tag.id) ? "default" : "outline"}
-                  className={`cursor-pointer ${activeFilters.includes(tag.id) ? "bg-foliage hover:bg-foliage-dark" : ""}`}
-                  onClick={() => toggleFilter(tag.id)}
+          {/* Filters and Search */}
+          <div className="bg-gray-50 rounded-md p-4 space-y-4">
+            <div className="flex flex-col md:flex-row gap-4">
+              <div className="flex-1">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                  <Input
+                    placeholder="Search crops..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-10"
+                  />
+                </div>
+              </div>
+              <div className="flex-1">
+                <select
+                  value={selectedCategory}
+                  onChange={(e) => setSelectedCategory(e.target.value)}
+                  className="w-full h-10 px-3 py-2 border border-input bg-background rounded-md text-sm"
                 >
-                  {tag.label}
-                </Badge>
-              ))}
+                  {categories.map(category => (
+                    <option key={category} value={category}>
+                      {category === "all" ? "All Categories" : category}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+            
+            <div>
+              <h3 className="text-sm font-medium mb-2 flex items-center">
+                <Filter className="h-4 w-4 mr-1" />
+                Filter Crops
+              </h3>
+              <div className="flex flex-wrap gap-2">
+                {filterTags.map(tag => (
+                  <Badge 
+                    key={tag.id}
+                    variant={activeFilters.includes(tag.id) ? "default" : "outline"}
+                    className={`cursor-pointer ${activeFilters.includes(tag.id) ? "bg-foliage hover:bg-foliage-dark" : ""}`}
+                    onClick={() => toggleFilter(tag.id)}
+                  >
+                    {tag.label}
+                  </Badge>
+                ))}
+              </div>
             </div>
           </div>
           
           <div className="grid md:grid-cols-2 gap-4">
             <div>
-              <h3 className="text-lg font-medium mb-4">Available Crops</h3>
+              <h3 className="text-lg font-medium mb-4">
+                Available Crops ({filteredCrops.length})
+              </h3>
               <div className="h-80 overflow-y-auto border rounded-md p-2 space-y-2">
                 {filteredCrops.map(crop => (
                   <TooltipProvider key={crop.id}>
@@ -406,21 +339,38 @@ const CropSelection = ({ landDetails, onSubmit, onBack }: CropSelectionProps) =>
                             isCropCompatible(crop) 
                               ? "border-foliage/30 bg-foliage/5" 
                               : "border-gray-200"
-                          } hover:bg-gray-50 cursor-pointer flex justify-between items-center`}
+                          } hover:bg-gray-50 cursor-pointer`}
                           onClick={() => addCrop(crop)}
                         >
-                          <div className="flex items-center">
-                            <Leaf size={16} className="mr-2 text-foliage" />
-                            <span>{crop.name}</span>
+                          <div className="flex justify-between items-center">
+                            <div className="flex items-center">
+                              <Leaf size={16} className="mr-2 text-foliage" />
+                              <span className="font-medium">{crop.name}</span>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <Badge variant="outline" className="text-xs">
+                                {crop.category}
+                              </Badge>
+                              {isCropCompatible(crop) && (
+                                <Badge variant="default" className="text-xs bg-green-500">
+                                  Compatible
+                                </Badge>
+                              )}
+                            </div>
                           </div>
-                          <Badge variant="outline" className="text-xs">
-                            {crop.category}
-                          </Badge>
+                          <div className="text-xs text-gray-600 mt-1">
+                            Yield: {crop.yieldPerAcre} tons/acre • ROI: {crop.roi} • Water: {crop.waterUsage}
+                          </div>
                         </div>
                       </TooltipTrigger>
-                      <TooltipContent side="right" className="w-64 p-2">
-                        <div className="space-y-1 text-sm">
+                      <TooltipContent side="right" className="w-80 p-3">
+                        <div className="space-y-2 text-sm">
                           <p><span className="font-medium">Description:</span> {crop.description}</p>
+                          <p><span className="font-medium">Market Price:</span> ₹{crop.marketPrice.toLocaleString()}/ton</p>
+                          <p><span className="font-medium">Planting Seasons:</span> {crop.plantingSeasons.join(", ")}</p>
+                          <p><span className="font-medium">Harvest:</span> {crop.harvestMonths.join(", ")}</p>
+                          <p><span className="font-medium">Maturity:</span> {crop.maturityDays} days</p>
+                          <p><span className="font-medium">pH Range:</span> {crop.phRange[0]} - {crop.phRange[1]}</p>
                           <p>
                             <span className="font-medium">Compatibility:</span> {" "}
                             {isCropCompatible(crop) 
@@ -428,19 +378,6 @@ const CropSelection = ({ landDetails, onSubmit, onBack }: CropSelectionProps) =>
                               : "Not ideal for your soil/climate"
                             }
                           </p>
-                          <p>
-                            <span className="font-medium">Water:</span> {" "}
-                            {crop.waterUsage === "low" ? "Low usage" : 
-                             crop.waterUsage === "medium" ? "Medium usage" : 
-                             "High usage"}
-                          </p>
-                          <p>
-                            <span className="font-medium">ROI:</span> {" "}
-                            {crop.roi === "high" ? "High return" : 
-                             crop.roi === "medium" ? "Medium return" : 
-                             "Low return"}
-                          </p>
-                          <p><span className="font-medium">Yield:</span> {crop.yieldPerAcre} tons/acre</p>
                         </div>
                       </TooltipContent>
                     </Tooltip>
@@ -448,7 +385,7 @@ const CropSelection = ({ landDetails, onSubmit, onBack }: CropSelectionProps) =>
                 ))}
                 {filteredCrops.length === 0 && (
                   <div className="p-4 text-center text-gray-500">
-                    No crops match your filters
+                    No crops match your current filters
                   </div>
                 )}
               </div>
@@ -495,8 +432,9 @@ const CropSelection = ({ landDetails, onSubmit, onBack }: CropSelectionProps) =>
                           <span className="text-sm w-16">{crop.percentage.toFixed(0)}%</span>
                         </div>
                         
-                        <div className="text-xs text-gray-500">
-                          Est. yield: {crop.estimatedYield.toFixed(1)} {cropInfo?.category === "Grain" ? "tons" : "units"}
+                        <div className="text-xs text-gray-500 grid grid-cols-2 gap-2">
+                          <span>Est. yield: {crop.estimatedYield.toFixed(1)} tons</span>
+                          <span>Revenue: ₹{Math.round(crop.estimatedYield * (cropInfo?.marketPrice || 0)).toLocaleString()}</span>
                         </div>
                       </div>
                     );
@@ -513,9 +451,11 @@ const CropSelection = ({ landDetails, onSubmit, onBack }: CropSelectionProps) =>
               <div className="text-center space-y-4">
                 <div className="animate-spin h-8 w-8 border-4 border-foliage border-t-transparent rounded-full mx-auto"></div>
                 <p className="text-gray-600">Analyzing soil, climate, and market data...</p>
+                <p className="text-sm text-gray-500">Generating personalized recommendations for {landDetails.soilType} soil</p>
               </div>
             </div>
           ) : (
+            // ... keep existing code (AI recommendations display)
             <>
               <div className="bg-gradient-to-r from-foliage-light/30 to-foliage-light/10 rounded-md p-4">
                 <h3 className="text-lg font-medium mb-2 flex items-center">
@@ -556,8 +496,9 @@ const CropSelection = ({ landDetails, onSubmit, onBack }: CropSelectionProps) =>
                           <span className="text-sm w-12">{crop.percentage.toFixed(0)}%</span>
                         </div>
                         
-                        <div className="text-xs text-gray-500">
-                          Est. yield: {crop.estimatedYield.toFixed(1)} {cropInfo?.category === "Grain" ? "tons" : "units"}
+                        <div className="text-xs text-gray-500 grid grid-cols-2 gap-2">
+                          <span>Yield: {crop.estimatedYield.toFixed(1)} tons</span>
+                          <span>Revenue: ₹{Math.round(crop.estimatedYield * (cropInfo?.marketPrice || 0)).toLocaleString()}</span>
                         </div>
                       </div>
                     );
@@ -608,9 +549,8 @@ const CropSelection = ({ landDetails, onSubmit, onBack }: CropSelectionProps) =>
                           ₹{
                             Math.round(
                               selectedCrops.reduce((sum, crop) => {
-                                // Random price between 8000 and 25000 per ton
-                                const pricePerTon = 8000 + Math.random() * 17000;
-                                return sum + (crop.estimatedYield * pricePerTon);
+                                const cropInfo = cropsWithRecommendations.find(c => c.id === crop.id);
+                                return sum + (crop.estimatedYield * (cropInfo?.marketPrice || 0));
                               }, 0)
                             ).toLocaleString()
                           }
@@ -640,7 +580,7 @@ const CropSelection = ({ landDetails, onSubmit, onBack }: CropSelectionProps) =>
           className={`bg-foliage hover:bg-foliage-dark flex items-center ${!isReadyToSubmit ? 'opacity-70' : ''}`}
           disabled={!isReadyToSubmit}
         >
-          Continue
+          Continue to Analysis
           <ChevronRight size={16} className="ml-1" />
         </Button>
       </div>
