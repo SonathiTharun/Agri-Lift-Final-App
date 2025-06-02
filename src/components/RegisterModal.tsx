@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
@@ -62,8 +63,13 @@ export function RegisterModal({ open, setOpen, userType, lang, t }: RegisterModa
       setPhone('');
       setPassword('');
       setConfirmPassword('');
-      // Redirect to /dashboard after successful registration
-      navigate('/dashboard');
+      
+      // Route based on user type
+      if (userType === 'executive') {
+        navigate('/executive-dashboard');
+      } else {
+        navigate('/dashboard');
+      }
     }, 1500);
   };
 
@@ -80,7 +86,7 @@ export function RegisterModal({ open, setOpen, userType, lang, t }: RegisterModa
             {userType === 'farmer' ? 'Farmer Registration' : 'Executive Registration'}
           </DialogTitle>
           <DialogDescription>
-            Create an account to access our services
+            Create an account to access our {userType} services
           </DialogDescription>
         </DialogHeader>
         

@@ -25,6 +25,7 @@ import FarmingType from "./pages/FarmingType";
 import CropAllocation from "./pages/CropAllocation";
 import Orders from "./pages/Orders";
 import Settings from "./pages/Settings";
+import ExecutiveDashboard from "./pages/ExecutiveDashboard";
 
 const queryClient = new QueryClient();
 
@@ -39,6 +40,7 @@ const App = () => (
             <Routes>
               <Route path="/" element={<Welcome />} />
               <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/executive-dashboard" element={<ExecutiveDashboard />} />
               <Route path="/farming-type" element={<FarmingType />} />
               <Route path="/crop-allocation" element={<CropAllocation />} />
               <Route path="/loans" element={<Loans />} />

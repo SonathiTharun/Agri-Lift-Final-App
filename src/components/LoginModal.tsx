@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
@@ -46,8 +47,13 @@ export function LoginModal({ open, setOpen, userType, lang, t }: LoginModalProps
       setOpen(false);
       setEmail('');
       setPassword('');
-      // Redirect to /dashboard after successful login
-      navigate('/dashboard');
+      
+      // Route based on user type
+      if (userType === 'executive') {
+        navigate('/executive-dashboard');
+      } else {
+        navigate('/dashboard');
+      }
     }, 1500);
   };
 
@@ -64,7 +70,7 @@ export function LoginModal({ open, setOpen, userType, lang, t }: LoginModalProps
             {userType === 'farmer' ? 'Farmer Login' : 'Executive Login'}
           </DialogTitle>
           <DialogDescription>
-            Enter your credentials to access your account
+            Enter your credentials to access your {userType} account
           </DialogDescription>
         </DialogHeader>
         
