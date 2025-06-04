@@ -97,13 +97,13 @@ const translations = {
     "loan-services": "கடன் சேவைகள்",
     "loan-services-desc": "அரசு மற்றும் தனியார் விவசாய கடன்களுக்கான எளிமையான அணுகல்",
     "market": "சந்தை",
-    "market-desc": "நம்பகமான விநியோகஸ்தர்களிடமிருந்து தரமான விதைகள் மற்றும் உత్పత్తుల்",
+    "market-desc": "விவசாயார் நம்பகமான விநியோகஸ்தர்களிடமிருந்து தரமான விதைகள் மற்றும் உत్పత్తుల்",
     "machinery-options": "இயந்திர விருப்பங்கள்",
     "machinery-options-desc": "நெகிழ்வான உழவு மற்றும் அறுவடை இயந்திர வாடகை",
     "labor-management": "தொழிலாளர் மேலாண்மை",
     "labor-management-desc": "திறமையான நடவு தொழிலாளர்கள் மற்றும் பண்ணை மேலாளர்களுடன் இணைக்கவும்",
     "weather-forecasts": "வானிலை முன்னறிவிப்புகள்",
-    "weather-forecasts-desc": "துல்லியமான திட்டமிடலுக்கான உள்ளூர், நிகழ்நேர வானிலை புதுப்பிப்புகள்",
+    "weather-forecasts-desc": "ఖచ్చితమైన ప్రణాళిక కోసం స్థానిక, రియల్-టైమ్ వாతావరణ నవీకరణలు",
     "diverse-farming": "விவேறு விவசாயம்",
     "diverse-farming-desc": "கோழி வளர்ப்பு, பால் பண்ணை மற்றும் மீன் வளர்ப்பு செயல்பாடுகளுக்கு ஆதரவு",
     "market-connections": "ஏற்றுமதி",
@@ -111,9 +111,9 @@ const translations = {
     "footer-title": "அக்ரிலிஃப்ட் - உங்கள் விவசாய பங்காளர்",
     "footer-description": "సాంకేతిక పరిజ్ఞానం మరియు స్థిరమైన పరిష్కారాల ద్వారా వ్యవసాయంలో వినూత్నత",
     "privacy-policy": "తனியுரிமை கொள்கை",
-    "terms-of-service": "சேவை விதிமுறைகள்",
+    "terms-of-service": "சேவை விதிமுறைகளు",
     "support": "ஆதரவு",
-    "copyright": "© 2025 அக்ரிலிஃப்ட். அனைத்து உரிமைகளும் பாதுகாக்கப்பட்டவை.",
+    "copyright": "© 2025 அக்ரிலிஃப்ட். அனைத்து உரிமைகளుம் பாதுகாக்கப்பட்டவை.",
     "language": "மொழி"
   },
   te: {
@@ -193,6 +193,11 @@ const Welcome = () => {
   const handleOpenRegister = (type: 'farmer' | 'executive') => {
     setUserType(type);
     setRegisterOpen(true);
+  };
+
+  const handleLoginSuccess = () => {
+    console.log('Login successful');
+    // Additional success handling can be added here if needed
   };
 
   return (
@@ -372,11 +377,9 @@ const Welcome = () => {
       </footer>
       
       <LoginModal 
-        open={loginOpen} 
-        setOpen={setLoginOpen} 
-        userType={userType}
-        lang={lang}
-        t={t}
+        isOpen={loginOpen} 
+        onClose={() => setLoginOpen(false)} 
+        onSuccess={handleLoginSuccess}
       />
       
       <RegisterModal
