@@ -1,12 +1,11 @@
 
-import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { MapPin, Satellite, TestTube, Thermometer, Droplets, Wind } from "lucide-react";
+import { MapPin } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import BasicLandForm from "./BasicLandForm";
+import SoilAnalysisPanel from "./SoilAnalysisPanel";
+import SatelliteViewPanel from "./SatelliteViewPanel";
 
 interface LandDetails {
   location: string;
@@ -35,23 +34,6 @@ const LandDetailsForm = ({ initialData, onSubmit }: LandDetailsFormProps) => {
     organicMatter: 3.2
   });
   const { toast } = useToast();
-
-  const soilTypes = [
-    { value: "Loam", label: "Loam", description: "Balanced mixture, ideal for most crops" },
-    { value: "Clay", label: "Clay", description: "High water retention, nutrient-rich" },
-    { value: "Sandy", label: "Sandy", description: "Well-draining, warms quickly" },
-    { value: "Silt", label: "Silt", description: "Fertile, retains moisture well" },
-    { value: "Chalk", label: "Chalk", description: "Alkaline, free-draining" },
-    { value: "Peat", label: "Peat", description: "High organic content, acidic" }
-  ];
-
-  const climateTypes = [
-    { value: "Temperate", label: "Temperate", description: "Moderate climate, distinct seasons" },
-    { value: "Tropical", label: "Tropical", description: "Hot and humid, year-round growing" },
-    { value: "Continental", label: "Continental", description: "Hot summers, cold winters" },
-    { value: "Arid", label: "Arid", description: "Dry climate, irrigation required" },
-    { value: "Mediterranean", label: "Mediterranean", description: "Mild winters, dry summers" }
-  ];
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -147,7 +129,6 @@ const LandDetailsForm = ({ initialData, onSubmit }: LandDetailsFormProps) => {
       </div>
       
       <div className="grid lg:grid-cols-3 gap-6">
-        {/* Basic Land Information */}
         <div className="lg:col-span-2">
           <Card>
             <CardHeader>
@@ -157,200 +138,24 @@ const LandDetailsForm = ({ initialData, onSubmit }: LandDetailsFormProps) => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="location">Location <span className="text-red-500">*</span></Label>
-                    <div className="flex">
-                      <Input
-                        id="location"
-                        name="location"
-                        placeholder="Enter location"
-                        value={formData.location}
-                        onChange={handleChange}
-                        className={`flex-1 ${errors.location ? "border-red-500" : ""}`}
-                      />
-                      <Button 
-                        type="button" 
-                        variant="outline" 
-                        onClick={detectLocation} 
-                        disabled={isDetectingLocation} 
-                        className="ml-2"
-                      >
-                        <MapPin size={16} className="mr-1" />
-                        {isDetectingLocation ? "Detecting..." : "GPS"}
-                      </Button>
-                    </div>
-                    {errors.location && <p className="text-red-500 text-sm">{errors.location}</p>}
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="pincode">Pincode <span className="text-red-500">*</span></Label>
-                    <Input
-                      id="pincode"
-                      name="pincode"
-                      placeholder="Enter 6-digit pincode"
-                      value={formData.pincode}
-                      onChange={handleChange}
-                      className={errors.pincode ? "border-red-500" : ""}
-                    />
-                    {errors.pincode && <p className="text-red-500 text-sm">{errors.pincode}</p>}
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="plotNumber">Plot Number <span className="text-red-500">*</span></Label>
-                    <Input
-                      id="plotNumber"
-                      name="plotNumber"
-                      placeholder="Enter plot number"
-                      value={formData.plotNumber}
-                      onChange={handleChange}
-                      className={errors.plotNumber ? "border-red-500" : ""}
-                    />
-                    {errors.plotNumber && <p className="text-red-500 text-sm">{errors.plotNumber}</p>}
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="totalArea">Total Area (acres) <span className="text-red-500">*</span></Label>
-                    <Input
-                      id="totalArea"
-                      name="totalArea"
-                      type="number"
-                      step="0.01"
-                      min="0"
-                      placeholder="Enter total area"
-                      value={formData.totalArea || ""}
-                      onChange={handleChange}
-                      className={errors.totalArea ? "border-red-500" : ""}
-                    />
-                    {errors.totalArea && <p className="text-red-500 text-sm">{errors.totalArea}</p>}
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="soilType">Soil Type</Label>
-                    <select
-                      id="soilType"
-                      name="soilType"
-                      value={formData.soilType}
-                      onChange={handleChange}
-                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                    >
-                      {soilTypes.map(type => (
-                        <option key={type.value} value={type.value}>
-                          {type.label} - {type.description}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="climateType">Climate Type</Label>
-                    <select
-                      id="climateType"
-                      name="climateType"
-                      value={formData.climateType}
-                      onChange={handleChange}
-                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                    >
-                      {climateTypes.map(type => (
-                        <option key={type.value} value={type.value}>
-                          {type.label} - {type.description}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-
-                <div className="flex justify-end pt-4">
-                  <Button type="submit" className="bg-green-600 hover:bg-green-700">
-                    Continue to Smart Selection →
-                  </Button>
-                </div>
-              </form>
+              <BasicLandForm
+                formData={formData}
+                errors={errors}
+                onSubmit={handleSubmit}
+                onChange={handleChange}
+                onDetectLocation={detectLocation}
+                isDetectingLocation={isDetectingLocation}
+              />
             </CardContent>
           </Card>
         </div>
 
-        {/* Soil Analysis Panel */}
         <div className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center justify-between">
-                <span className="flex items-center">
-                  <TestTube className="h-5 w-5 mr-2 text-blue-600" />
-                  Soil Analysis
-                </span>
-                <Button onClick={simulateSoilTest} size="sm" variant="outline">
-                  Refresh
-                </Button>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <div className="grid grid-cols-2 gap-3">
-                <div className="bg-blue-50 p-3 rounded-lg">
-                  <div className="text-sm text-blue-600">pH Level</div>
-                  <div className="text-xl font-bold text-blue-900">{soilAnalysis.ph.toFixed(1)}</div>
-                  <Badge variant={soilAnalysis.ph >= 6 && soilAnalysis.ph <= 7.5 ? "default" : "destructive"} className="text-xs">
-                    {soilAnalysis.ph >= 6 && soilAnalysis.ph <= 7.5 ? "Optimal" : "Needs attention"}
-                  </Badge>
-                </div>
-
-                <div className="bg-green-50 p-3 rounded-lg">
-                  <div className="text-sm text-green-600">Nitrogen</div>
-                  <div className="text-xl font-bold text-green-900">{soilAnalysis.nitrogen.toFixed(0)}ppm</div>
-                  <Badge variant={soilAnalysis.nitrogen >= 40 ? "default" : "destructive"} className="text-xs">
-                    {soilAnalysis.nitrogen >= 40 ? "Good" : "Low"}
-                  </Badge>
-                </div>
-
-                <div className="bg-purple-50 p-3 rounded-lg">
-                  <div className="text-sm text-purple-600">Phosphorus</div>
-                  <div className="text-xl font-bold text-purple-900">{soilAnalysis.phosphorus.toFixed(0)}ppm</div>
-                  <Badge variant={soilAnalysis.phosphorus >= 25 ? "default" : "destructive"} className="text-xs">
-                    {soilAnalysis.phosphorus >= 25 ? "Good" : "Low"}
-                  </Badge>
-                </div>
-
-                <div className="bg-orange-50 p-3 rounded-lg">
-                  <div className="text-sm text-orange-600">Potassium</div>
-                  <div className="text-xl font-bold text-orange-900">{soilAnalysis.potassium.toFixed(0)}ppm</div>
-                  <Badge variant={soilAnalysis.potassium >= 20 ? "default" : "destructive"} className="text-xs">
-                    {soilAnalysis.potassium >= 20 ? "Good" : "Low"}
-                  </Badge>
-                </div>
-              </div>
-
-              <div className="bg-gray-50 p-3 rounded-lg">
-                <div className="text-sm text-gray-600">Organic Matter</div>
-                <div className="text-lg font-bold text-gray-900">{soilAnalysis.organicMatter.toFixed(1)}%</div>
-                <div className="text-xs text-gray-500">Soil health indicator</div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <Satellite className="h-5 w-5 mr-2 text-indigo-600" />
-                Satellite View
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="bg-gray-100 rounded-lg h-32 flex items-center justify-center mb-3">
-                <div className="text-center text-gray-500">
-                  <Satellite className="h-8 w-8 mx-auto mb-2" />
-                  <div className="text-sm">Satellite imagery</div>
-                  <div className="text-xs">Plot visualization</div>
-                </div>
-              </div>
-              {coordinates && (
-                <div className="text-xs text-gray-600">
-                  <div>Lat: {coordinates.lat.toFixed(6)}</div>
-                  <div>Lng: {coordinates.lng.toFixed(6)}</div>
-                </div>
-              )}
-            </CardContent>
-          </Card>
+          <SoilAnalysisPanel 
+            soilAnalysis={soilAnalysis}
+            onRefresh={simulateSoilTest}
+          />
+          <SatelliteViewPanel coordinates={coordinates} />
         </div>
       </div>
     </div>
