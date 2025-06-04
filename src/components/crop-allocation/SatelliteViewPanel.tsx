@@ -11,9 +11,11 @@ interface SatelliteViewPanelProps {
 const SatelliteViewPanel = ({ coordinates }: SatelliteViewPanelProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+  const [imageError, setImageError] = useState(false);
 
   const refreshSatelliteView = () => {
     setIsLoading(true);
+    setImageError(false);
     // Simulate loading time for satellite data
     setTimeout(() => {
       setIsLoading(false);
@@ -24,13 +26,17 @@ const SatelliteViewPanel = ({ coordinates }: SatelliteViewPanelProps) => {
   const getSatelliteImageUrl = () => {
     if (!coordinates) return null;
     
-    // Simulate satellite image URL (in real implementation, this would be from a satellite imagery service)
+    // Using a more reliable placeholder service
     const zoom = 15;
     const width = 300;
     const height = 200;
     
-    // Using a placeholder service that shows a satellite-style map
-    return `https://api.mapbox.com/styles/v1/mapbox/satellite-v9/static/${coordinates.lng},${coordinates.lat},${zoom}/${width}x${height}@2x?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw`;
+    // Using Google Static Maps as a more reliable fallback
+    return `https://maps.googleapis.com/maps/api/staticmap?center=${coordinates.lat},${coordinates.lng}&zoom=${zoom}&size=${width}x${height}&maptype=satellite&key=demo`;
+  };
+
+  const handleImageError = () => {
+    setImageError(true);
   };
 
   return (
@@ -64,28 +70,21 @@ const SatelliteViewPanel = ({ coordinates }: SatelliteViewPanelProps) => {
                     <div className="text-sm">Loading satellite view...</div>
                   </div>
                 </div>
+              ) : imageError ? (
+                <div className="flex items-center justify-center h-full text-gray-500">
+                  <div className="text-center">
+                    <Satellite className="h-8 w-8 mx-auto mb-2" />
+                    <div className="text-sm">Satellite view</div>
+                    <div className="text-xs">Plot visualization</div>
+                  </div>
+                </div>
               ) : (
                 <>
                   <img 
                     src={getSatelliteImageUrl() || ''} 
                     alt="Satellite view of your land"
                     className="w-full h-full object-cover rounded"
-                    onError={(e) => {
-                      // Fallback if satellite image fails to load
-                      const target = e.target as HTMLImageElement;
-                      target.style.display = 'none';
-                      target.parentElement!.innerHTML = `
-                        <div class="flex items-center justify-center h-full text-gray-500">
-                          <div class="text-center">
-                            <svg class="h-8 w-8 mx-auto mb-2" fill="currentColor" viewBox="0 0 24 24">
-                              <path d="M12 2L13.09 8.26L22 9L13.09 9.74L12 16L10.91 9.74L2 9L10.91 8.26L12 2Z"/>
-                            </svg>
-                            <div class="text-sm">Satellite view</div>
-                            <div class="text-xs">Plot visualization</div>
-                          </div>
-                        </div>
-                      `;
-                    }}
+                    onError={handleImageError}
                   />
                   <div className="absolute top-2 right-2 bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded">
                     Live View
