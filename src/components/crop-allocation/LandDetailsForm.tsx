@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { MapPin } from "lucide-react";
@@ -57,31 +56,64 @@ const LandDetailsForm = ({ initialData, onSubmit }: LandDetailsFormProps) => {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const { latitude, longitude } = position.coords;
-          setCoordinates({ lat: latitude, lng: longitude });
+          const newCoordinates = { lat: latitude, lng: longitude };
+          setCoordinates(newCoordinates);
           
-          setTimeout(() => {
-            setFormData(prev => ({
-              ...prev,
-              location: `Agricultural Zone: ${latitude.toFixed(4)}, ${longitude.toFixed(4)}`,
-              pincode: "560001"
-            }));
-            setIsDetectingLocation(false);
-            
-            toast({
-              title: "Location detected",
-              description: "GPS coordinates captured successfully"
-            });
-          }, 1500);
-        },
-        () => {
+          console.log('GPS coordinates detected:', newCoordinates);
+          
+          // Simulate reverse geocoding with more realistic location data
+          const locationName = `Agricultural Zone ${latitude.toFixed(4)}, ${longitude.toFixed(4)}`;
+          const simulatedPincode = Math.floor(100000 + Math.random() * 900000).toString();
+          
+          setFormData(prev => ({
+            ...prev,
+            location: locationName,
+            pincode: simulatedPincode
+          }));
+          
           setIsDetectingLocation(false);
+          
+          toast({
+            title: "Location detected successfully",
+            description: `GPS coordinates captured: ${latitude.toFixed(6)}, ${longitude.toFixed(6)}`
+          });
+        },
+        (error) => {
+          setIsDetectingLocation(false);
+          console.error('GPS error:', error);
+          
+          let errorMessage = "Please enter location manually";
+          switch(error.code) {
+            case error.PERMISSION_DENIED:
+              errorMessage = "Location access denied. Please enable location permissions.";
+              break;
+            case error.POSITION_UNAVAILABLE:
+              errorMessage = "Location information unavailable.";
+              break;
+            case error.TIMEOUT:
+              errorMessage = "Location request timed out.";
+              break;
+          }
+          
           toast({
             title: "Location detection failed",
-            description: "Please enter location manually",
+            description: errorMessage,
             variant: "destructive"
           });
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 60000
         }
       );
+    } else {
+      setIsDetectingLocation(false);
+      toast({
+        title: "GPS not supported",
+        description: "Your browser doesn't support geolocation",
+        variant: "destructive"
+      });
     }
   };
 
