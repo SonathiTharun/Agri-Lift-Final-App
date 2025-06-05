@@ -95,7 +95,7 @@ const PlotVisualizationEnhanced = ({
   return (
     <GradientBackground variant="primary">
       <motion.div
-        className="space-y-8 p-6"
+        className="space-y-6 p-6"
         variants={containerVariants}
         initial="hidden"
         animate="visible"
@@ -115,20 +115,20 @@ const PlotVisualizationEnhanced = ({
           </p>
         </motion.div>
 
-        {/* Hero Dashboard Section */}
+        {/* Optimized Hero Dashboard Section */}
         <motion.div
-          className="grid grid-cols-1 lg:grid-cols-4 gap-6"
+          className="grid grid-cols-1 lg:grid-cols-5 gap-4"
           variants={containerVariants}
         >
-          {/* Main 3D Visualization */}
+          {/* Enhanced Interactive Farm Field - Now spans 3 columns (60% width) */}
           <AnimatedCard
-            className="lg:col-span-2 h-full"
+            className="lg:col-span-3 min-h-[500px]"
             variant="glass"
             delay={0.2}
             title="🌱 Interactive Farm Field"
             icon={<Satellite className="h-6 w-6 text-blue-600" />}
           >
-            <div className="relative">
+            <div className="relative h-full">
               <VisualizationArea 
                 selectedCrops={selectedCrops}
                 rotationEnabled={true}
@@ -139,79 +139,86 @@ const PlotVisualizationEnhanced = ({
             </div>
           </AnimatedCard>
 
-          {/* Live Weather Widget */}
-          <AnimatedCard
-            variant="gradient"
-            delay={0.3}
-          >
-            <RealTimeWeatherWidget location={landDetails.location} />
-          </AnimatedCard>
+          {/* Right Side Panel - Optimized Heights */}
+          <div className="lg:col-span-2 space-y-4">
+            {/* Compact Weather Widget */}
+            <AnimatedCard
+              variant="gradient"
+              delay={0.3}
+              className="h-48"
+            >
+              <div className="h-full overflow-hidden">
+                <RealTimeWeatherWidget location={landDetails.location} />
+              </div>
+            </AnimatedCard>
 
-          {/* Smart Statistics Panel */}
-          <AnimatedCard
-            variant="glass"
-            delay={0.4}
-            title="📊 Smart Analytics"
-          >
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-3">
-                <motion.div 
-                  className="bg-gradient-to-br from-green-400 to-green-600 p-4 rounded-xl text-white text-center shadow-lg"
-                  whileHover={{ scale: 1.05 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  <AnimatedCounter
-                    value={selectedCrops.length}
-                    className="text-2xl font-bold"
-                  />
-                  <div className="text-xs opacity-90 mt-1">Crops Selected</div>
-                </motion.div>
+            {/* Compact Smart Analytics Panel */}
+            <AnimatedCard
+              variant="glass"
+              delay={0.4}
+              title="📊 Smart Analytics"
+              className="h-64"
+            >
+              <div className="h-full space-y-3">
+                <div className="grid grid-cols-2 gap-2">
+                  <motion.div 
+                    className="bg-gradient-to-br from-green-400 to-green-600 p-3 rounded-lg text-white text-center shadow-lg"
+                    whileHover={{ scale: 1.05 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <AnimatedCounter
+                      value={selectedCrops.length}
+                      className="text-xl font-bold"
+                    />
+                    <div className="text-xs opacity-90 mt-1">Crops</div>
+                  </motion.div>
+                  
+                  <motion.div 
+                    className="bg-gradient-to-br from-blue-400 to-blue-600 p-3 rounded-lg text-white text-center shadow-lg"
+                    whileHover={{ scale: 1.05 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <AnimatedCounter
+                      value={landDetails.totalArea}
+                      className="text-xl font-bold"
+                    />
+                    <div className="text-xs opacity-90 mt-1">Acres</div>
+                  </motion.div>
+                  
+                  <motion.div 
+                    className="bg-gradient-to-br from-purple-400 to-purple-600 p-3 rounded-lg text-white text-center shadow-lg"
+                    whileHover={{ scale: 1.05 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <AnimatedCounter
+                      value={totalYield}
+                      decimals={1}
+                      suffix=" tons"
+                      className="text-lg font-bold"
+                    />
+                    <div className="text-xs opacity-90 mt-1">Est. Yield</div>
+                  </motion.div>
+                  
+                  <motion.div 
+                    className="bg-gradient-to-br from-yellow-400 to-orange-500 p-3 rounded-lg text-white text-center shadow-lg"
+                    whileHover={{ scale: 1.05 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <AnimatedCounter
+                      value={estimatedRevenue}
+                      prefix="₹"
+                      className="text-sm font-bold"
+                    />
+                    <div className="text-xs opacity-90 mt-1">Revenue</div>
+                  </motion.div>
+                </div>
                 
-                <motion.div 
-                  className="bg-gradient-to-br from-blue-400 to-blue-600 p-4 rounded-xl text-white text-center shadow-lg"
-                  whileHover={{ scale: 1.05 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  <AnimatedCounter
-                    value={landDetails.totalArea}
-                    className="text-2xl font-bold"
-                  />
-                  <div className="text-xs opacity-90 mt-1">Total Acres</div>
-                </motion.div>
-                
-                <motion.div 
-                  className="bg-gradient-to-br from-purple-400 to-purple-600 p-4 rounded-xl text-white text-center shadow-lg"
-                  whileHover={{ scale: 1.05 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  <AnimatedCounter
-                    value={totalYield}
-                    decimals={1}
-                    suffix=" tons"
-                    className="text-xl font-bold"
-                  />
-                  <div className="text-xs opacity-90 mt-1">Est. Yield</div>
-                </motion.div>
-                
-                <motion.div 
-                  className="bg-gradient-to-br from-yellow-400 to-orange-500 p-4 rounded-xl text-white text-center shadow-lg"
-                  whileHover={{ scale: 1.05 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  <AnimatedCounter
-                    value={estimatedRevenue}
-                    prefix="₹"
-                    className="text-lg font-bold"
-                  />
-                  <div className="text-xs opacity-90 mt-1">Est. Revenue</div>
-                </motion.div>
+                <div className="flex-1 overflow-hidden">
+                  <IoTSensorDashboard location={landDetails.location} />
+                </div>
               </div>
-              
-              <div className="mt-4">
-                <IoTSensorDashboard location={landDetails.location} />
-              </div>
-            </div>
-          </AnimatedCard>
+            </AnimatedCard>
+          </div>
         </motion.div>
 
         {/* Live Market Ticker */}
