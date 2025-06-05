@@ -1,7 +1,7 @@
 
 import { useState } from "react";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChevronLeft, Activity, Brain, TrendingUp, Settings, Calendar, FileText, Satellite, BarChart, PieChart } from "lucide-react";
 import {
@@ -26,6 +26,11 @@ import RealTimeWeatherWidget from "./realtime/RealTimeWeatherWidget";
 import LiveMarketTicker from "./realtime/LiveMarketTicker";
 import IoTSensorDashboard from "./realtime/IoTSensorDashboard";
 import AIRecommendationEngine from "./analytics/AIRecommendationEngine";
+import AnimatedCard from "./modern/AnimatedCard";
+import AnimatedCounter from "./modern/AnimatedCounter";
+import LiveStatusIndicator from "./modern/LiveStatusIndicator";
+import GradientBackground from "./modern/GradientBackground";
+import ModernTabs from "./modern/ModernTabs";
 
 ChartJS.register(
   CategoryScale,
@@ -72,303 +77,403 @@ const PlotVisualizationEnhanced = ({
   isSubmitting
 }: PlotVisualizationEnhancedProps) => {
   const [activeTab, setActiveTab] = useState<string>("overview");
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+        delayChildren: 0.2
+      }
+    }
+  };
+
+  const totalYield = selectedCrops.reduce((sum, crop) => sum + crop.estimatedYield, 0);
+  const estimatedRevenue = totalYield * 2000;
   
   return (
-    <div className="space-y-6">
-      <div className="text-center mb-6">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Step 3: Real-Time Analysis & Visualization</h2>
-        <p className="text-gray-600">Live monitoring and intelligent insights for your crop allocation plan</p>
-      </div>
+    <GradientBackground variant="primary">
+      <motion.div
+        className="space-y-8 p-6"
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+      >
+        {/* Header Section */}
+        <motion.div 
+          className="text-center"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <h2 className="text-4xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent mb-4">
+            🚀 Real-Time Farm Intelligence
+          </h2>
+          <p className="text-lg text-gray-700 max-w-3xl mx-auto">
+            Advanced AI-powered monitoring and intelligent insights for your smart farming operations
+          </p>
+        </motion.div>
 
-      {/* Real-Time Overview Dashboard */}
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-8">
-        {/* Main Visualization */}
-        <div className="lg:col-span-2">
-          <Card className="h-full">
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <Satellite className="h-5 w-5 mr-2 text-blue-600" />
-                3D Field Visualization
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
+        {/* Hero Dashboard Section */}
+        <motion.div
+          className="grid grid-cols-1 lg:grid-cols-4 gap-6"
+          variants={containerVariants}
+        >
+          {/* Main 3D Visualization */}
+          <AnimatedCard
+            className="lg:col-span-2 h-full"
+            variant="glass"
+            delay={0.2}
+            title="🌱 Interactive Farm Field"
+            icon={<Satellite className="h-6 w-6 text-blue-600" />}
+          >
+            <div className="relative">
               <VisualizationArea 
                 selectedCrops={selectedCrops}
                 rotationEnabled={true}
               />
-            </CardContent>
-          </Card>
-        </div>
+              <div className="absolute top-4 right-4">
+                <LiveStatusIndicator status="online" label="Live Monitoring" />
+              </div>
+            </div>
+          </AnimatedCard>
 
-        {/* Real-Time Widgets */}
-        <div className="space-y-4">
-          <RealTimeWeatherWidget location={landDetails.location} />
-          <IoTSensorDashboard location={landDetails.location} />
-        </div>
+          {/* Live Weather Widget */}
+          <AnimatedCard
+            variant="gradient"
+            delay={0.3}
+          >
+            <RealTimeWeatherWidget location={landDetails.location} />
+          </AnimatedCard>
 
-        <div className="space-y-4">
-          <LiveMarketTicker location={landDetails.location} />
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-lg">Quick Stats</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
+          {/* Smart Statistics Panel */}
+          <AnimatedCard
+            variant="glass"
+            delay={0.4}
+            title="📊 Smart Analytics"
+          >
+            <div className="space-y-4">
               <div className="grid grid-cols-2 gap-3">
-                <div className="bg-green-50 p-3 rounded-lg text-center">
-                  <div className="text-2xl font-bold text-green-700">{selectedCrops.length}</div>
-                  <div className="text-xs text-green-600">Crops Selected</div>
-                </div>
-                <div className="bg-blue-50 p-3 rounded-lg text-center">
-                  <div className="text-2xl font-bold text-blue-700">{landDetails.totalArea}</div>
-                  <div className="text-xs text-blue-600">Total Acres</div>
-                </div>
-                <div className="bg-purple-50 p-3 rounded-lg text-center">
-                  <div className="text-2xl font-bold text-purple-700">
-                    {selectedCrops.reduce((sum, crop) => sum + crop.estimatedYield, 0).toFixed(1)}
+                <motion.div 
+                  className="bg-gradient-to-br from-green-400 to-green-600 p-4 rounded-xl text-white text-center shadow-lg"
+                  whileHover={{ scale: 1.05 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <AnimatedCounter
+                    value={selectedCrops.length}
+                    className="text-2xl font-bold"
+                  />
+                  <div className="text-xs opacity-90 mt-1">Crops Selected</div>
+                </motion.div>
+                
+                <motion.div 
+                  className="bg-gradient-to-br from-blue-400 to-blue-600 p-4 rounded-xl text-white text-center shadow-lg"
+                  whileHover={{ scale: 1.05 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <AnimatedCounter
+                    value={landDetails.totalArea}
+                    className="text-2xl font-bold"
+                  />
+                  <div className="text-xs opacity-90 mt-1">Total Acres</div>
+                </motion.div>
+                
+                <motion.div 
+                  className="bg-gradient-to-br from-purple-400 to-purple-600 p-4 rounded-xl text-white text-center shadow-lg"
+                  whileHover={{ scale: 1.05 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <AnimatedCounter
+                    value={totalYield}
+                    decimals={1}
+                    suffix=" tons"
+                    className="text-xl font-bold"
+                  />
+                  <div className="text-xs opacity-90 mt-1">Est. Yield</div>
+                </motion.div>
+                
+                <motion.div 
+                  className="bg-gradient-to-br from-yellow-400 to-orange-500 p-4 rounded-xl text-white text-center shadow-lg"
+                  whileHover={{ scale: 1.05 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <AnimatedCounter
+                    value={estimatedRevenue}
+                    prefix="₹"
+                    className="text-lg font-bold"
+                  />
+                  <div className="text-xs opacity-90 mt-1">Est. Revenue</div>
+                </motion.div>
+              </div>
+              
+              <div className="mt-4">
+                <IoTSensorDashboard location={landDetails.location} />
+              </div>
+            </div>
+          </AnimatedCard>
+        </motion.div>
+
+        {/* Live Market Ticker */}
+        <AnimatedCard variant="gradient" delay={0.5}>
+          <LiveMarketTicker location={landDetails.location} />
+        </AnimatedCard>
+
+        {/* Advanced Analytics Dashboard */}
+        <AnimatedCard
+          variant="glass"
+          delay={0.6}
+          title="🧠 Comprehensive Analytics Suite"
+          icon={<Brain className="h-6 w-6 text-purple-600" />}
+        >
+          <ModernTabs
+            defaultValue="overview"
+            onValueChange={setActiveTab}
+            tabs={[
+              {
+                value: "overview",
+                label: "Overview",
+                icon: <Activity className="h-4 w-4" />,
+                content: (
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <SummaryTab 
+                      landDetails={landDetails}
+                      selectedCrops={selectedCrops}
+                      onSubmit={onSubmit}
+                      isSubmitting={isSubmitting}
+                    />
+                    <InsightsTab 
+                      landDetails={landDetails}
+                      selectedCrops={selectedCrops}
+                    />
                   </div>
-                  <div className="text-xs text-purple-600">Est. Yield (tons)</div>
-                </div>
-                <div className="bg-yellow-50 p-3 rounded-lg text-center">
-                  <div className="text-2xl font-bold text-yellow-700">₹{
-                    (selectedCrops.reduce((sum, crop) => sum + crop.estimatedYield, 0) * 2000).toLocaleString()
-                  }</div>
-                  <div className="text-xs text-yellow-600">Est. Revenue</div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-
-      {/* Detailed Analytics Tabs */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center">
-            <Brain className="h-5 w-5 mr-2 text-purple-600" />
-            Comprehensive Analysis Dashboard
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-6">
-              <TabsTrigger value="overview" className="flex items-center">
-                <Activity className="h-4 w-4 mr-1" />
-                Overview
-              </TabsTrigger>
-              <TabsTrigger value="ai-insights" className="flex items-center">
-                <Brain className="h-4 w-4 mr-1" />
-                AI Insights
-              </TabsTrigger>
-              <TabsTrigger value="financial" className="flex items-center">
-                <TrendingUp className="h-4 w-4 mr-1" />
-                Financial
-              </TabsTrigger>
-              <TabsTrigger value="resources" className="flex items-center">
-                <Settings className="h-4 w-4 mr-1" />
-                Resources
-              </TabsTrigger>
-              <TabsTrigger value="calendar" className="flex items-center">
-                <Calendar className="h-4 w-4 mr-1" />
-                Calendar
-              </TabsTrigger>
-              <TabsTrigger value="reports" className="flex items-center">
-                <FileText className="h-4 w-4 mr-1" />
-                Reports
-              </TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="overview" className="mt-6">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <SummaryTab 
-                  landDetails={landDetails}
-                  selectedCrops={selectedCrops}
-                  onSubmit={onSubmit}
-                  isSubmitting={isSubmitting}
-                />
-                <InsightsTab 
-                  landDetails={landDetails}
-                  selectedCrops={selectedCrops}
-                />
-              </div>
-            </TabsContent>
-
-            <TabsContent value="ai-insights" className="mt-6">
-              <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-                <AIRecommendationEngine 
-                  landDetails={landDetails}
-                  selectedCrops={selectedCrops}
-                  location={landDetails.location}
-                />
-                
-                <div className="space-y-6">
-                  {/* Predictive Analytics */}
-                  <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-200">
-                    <CardHeader>
-                      <CardTitle className="flex items-center text-lg">
-                        <Satellite className="h-5 w-5 mr-2 text-blue-600" />
-                        Predictive Analytics
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      <div className="bg-white rounded-lg p-4 shadow-sm">
-                        <h4 className="font-medium text-blue-900 mb-2">Yield Prediction</h4>
-                        <p className="text-sm text-blue-800 mb-2">
-                          Based on current conditions and historical data:
-                        </p>
-                        <div className="text-2xl font-bold text-blue-900">
-                          {selectedCrops.reduce((sum, crop) => sum + crop.estimatedYield, 0).toFixed(1)} tons
-                        </div>
-                        <p className="text-xs text-blue-700 mt-1">±5% confidence interval</p>
-                      </div>
+                )
+              },
+              {
+                value: "ai-insights",
+                label: "AI Insights",
+                icon: <Brain className="h-4 w-4" />,
+                content: (
+                  <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                    <AIRecommendationEngine 
+                      landDetails={landDetails}
+                      selectedCrops={selectedCrops}
+                      location={landDetails.location}
+                    />
+                    
+                    <div className="space-y-6">
+                      {/* Predictive Analytics */}
+                      <AnimatedCard variant="gradient" delay={0.1}>
+                        <CardHeader>
+                          <CardTitle className="flex items-center text-lg">
+                            <Satellite className="h-5 w-5 mr-2 text-blue-600" />
+                            🔮 Predictive Analytics
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                          <motion.div 
+                            className="bg-white rounded-lg p-4 shadow-sm"
+                            whileHover={{ scale: 1.02 }}
+                            transition={{ duration: 0.2 }}
+                          >
+                            <h4 className="font-medium text-blue-900 mb-2">📈 Yield Prediction</h4>
+                            <p className="text-sm text-blue-800 mb-2">
+                              Based on AI analysis of current conditions:
+                            </p>
+                            <div className="text-2xl font-bold text-blue-900">
+                              <AnimatedCounter
+                                value={totalYield}
+                                decimals={1}
+                                suffix=" tons"
+                              />
+                            </div>
+                            <p className="text-xs text-blue-700 mt-1">±5% confidence interval</p>
+                          </motion.div>
+                          
+                          <motion.div 
+                            className="bg-white rounded-lg p-4 shadow-sm"
+                            whileHover={{ scale: 1.02 }}
+                            transition={{ duration: 0.2 }}
+                          >
+                            <h4 className="font-medium text-green-900 mb-2">🛡️ Disease Risk Assessment</h4>
+                            <div className="flex items-center justify-between">
+                              <span className="text-sm text-green-800">Current Risk Level</span>
+                              <span className="text-lg font-bold text-green-900">Low</span>
+                            </div>
+                            <div className="w-full bg-green-200 rounded-full h-2 mt-2">
+                              <motion.div 
+                                className="bg-green-600 h-2 rounded-full"
+                                initial={{ width: 0 }}
+                                animate={{ width: '25%' }}
+                                transition={{ duration: 1, delay: 0.5 }}
+                              />
+                            </div>
+                          </motion.div>
+                          
+                          <motion.div 
+                            className="bg-white rounded-lg p-4 shadow-sm"
+                            whileHover={{ scale: 1.02 }}
+                            transition={{ duration: 0.2 }}
+                          >
+                            <h4 className="font-medium text-yellow-900 mb-2">📊 Market Forecast</h4>
+                            <p className="text-sm text-yellow-800">
+                              AI predicts 12% price increase over next 3 months
+                            </p>
+                            <div className="text-lg font-bold text-yellow-900 mt-1">
+                              🎯 Optimal selling: Week 8-10
+                            </div>
+                          </motion.div>
+                        </CardContent>
+                      </AnimatedCard>
                       
-                      <div className="bg-white rounded-lg p-4 shadow-sm">
-                        <h4 className="font-medium text-green-900 mb-2">Disease Risk Assessment</h4>
-                        <div className="flex items-center justify-between">
-                          <span className="text-sm text-green-800">Current Risk Level</span>
-                          <span className="text-lg font-bold text-green-900">Low</span>
-                        </div>
-                        <div className="w-full bg-green-200 rounded-full h-2 mt-2">
-                          <div className="bg-green-600 h-2 rounded-full" style={{ width: '25%' }}></div>
-                        </div>
-                      </div>
-                      
-                      <div className="bg-white rounded-lg p-4 shadow-sm">
-                        <h4 className="font-medium text-yellow-900 mb-2">Market Forecast</h4>
-                        <p className="text-sm text-yellow-800">
-                          Prices expected to increase by 12% over next 3 months
-                        </p>
-                        <div className="text-lg font-bold text-yellow-900 mt-1">
-                          Optimal selling window: Week 8-10
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                  
-                  {/* Risk Matrix */}
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Risk Assessment Matrix</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="bg-red-50 border border-red-200 rounded-lg p-3">
-                          <h4 className="font-medium text-red-900 text-sm">Weather Risk</h4>
-                          <div className="text-lg font-bold text-red-900">Medium</div>
-                          <p className="text-xs text-red-700">Heavy rain predicted</p>
-                        </div>
-                        
-                        <div className="bg-green-50 border border-green-200 rounded-lg p-3">
-                          <h4 className="font-medium text-green-900 text-sm">Market Risk</h4>
-                          <div className="text-lg font-bold text-green-900">Low</div>
-                          <p className="text-xs text-green-700">Stable demand</p>
-                        </div>
-                        
-                        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
-                          <h4 className="font-medium text-yellow-900 text-sm">Resource Risk</h4>
-                          <div className="text-lg font-bold text-yellow-900">Medium</div>
-                          <p className="text-xs text-yellow-700">Water availability</p>
-                        </div>
-                        
-                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-                          <h4 className="font-medium text-blue-900 text-sm">Pest Risk</h4>
-                          <div className="text-lg font-bold text-blue-900">Low</div>
-                          <p className="text-xs text-blue-700">Favorable conditions</p>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </div>
-              </div>
-            </TabsContent>
-
-            <TabsContent value="financial" className="mt-6">
-              <FinancialProjections 
-                selectedCrops={selectedCrops}
-                landDetails={landDetails}
-              />
-            </TabsContent>
-
-            <TabsContent value="resources" className="mt-6">
-              <ResourceOptimization
-                selectedCrops={selectedCrops}
-                landDetails={landDetails}
-              />
-            </TabsContent>
-
-            <TabsContent value="calendar" className="mt-6">
-              <CropCalendar selectedCrops={selectedCrops} />
-            </TabsContent>
-
-            <TabsContent value="reports" className="mt-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Export Options</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                    <Button variant="outline" className="w-full justify-start">
-                      <FileText className="h-4 w-4 mr-2" />
-                      Download Comprehensive Report (PDF)
-                    </Button>
-                    <Button variant="outline" className="w-full justify-start">
-                      <BarChart className="h-4 w-4 mr-2" />
-                      Export Analytics to Excel
-                    </Button>
-                    <Button variant="outline" className="w-full justify-start">
-                      <PieChart className="h-4 w-4 mr-2" />
-                      Generate Real-Time Dashboard
-                    </Button>
-                    <Button variant="outline" className="w-full justify-start">
-                      <Activity className="h-4 w-4 mr-2" />
-                      Export IoT Data History
-                    </Button>
-                  </CardContent>
-                </Card>
-                
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Sharing & Collaboration</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                    <Button variant="outline" className="w-full justify-start">
-                      Share Real-Time Dashboard
-                    </Button>
-                    <Button variant="outline" className="w-full justify-start">
-                      Send to Agricultural Advisor
-                    </Button>
-                    <Button variant="outline" className="w-full justify-start">
-                      Submit to Bank for Loan
-                    </Button>
-                    <Button variant="outline" className="w-full justify-start">
-                      Create Investor Presentation
-                    </Button>
-                  </CardContent>
-                </Card>
-              </div>
-            </TabsContent>
-          </Tabs>
-        </CardContent>
-      </Card>
-      
-      <div className="flex justify-between pt-6">
-        <Button 
-          variant="outline" 
-          onClick={onBack}
-          className="flex items-center"
-        >
-          <ChevronLeft size={16} className="mr-1" />
-          Back to Selection
-        </Button>
+                      {/* Risk Matrix */}
+                      <AnimatedCard delay={0.2}>
+                        <CardHeader>
+                          <CardTitle>⚠️ Smart Risk Assessment</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="grid grid-cols-2 gap-4">
+                            {[
+                              { label: "Weather Risk", level: "Medium", color: "red", icon: "🌦️", desc: "Heavy rain predicted" },
+                              { label: "Market Risk", level: "Low", color: "green", icon: "📈", desc: "Stable demand" },
+                              { label: "Resource Risk", level: "Medium", color: "yellow", icon: "💧", desc: "Water availability" },
+                              { label: "Pest Risk", level: "Low", color: "blue", icon: "🐛", desc: "Favorable conditions" }
+                            ].map((risk, index) => (
+                              <motion.div
+                                key={risk.label}
+                                className={`bg-${risk.color}-50 border border-${risk.color}-200 rounded-lg p-3`}
+                                initial={{ opacity: 0, scale: 0.9 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                transition={{ delay: index * 0.1 }}
+                                whileHover={{ scale: 1.05 }}
+                              >
+                                <h4 className={`font-medium text-${risk.color}-900 text-sm flex items-center`}>
+                                  <span className="mr-2">{risk.icon}</span>
+                                  {risk.label}
+                                </h4>
+                                <div className={`text-lg font-bold text-${risk.color}-900`}>{risk.level}</div>
+                                <p className={`text-xs text-${risk.color}-700`}>{risk.desc}</p>
+                              </motion.div>
+                            ))}
+                          </div>
+                        </CardContent>
+                      </AnimatedCard>
+                    </div>
+                  </div>
+                )
+              },
+              {
+                value: "financial",
+                label: "Financial",
+                icon: <TrendingUp className="h-4 w-4" />,
+                content: <FinancialProjections selectedCrops={selectedCrops} landDetails={landDetails} />
+              },
+              {
+                value: "resources",
+                label: "Resources",
+                icon: <Settings className="h-4 w-4" />,
+                content: <ResourceOptimization selectedCrops={selectedCrops} landDetails={landDetails} />
+              },
+              {
+                value: "calendar",
+                label: "Calendar",
+                icon: <Calendar className="h-4 w-4" />,
+                content: <CropCalendar selectedCrops={selectedCrops} />
+              },
+              {
+                value: "reports",
+                label: "Reports",
+                icon: <FileText className="h-4 w-4" />,
+                content: (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <AnimatedCard delay={0.1}>
+                      <CardHeader>
+                        <CardTitle>📄 Export Options</CardTitle>
+                      </CardHeader>
+                      <CardContent className="space-y-3">
+                        {[
+                          { icon: <FileText className="h-4 w-4" />, label: "Comprehensive Report (PDF)" },
+                          { icon: <BarChart className="h-4 w-4" />, label: "Analytics to Excel" },
+                          { icon: <PieChart className="h-4 w-4" />, label: "Real-Time Dashboard" },
+                          { icon: <Activity className="h-4 w-4" />, label: "IoT Data History" }
+                        ].map((item, index) => (
+                          <motion.div key={index} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                            <Button variant="outline" className="w-full justify-start">
+                              {item.icon}
+                              <span className="ml-2">{item.label}</span>
+                            </Button>
+                          </motion.div>
+                        ))}
+                      </CardContent>
+                    </AnimatedCard>
+                    
+                    <AnimatedCard delay={0.2}>
+                      <CardHeader>
+                        <CardTitle>🤝 Sharing & Collaboration</CardTitle>
+                      </CardHeader>
+                      <CardContent className="space-y-3">
+                        {[
+                          "Share Real-Time Dashboard",
+                          "Send to Agricultural Advisor", 
+                          "Submit to Bank for Loan",
+                          "Create Investor Presentation"
+                        ].map((label, index) => (
+                          <motion.div key={index} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                            <Button variant="outline" className="w-full justify-start">
+                              {label}
+                            </Button>
+                          </motion.div>
+                        ))}
+                      </CardContent>
+                    </AnimatedCard>
+                  </div>
+                )
+              }
+            ]}
+          />
+        </AnimatedCard>
         
-        <Button 
-          onClick={onSubmit}
-          className="bg-green-600 hover:bg-green-700 flex items-center"
-          disabled={isSubmitting}
+        {/* Action Buttons */}
+        <motion.div 
+          className="flex justify-between pt-6"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.8 }}
         >
-          {isSubmitting ? 'Saving Real-Time Plan...' : 'Save Complete Plan'}
-        </Button>
-      </div>
-    </div>
+          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+            <Button 
+              variant="outline" 
+              onClick={onBack}
+              className="flex items-center bg-white/50 backdrop-blur-sm border-white/30 shadow-lg hover:bg-white/70"
+            >
+              <ChevronLeft size={16} className="mr-1" />
+              Back to Selection
+            </Button>
+          </motion.div>
+          
+          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+            <Button 
+              onClick={onSubmit}
+              className="bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 flex items-center shadow-lg"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? (
+                <>
+                  <motion.div
+                    className="w-4 h-4 border-2 border-white border-t-transparent rounded-full mr-2"
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                  />
+                  Saving Smart Plan...
+                </>
+              ) : (
+                '🚀 Save Complete Plan'
+              )}
+            </Button>
+          </motion.div>
+        </motion.div>
+      </motion.div>
+    </GradientBackground>
   );
 };
 
