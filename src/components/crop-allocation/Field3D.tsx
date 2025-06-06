@@ -1,3 +1,4 @@
+
 import React, { useRef, useState } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, Environment, Text, Html } from "@react-three/drei";
@@ -5,27 +6,25 @@ import * as THREE from "three";
 import FieldGround from "./3d/FieldGround";
 import FieldDecorations from "./3d/FieldDecorations";
 import CropPlacement from "./3d/CropPlacement";
-interface SelectedCrop {
-  id: string;
-  name: string;
-  area: number;
-  percentage: number;
-  estimatedYield: number;
-}
+import { SelectedCrop } from "./types";
+
 interface Field3DProps {
   crops: SelectedCrop[];
   rotationEnabled: boolean;
 }
+
 const Field3DScene: React.FC<Field3DProps> = ({
   crops,
   rotationEnabled
 }) => {
   const groupRef = useRef<THREE.Group>(null);
+  
   useFrame(() => {
     if (rotationEnabled && groupRef.current) {
       groupRef.current.rotation.y += 0.003;
     }
   });
+  
   return <group ref={groupRef} position={[0, 0, 0]}>
       <FieldGround />
       <FieldDecorations />
@@ -59,11 +58,13 @@ const Field3DScene: React.FC<Field3DProps> = ({
         </Html>}
     </group>;
 };
+
 const Field3D: React.FC<Field3DProps> = ({
   crops,
   rotationEnabled
 }) => {
   const [showInfo, setShowInfo] = useState(true);
+  
   return <div className="w-full h-96 rounded-lg overflow-hidden border shadow bg-gradient-to-b from-sky-200 to-green-100 relative">
       <Canvas shadows camera={{
       position: [0, 8, 10],
@@ -107,4 +108,5 @@ const Field3D: React.FC<Field3DProps> = ({
       </div>
     </div>;
 };
+
 export default Field3D;
