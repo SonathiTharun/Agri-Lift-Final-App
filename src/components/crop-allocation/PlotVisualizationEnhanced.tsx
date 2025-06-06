@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -128,7 +127,7 @@ const PlotVisualizationEnhanced = ({
               rotationEnabled={true}
             />
             <div className="absolute top-4 right-4">
-              <LiveStatusIndicator status="online" label="Live Monitoring" />
+              <LiveStatusIndicator status="online" label="Live Monitoring" showLabel={false} />
             </div>
           </div>
         </AnimatedCard>

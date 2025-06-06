@@ -4,14 +4,16 @@ import { motion } from 'framer-motion';
 
 interface LiveStatusIndicatorProps {
   status: 'online' | 'offline' | 'warning' | 'error';
-  label: string;
+  label?: string;
   className?: string;
+  showLabel?: boolean;
 }
 
 const LiveStatusIndicator: React.FC<LiveStatusIndicatorProps> = ({ 
   status, 
   label, 
-  className = '' 
+  className = '',
+  showLabel = true
 }) => {
   const getStatusColor = () => {
     switch (status) {
@@ -37,7 +39,9 @@ const LiveStatusIndicator: React.FC<LiveStatusIndicatorProps> = ({
           ease: "easeInOut"
         }}
       />
-      <span className="text-sm font-medium">{label}</span>
+      {showLabel && label && (
+        <span className="text-sm font-medium">{label}</span>
+      )}
     </div>
   );
 };
