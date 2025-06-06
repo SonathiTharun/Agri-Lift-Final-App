@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ChevronLeft, Sparkles, TrendingUp, Brain, Target, Droplets, Sun, DollarSign, Clock, AlertTriangle } from "lucide-react";
+import { ChevronLeft, Sparkles, TrendingUp, Brain, Target, Droplets, Sun, DollarSign, Clock, AlertTriangle, Wand2 } from "lucide-react";
 import { useRealTimeData } from "@/hooks/useRealTimeData";
 
 interface LandDetails {
@@ -51,6 +51,7 @@ const CropSelectionEnhanced = ({ landDetails, onSubmit, onBack }: CropSelectionE
   const [recommendations, setRecommendations] = useState<CropRecommendation[]>([]);
   const [isAnalyzing, setIsAnalyzing] = useState(true);
   const [activeTab, setActiveTab] = useState("ai-recommendations");
+  const [isOptimizing, setIsOptimizing] = useState(false);
   const { weatherData, marketData } = useRealTimeData(landDetails.location);
 
   useEffect(() => {
@@ -145,6 +146,90 @@ const CropSelectionEnhanced = ({ landDetails, onSubmit, onBack }: CropSelectionE
       }
       return [...prev, newCrop];
     });
+  };
+
+  const optimizeAllocation = () => {
+    setIsOptimizing(true);
+    
+    // Simulate AI processing delay
+    setTimeout(() => {
+      const totalArea = landDetails.totalArea;
+      const sortedRecommendations = [...recommendations].sort((a, b) => 
+        (b.suitability + b.profitability) - (a.suitability + a.profitability)
+      );
+      
+      // Calculate allocation based on suitability, profitability and risk balance
+      const newAllocations: SelectedCrop[] = [];
+      let remainingArea = totalArea;
+      
+      // For best crop, allocate up to 40% of land depending on suitability
+      if (sortedRecommendations.length > 0) {
+        const topCrop = sortedRecommendations[0];
+        const allocation = Math.min(
+          remainingArea * 0.4, 
+          (totalArea * topCrop.suitability / 100) * 0.5
+        );
+        newAllocations.push({
+          id: topCrop.id,
+          name: topCrop.name,
+          area: parseFloat(allocation.toFixed(1)),
+          percentage: (allocation / totalArea) * 100,
+          estimatedYield: topCrop.expectedYield * allocation
+        });
+        remainingArea -= allocation;
+      }
+      
+      // For second best crop, allocate up to 30% of land
+      if (sortedRecommendations.length > 1) {
+        const secondCrop = sortedRecommendations[1];
+        const allocation = Math.min(
+          remainingArea * 0.5,
+          (totalArea * secondCrop.suitability / 100) * 0.4
+        );
+        newAllocations.push({
+          id: secondCrop.id,
+          name: secondCrop.name,
+          area: parseFloat(allocation.toFixed(1)),
+          percentage: (allocation / totalArea) * 100,
+          estimatedYield: secondCrop.expectedYield * allocation
+        });
+        remainingArea -= allocation;
+      }
+      
+      // Distribute remaining land to other crops based on their suitability
+      if (sortedRecommendations.length > 2 && remainingArea > 0) {
+        const remainingCrops = sortedRecommendations.slice(2, 5); // Take up to 3 more crops
+        const totalSuitability = remainingCrops.reduce((sum, crop) => sum + crop.suitability, 0);
+        
+        remainingCrops.forEach(crop => {
+          if (remainingArea > 0 && totalSuitability > 0) {
+            const suitabilityRatio = crop.suitability / totalSuitability;
+            const allocation = parseFloat((remainingArea * suitabilityRatio).toFixed(1));
+            
+            if (allocation >= 0.1) { // Only add if allocation is meaningful
+              newAllocations.push({
+                id: crop.id,
+                name: crop.name,
+                area: allocation,
+                percentage: (allocation / totalArea) * 100,
+                estimatedYield: crop.expectedYield * allocation
+              });
+              remainingArea -= allocation;
+            }
+          }
+        });
+      }
+      
+      // If there's still land left, add it to the highest suitability crop
+      if (remainingArea > 0.1 && newAllocations.length > 0) {
+        newAllocations[0].area = parseFloat((newAllocations[0].area + remainingArea).toFixed(1));
+        newAllocations[0].percentage = (newAllocations[0].area / totalArea) * 100;
+        newAllocations[0].estimatedYield = recommendations.find(r => r.id === newAllocations[0].id)!.expectedYield * newAllocations[0].area;
+      }
+      
+      setSelectedCrops(newAllocations);
+      setIsOptimizing(false);
+    }, 1500);
   };
 
   const removeCrop = (cropId: string) => {
@@ -403,9 +488,20 @@ const CropSelectionEnhanced = ({ landDetails, onSubmit, onBack }: CropSelectionE
         <div>
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center">
-                <Target className="h-5 w-5 mr-2 text-purple-600" />
-                Selected Crops
+              <CardTitle className="flex items-center justify-between">
+                <span className="flex items-center">
+                  <Target className="h-5 w-5 mr-2 text-purple-600" />
+                  Selected Crops
+                </span>
+                <Button 
+                  onClick={optimizeAllocation} 
+                  variant="outline" 
+                  className="flex items-center space-x-1" 
+                  disabled={isAnalyzing || isOptimizing}
+                >
+                  <Wand2 size={16} className="mr-1" />
+                  {isOptimizing ? "Optimizing..." : "Let AI Decide"}
+                </Button>
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -432,6 +528,17 @@ const CropSelectionEnhanced = ({ landDetails, onSubmit, onBack }: CropSelectionE
                     <AlertTriangle className="h-4 w-4 text-red-600 mr-2" />
                     <span className="text-sm text-red-800">
                       Allocated area exceeds total land area
+                    </span>
+                  </div>
+                </div>
+              )}
+
+              {isOptimizing && (
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
+                  <div className="flex items-center justify-center space-x-2">
+                    <Wand2 className="h-4 w-4 text-blue-600 animate-pulse" />
+                    <span className="text-sm text-blue-800">
+                      AI is optimizing crop allocation...
                     </span>
                   </div>
                 </div>
