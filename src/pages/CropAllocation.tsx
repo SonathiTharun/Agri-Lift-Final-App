@@ -3,10 +3,11 @@ import { useState } from "react";
 import { Layout } from "@/components/Layout";
 import { useNavigate } from "react-router-dom";
 import LandDetailsForm from "@/components/crop-allocation/LandDetailsForm";
-import CropSelection from "@/components/crop-allocation/CropSelection";
-import PlotVisualization from "@/components/crop-allocation/PlotVisualization";
+import CropSelectionEnhanced from "@/components/crop-allocation/CropSelectionEnhanced";
+import PlotVisualizationEnhanced from "@/components/crop-allocation/PlotVisualizationEnhanced";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { CheckCircle, Circle } from "lucide-react";
 
 type StepType = "land-details" | "crop-selection" | "visualization";
 
@@ -55,12 +56,11 @@ const CropAllocation = () => {
   const handleFinish = () => {
     setIsSubmitting(true);
     
-    // Simulate API call
     setTimeout(() => {
       setIsSubmitting(false);
       toast({
-        title: "Crop allocation plan saved",
-        description: "Your allocation plan has been saved successfully."
+        title: "Complete crop allocation plan saved",
+        description: "Your real-time smart farming plan with AI insights has been saved successfully."
       });
       navigate("/market");
     }, 1500);
@@ -74,93 +74,159 @@ const CropAllocation = () => {
     }
   };
 
-  const handleNext = () => {
-    if (currentStep === "visualization") {
-      navigate("/market");
-    }
+  const getStepStatus = (step: StepType) => {
+    const steps = ["land-details", "crop-selection", "visualization"];
+    const currentIndex = steps.indexOf(currentStep);
+    const stepIndex = steps.indexOf(step);
+    
+    if (stepIndex < currentIndex) return "completed";
+    if (stepIndex === currentIndex) return "current";
+    return "upcoming";
   };
 
   return (
     <Layout>
       <main className="container mx-auto px-4 pb-10">
-        <div className="max-w-5xl mx-auto pt-6">
-          <h1 className="text-2xl md:text-3xl font-bold mb-6 text-foliage-dark">Crop Allocation Plan</h1>
+        <div className="max-w-7xl mx-auto pt-6">
+          <div className="text-center mb-8">
+            <h1 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
+              Smart Crop Allocation System
+            </h1>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              AI-powered crop planning with real-time insights, market analysis, and predictive recommendations
+            </p>
+          </div>
 
-          {/* Progress indicator */}
-          <div className="mb-8">
-            <div className="flex items-center justify-between">
+          {/* Enhanced Progress indicator */}
+          <div className="mb-10">
+            <div className="flex items-center justify-between max-w-4xl mx-auto">
+              {/* Step 1 */}
               <div className="flex flex-col items-center">
-                <div className={`w-10 h-10 rounded-full flex items-center justify-center ${currentStep === "land-details" ? "bg-foliage text-white" : "bg-foliage/20 text-foliage-dark"}`}>
-                  1
+                <div className={`w-16 h-16 rounded-full flex items-center justify-center transition-all duration-300 ${
+                  getStepStatus("land-details") === "completed" 
+                    ? "bg-green-600 text-white shadow-lg" 
+                    : getStepStatus("land-details") === "current"
+                      ? "bg-blue-600 text-white shadow-lg scale-110" 
+                      : "bg-gray-200 text-gray-400"
+                }`}>
+                  {getStepStatus("land-details") === "completed" ? (
+                    <CheckCircle className="h-8 w-8" />
+                  ) : (
+                    <Circle className="h-8 w-8" />
+                  )}
                 </div>
-                <span className="text-sm mt-1">Land Details</span>
+                <div className="text-center mt-3">
+                  <div className="font-semibold text-gray-900">Smart Land Analysis</div>
+                  <div className="text-sm text-gray-500">GPS mapping & soil testing</div>
+                </div>
               </div>
-              <div className="flex-1 h-1 mx-2 bg-gray-200">
+              
+              {/* Progress Line 1 */}
+              <div className="flex-1 h-2 mx-4 bg-gray-200 rounded-full overflow-hidden">
                 <div 
-                  className="h-full bg-foliage" 
-                  style={{ width: currentStep === "land-details" ? "0%" : currentStep === "crop-selection" ? "50%" : "100%" }}
+                  className="h-full bg-gradient-to-r from-blue-600 to-green-600 transition-all duration-500" 
+                  style={{ 
+                    width: getStepStatus("crop-selection") === "upcoming" ? "0%" : "100%" 
+                  }}
                 />
               </div>
+              
+              {/* Step 2 */}
               <div className="flex flex-col items-center">
-                <div className={`w-10 h-10 rounded-full flex items-center justify-center ${currentStep === "crop-selection" ? "bg-foliage text-white" : currentStep === "visualization" ? "bg-foliage/20 text-foliage-dark" : "bg-gray-200 text-gray-400"}`}>
-                  2
+                <div className={`w-16 h-16 rounded-full flex items-center justify-center transition-all duration-300 ${
+                  getStepStatus("crop-selection") === "completed" 
+                    ? "bg-green-600 text-white shadow-lg" 
+                    : getStepStatus("crop-selection") === "current"
+                      ? "bg-blue-600 text-white shadow-lg scale-110" 
+                      : "bg-gray-200 text-gray-400"
+                }`}>
+                  {getStepStatus("crop-selection") === "completed" ? (
+                    <CheckCircle className="h-8 w-8" />
+                  ) : (
+                    <Circle className="h-8 w-8" />
+                  )}
                 </div>
-                <span className="text-sm mt-1">Crop Selection</span>
+                <div className="text-center mt-3">
+                  <div className="font-semibold text-gray-900">AI Crop Selection</div>
+                  <div className="text-sm text-gray-500">Smart recommendations</div>
+                </div>
               </div>
-              <div className="flex-1 h-1 mx-2 bg-gray-200">
+              
+              {/* Progress Line 2 */}
+              <div className="flex-1 h-2 mx-4 bg-gray-200 rounded-full overflow-hidden">
                 <div 
-                  className="h-full bg-foliage" 
-                  style={{ width: currentStep === "visualization" ? "100%" : "0%" }}
+                  className="h-full bg-gradient-to-r from-blue-600 to-green-600 transition-all duration-500" 
+                  style={{ 
+                    width: getStepStatus("visualization") === "upcoming" ? "0%" : "100%" 
+                  }}
                 />
               </div>
+              
+              {/* Step 3 */}
               <div className="flex flex-col items-center">
-                <div className={`w-10 h-10 rounded-full flex items-center justify-center ${currentStep === "visualization" ? "bg-foliage text-white" : "bg-gray-200 text-gray-400"}`}>
-                  3
+                <div className={`w-16 h-16 rounded-full flex items-center justify-center transition-all duration-300 ${
+                  getStepStatus("visualization") === "completed" 
+                    ? "bg-green-600 text-white shadow-lg" 
+                    : getStepStatus("visualization") === "current"
+                      ? "bg-blue-600 text-white shadow-lg scale-110" 
+                      : "bg-gray-200 text-gray-400"
+                }`}>
+                  {getStepStatus("visualization") === "completed" ? (
+                    <CheckCircle className="h-8 w-8" />
+                  ) : (
+                    <Circle className="h-8 w-8" />
+                  )}
                 </div>
-                <span className="text-sm mt-1">Visualization</span>
+                <div className="text-center mt-3">
+                  <div className="font-semibold text-gray-900">Real-Time Analysis</div>
+                  <div className="text-sm text-gray-500">Live monitoring & insights</div>
+                </div>
               </div>
             </div>
           </div>
           
           {/* Content area */}
-          <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-            {currentStep === "land-details" && (
-              <LandDetailsForm 
-                initialData={landDetails}
-                onSubmit={handleLandDetailsSubmit}
-              />
-            )}
-            
-            {currentStep === "crop-selection" && (
-              <CropSelection
-                landDetails={landDetails}
-                onSubmit={handleCropSelectionSubmit}
-                onBack={handlePrevious}
-              />
-            )}
-            
-            {currentStep === "visualization" && (
-              <PlotVisualization
-                landDetails={landDetails}
-                selectedCrops={selectedCrops}
-                onSubmit={handleFinish}
-                onBack={handlePrevious}
-                isSubmitting={isSubmitting}
-              />
-            )}
+          <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+            <div className="p-8">
+              {currentStep === "land-details" && (
+                <LandDetailsForm 
+                  initialData={landDetails}
+                  onSubmit={handleLandDetailsSubmit}
+                />
+              )}
+              
+              {currentStep === "crop-selection" && (
+                <CropSelectionEnhanced
+                  landDetails={landDetails}
+                  onSubmit={handleCropSelectionSubmit}
+                  onBack={handlePrevious}
+                />
+              )}
+              
+              {currentStep === "visualization" && (
+                <PlotVisualizationEnhanced
+                  landDetails={landDetails}
+                  selectedCrops={selectedCrops}
+                  onSubmit={handleFinish}
+                  onBack={handlePrevious}
+                  isSubmitting={isSubmitting}
+                />
+              )}
+            </div>
           </div>
           
-          {/* Navigation Buttons */}
-          <div className="flex justify-between">
-            {currentStep === "visualization" && (
+          {/* Quick Access to Market */}
+          {currentStep === "visualization" && (
+            <div className="text-center mt-8">
               <Button
-                onClick={handleNext}
-                className="bg-foliage hover:bg-foliage-dark"
+                onClick={() => navigate("/market")}
+                variant="outline"
+                className="bg-gradient-to-r from-green-50 to-blue-50 border-green-200 hover:from-green-100 hover:to-blue-100"
               >
-                Next: Market
+                Continue to Smart Market →
               </Button>
-            )}
-          </div>
+            </div>
+          )}
         </div>
       </main>
     </Layout>
