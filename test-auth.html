@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Authentication Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .test-section { margin: 20px 0; padding: 20px; border: 1px solid #ddd; border-radius: 5px; }
+        button { padding: 10px 20px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 3px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        .result { margin-top: 10px; padding: 10px; background: #f8f9fa; border-radius: 3px; white-space: pre-wrap; }
+        .error { background: #f8d7da; color: #721c24; }
+        .success { background: #d4edda; color: #155724; }
+        input { padding: 8px; margin: 5px; border: 1px solid #ddd; border-radius: 3px; width: 200px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>AgriLift Authentication Test</h1>
+        
+        <div class="test-section">
+            <h3>Health Check</h3>
+            <button onclick="testHealth()">Test Backend Health</button>
+            <div id="health-result" class="result"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>User Registration</h3>
+            <div>
+                <input type="text" id="reg-name" placeholder="Full Name" value="Test Farmer">
+                <input type="email" id="reg-email" placeholder="Email" value="test@farmer.com">
+                <input type="tel" id="reg-phone" placeholder="Phone" value="+1234567890">
+                <input type="password" id="reg-password" placeholder="Password" value="Test123">
+                <select id="reg-role">
+                    <option value="farmer">Farmer</option>
+                    <option value="executive">Executive</option>
+                </select>
+                <button onclick="testRegister()">Register User</button>
+            </div>
+            <div id="register-result" class="result"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>User Login</h3>
+            <div>
+                <input type="email" id="login-email" placeholder="Email" value="test@farmer.com">
+                <input type="password" id="login-password" placeholder="Password" value="Test123">
+                <select id="login-role">
+                    <option value="">Any Role</option>
+                    <option value="farmer">Farmer</option>
+                    <option value="executive">Executive</option>
+                </select>
+                <button onclick="testLogin()">Login User</button>
+            </div>
+            <div id="login-result" class="result"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>Protected Route Test</h3>
+            <button onclick="testProfile()">Get Profile (Requires Auth)</button>
+            <button onclick="testStats()">Get User Stats (Executive Only)</button>
+            <div id="protected-result" class="result"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>Logout</h3>
+            <button onclick="testLogout()">Logout User</button>
+            <div id="logout-result" class="result"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:5000/api';
+        let authToken = null;
+
+        function displayResult(elementId, data, isError = false) {
+            const element = document.getElementById(elementId);
+            element.textContent = JSON.stringify(data, null, 2);
+            element.className = `result ${isError ? 'error' : 'success'}`;
+        }
+
+        async function testHealth() {
+            try {
+                const response = await fetch('http://localhost:5000/health');
+                const data = await response.json();
+                displayResult('health-result', data);
+            } catch (error) {
+                displayResult('health-result', { error: error.message }, true);
+            }
+        }
+
+        async function testRegister() {
+            try {
+                const userData = {
+                    name: document.getElementById('reg-name').value,
+                    email: document.getElementById('reg-email').value,
+                    phone: document.getElementById('reg-phone').value,
+                    password: document.getElementById('reg-password').value,
+                    role: document.getElementById('reg-role').value
+                };
+
+                const response = await fetch(`${API_BASE}/auth/register`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(userData),
+                    credentials: 'include'
+                });
+
+                const data = await response.json();
+                
+                if (response.ok && data.data?.token) {
+                    authToken = data.data.token;
+                    displayResult('register-result', { ...data, token: 'STORED' });
+                } else {
+                    displayResult('register-result', data, true);
+                }
+            } catch (error) {
+                displayResult('register-result', { error: error.message }, true);
+            }
+        }
+
+        async function testLogin() {
+            try {
+                const loginData = {
+                    email: document.getElementById('login-email').value,
+                    password: document.getElementById('login-password').value,
+                };
+
+                const userType = document.getElementById('login-role').value;
+                if (userType) {
+                    loginData.userType = userType;
+                }
+
+                const response = await fetch(`${API_BASE}/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(loginData),
+                    credentials: 'include'
+                });
+
+                const data = await response.json();
+                
+                if (response.ok && data.data?.token) {
+                    authToken = data.data.token;
+                    displayResult('login-result', { ...data, token: 'STORED' });
+                } else {
+                    displayResult('login-result', data, true);
+                }
+            } catch (error) {
+                displayResult('login-result', { error: error.message }, true);
+            }
+        }
+
+        async function testProfile() {
+            try {
+                if (!authToken) {
+                    throw new Error('No auth token. Please login first.');
+                }
+
+                const response = await fetch(`${API_BASE}/auth/profile`, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                    },
+                });
+
+                const data = await response.json();
+                displayResult('protected-result', data, !response.ok);
+            } catch (error) {
+                displayResult('protected-result', { error: error.message }, true);
+            }
+        }
+
+        async function testStats() {
+            try {
+                if (!authToken) {
+                    throw new Error('No auth token. Please login first.');
+                }
+
+                const response = await fetch(`${API_BASE}/auth/stats`, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                    },
+                });
+
+                const data = await response.json();
+                displayResult('protected-result', data, !response.ok);
+            } catch (error) {
+                displayResult('protected-result', { error: error.message }, true);
+            }
+        }
+
+        async function testLogout() {
+            try {
+                if (!authToken) {
+                    throw new Error('No auth token. Please login first.');
+                }
+
+                const response = await fetch(`${API_BASE}/auth/logout`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                    },
+                    credentials: 'include'
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    authToken = null;
+                    displayResult('logout-result', data);
+                } else {
+                    displayResult('logout-result', data, true);
+                }
+            } catch (error) {
+                displayResult('logout-result', { error: error.message }, true);
+            }
+        }
+    </script>
+</body>
+</html>

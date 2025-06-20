@@ -13,7 +13,7 @@ import {
   Zap,
   Users,
   Clock,
-  Compare,
+  SplitSquareVertical, // Replacing Compare with SplitSquareVertical
   Share
 } from "lucide-react";
 import { GlassCard } from "./GlassCard";
@@ -212,7 +212,7 @@ export const ModernProductCard = ({ product, onAddToComparison, viewMode = 'grid
                       onClick={handleCompare}
                       className="p-2"
                     >
-                      <Compare className="h-4 w-4" />
+                      <SplitSquareVertical className="h-4 w-4" />
                     </Button>
                     
                     <Button
@@ -290,7 +290,7 @@ export const ModernProductCard = ({ product, onAddToComparison, viewMode = 'grid
                   className="bg-white/90 hover:bg-white"
                   onClick={handleCompare}
                 >
-                  <Compare className="h-4 w-4 mr-1" />
+                  <SplitSquareVertical className="h-4 w-4 mr-1" />
                   Compare
                 </Button>
                 <Link to={`/market/${product.categoryId}/${product.id}`}>

@@ -23,10 +23,10 @@ const Services = () => {
 
   // Statistics data
   const stats = [
-    { value: "10K+", label: "Farmers Served" },
-    { value: "25+", label: "Seed Varieties" },
-    { value: "95%", label: "Success Rate" },
-    { value: "24/7", label: "Expert Support" },
+    { value: "10K+", label: t("farmers-served") },
+    { value: "25+", label: t("seed-varieties") },
+    { value: "95%", label: t("success-rate") },
+    { value: "24/7", label: t("expert-support") },
   ];
 
   // Service cards data
@@ -182,7 +182,7 @@ const Services = () => {
         onClick={service.action}
         className="w-full bg-emerald-600 hover:bg-emerald-700"
       >
-        Get Started
+        {t('get-started')}
       </Button>
     </div>
   );
@@ -194,10 +194,10 @@ const Services = () => {
           {/* Hero Section */}
           <div className="text-center max-w-4xl mx-auto mb-16">
             <h1 className="text-4xl md:text-5xl font-bold text-emerald-800 mb-6">
-              Agricultural Services
+              {t('agricultural-services')}
             </h1>
             <p className="text-xl text-gray-600 mb-8">
-              End-to-end solutions for modern farming needs, from seed to harvest and beyond
+              {t('services-description')}
             </p>
             <div className="flex flex-wrap justify-center gap-4">
               <Button 
@@ -205,14 +205,14 @@ const Services = () => {
                 className="bg-emerald-600 hover:bg-emerald-700"
                 onClick={() => document.getElementById('services')?.scrollIntoView({ behavior: 'smooth' })}
               >
-                Explore Services
+                {t('explore-services')}
               </Button>
-              <Button 
+              <Button
                 size="lg"
                 variant="outline"
                 onClick={() => navigate("/farming-type")}
               >
-                Choose Farming Type
+                {t('choose-farming-type')}
               </Button>
             </div>
           </div>
@@ -237,7 +237,7 @@ const Services = () => {
                   onClick={() => setActiveTab(tab)}
                   className={activeTab === tab ? "bg-emerald-600" : ""}
                 >
-                  {tab.charAt(0).toUpperCase() + tab.slice(1)} Services
+                  {t(`${tab}-services`)}
                 </Button>
               ))}
             </div>

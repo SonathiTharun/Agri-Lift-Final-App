@@ -9,6 +9,7 @@ import { LanguageProvider } from "./components/LanguageContext";
 import { CartProvider } from "./context/CartContext";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { WishlistProvider } from "./contexts/WishlistContext";
+import { AuthProvider } from "./contexts/AuthContext";
 import { Toaster } from "@/components/ui/sonner";
 
 const queryClient = new QueryClient();
@@ -19,12 +20,14 @@ createRoot(document.getElementById("root")!).render(
       <BrowserRouter>
         <ThemeProvider>
           <LanguageProvider>
-            <CartProvider>
-              <WishlistProvider>
-                <App />
-                <Toaster />
-              </WishlistProvider>
-            </CartProvider>
+            <AuthProvider>
+              <CartProvider>
+                <WishlistProvider>
+                  <App />
+                  <Toaster />
+                </WishlistProvider>
+              </CartProvider>
+            </AuthProvider>
           </LanguageProvider>
         </ThemeProvider>
       </BrowserRouter>

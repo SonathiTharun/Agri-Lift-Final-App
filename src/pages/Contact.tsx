@@ -8,10 +8,12 @@ import { Badge } from "@/components/ui/badge";
 import { Phone, Mail } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import React, { useState } from "react";
+import { useLanguage } from "@/components/LanguageContext";
 
 const initialState = { name: "", email: "", message: "" };
 
 const Contact = () => {
+  const { t } = useLanguage();
   const [form, setForm] = useState(initialState);
   const { toast } = useToast();
 
@@ -24,15 +26,15 @@ const Contact = () => {
     // validation
     if (!form.name || !form.email || !form.message) {
       toast({
-        title: "Missing information",
-        description: "Please fill all fields!",
+        title: t("missing-information"),
+        description: t("fill-all-fields"),
         variant: "destructive"
       });
       return;
     }
     toast({
-      title: "Message sent!",
-      description: "Thank you for reaching out. We'll get back to you soon."
+      title: t("message-sent"),
+      description: t("thank-you-message")
     });
     setForm(initialState);
   };
@@ -44,12 +46,12 @@ const Contact = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Mail className="h-6 w-6 text-foliage" />
-              Contact Us
+              {t('contact-us')}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="mb-6">
-              <p className="mb-2 text-gray-700">How can we assist you today? Fill out the form or use one of the direct contact methods below!</p>
+              <p className="mb-2 text-gray-700">{t('contact-description')}</p>
               <div className="flex flex-col md:flex-row gap-3 mb-4">
                 <Badge className="flex items-center gap-1 bg-foliage text-white">
                   <Phone className="h-4 w-4" /> +91 98765 43210
@@ -62,7 +64,7 @@ const Contact = () => {
             <form onSubmit={handleSubmit} className="flex flex-col gap-4">
               <Input
                 name="name"
-                placeholder="Your Name"
+                placeholder={t('your-name')}
                 value={form.name}
                 onChange={handleChange}
                 required
@@ -70,7 +72,7 @@ const Contact = () => {
               <Input
                 name="email"
                 type="email"
-                placeholder="Your Email"
+                placeholder={t('your-email')}
                 value={form.email}
                 onChange={handleChange}
                 required
@@ -78,16 +80,16 @@ const Contact = () => {
               <Textarea
                 name="message"
                 rows={5}
-                placeholder="How can we help you?"
+                placeholder={t('how-can-help')}
                 value={form.message}
                 onChange={handleChange}
                 required
                 className="resize-none"
               />
-              <Button className="bg-foliage hover:bg-foliage-dark">Send Message</Button>
+              <Button className="bg-foliage hover:bg-foliage-dark">{t('send-message')}</Button>
             </form>
             <div className="mt-8 text-sm text-gray-500">
-              Our support team responds within 24 hours. For urgent matters, please use the phone number above.
+              {t('support-response')}
             </div>
           </CardContent>
         </Card>

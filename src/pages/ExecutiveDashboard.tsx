@@ -1,6 +1,8 @@
 
 import { useState, useEffect } from "react";
 import { ExecutiveNavbar } from "@/components/ExecutiveNavbar";
+import { withAuth } from "@/contexts/AuthContext";
+import { useLanguage } from "@/components/LanguageContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -46,6 +48,7 @@ interface RecentActivity {
 }
 
 const ExecutiveDashboard = () => {
+  const { t } = useLanguage();
   const { toast } = useToast();
   const [metrics, setMetrics] = useState<DashboardMetrics>({
     totalFarmers: 1247,
@@ -149,7 +152,7 @@ const ExecutiveDashboard = () => {
     return (
       <div className="min-h-screen bg-gray-50">
         <ExecutiveNavbar />
-        <div className="pt-16">
+        <div className="pt-20 lg:pt-24">
           <div className="container mx-auto px-4 py-6">
             <div className="flex justify-center items-center min-h-[400px]">
               <div className="text-center animate-pulse">
@@ -167,12 +170,12 @@ const ExecutiveDashboard = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <ExecutiveNavbar />
-      <div className="pt-16 animate-fade-in">
+      <div className="pt-20 lg:pt-24 animate-fade-in">
         <div className="container mx-auto px-4 py-6">
           <div className="flex justify-between items-center mb-8 animate-slide-in">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Executive Dashboard</h1>
-              <p className="text-gray-600 mt-2">Monitor and manage AgriLift platform operations</p>
+              <h1 className="text-3xl font-bold text-gray-900">{t('executive-dashboard')}</h1>
+              <p className="text-gray-600 mt-2">{t('executive-dashboard-desc')}</p>
             </div>
             <div className="flex gap-3">
               <select 
@@ -180,9 +183,9 @@ const ExecutiveDashboard = () => {
                 onChange={(e) => handleTimeframeChange(e.target.value)}
                 className="px-3 py-2 border rounded-md bg-white hover:bg-gray-50 transition-colors"
               >
-                <option value="week">This Week</option>
-                <option value="month">This Month</option>
-                <option value="year">This Year</option>
+                <option value="week">{t('this-week')}</option>
+                <option value="month">{t('this-month')}</option>
+                <option value="year">{t('this-year')}</option>
               </select>
               <Button 
                 onClick={() => handleQuickAction("System Health Check")}
@@ -206,10 +209,10 @@ const ExecutiveDashboard = () => {
           {/* Key Metrics Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             {[
-              { title: "Total Farmers", value: metrics.totalFarmers.toLocaleString(), subtitle: `${metrics.activeFarmers} active this month`, icon: Users, color: "text-blue-600" },
-              { title: "Total Revenue", value: `₹${(metrics.totalRevenue / 100000).toFixed(1)}L`, subtitle: `+${metrics.monthlyGrowth}% from last ${selectedTimeframe}`, icon: DollarSign, color: "text-green-600" },
-              { title: "Pending Loans", value: metrics.pendingLoans.toString(), subtitle: "Requiring approval", icon: TrendingUp, color: "text-orange-600" },
-              { title: "Market Orders", value: metrics.marketOrders.toString(), subtitle: "Active orders", icon: ShoppingCart, color: "text-purple-600" }
+              { title: t("total-farmers"), value: metrics.totalFarmers.toLocaleString(), subtitle: `${metrics.activeFarmers} ${t('active-farmers')} this month`, icon: Users, color: "text-blue-600" },
+              { title: t("total-revenue"), value: `₹${(metrics.totalRevenue / 100000).toFixed(1)}L`, subtitle: `+${metrics.monthlyGrowth}% ${t('monthly-growth')}`, icon: DollarSign, color: "text-green-600" },
+              { title: t("pending-loans"), value: metrics.pendingLoans.toString(), subtitle: "Requiring approval", icon: TrendingUp, color: "text-orange-600" },
+              { title: t("market-orders"), value: metrics.marketOrders.toString(), subtitle: "Active orders", icon: ShoppingCart, color: "text-purple-600" }
             ].map((metric, index) => (
               <Card key={metric.title} className="hover:shadow-lg transition-all duration-300 hover:scale-105 animate-fade-in" style={{ animationDelay: `${index * 100}ms` }}>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -249,7 +252,7 @@ const ExecutiveDashboard = () => {
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                       <Bell className="h-5 w-5" />
-                      Recent Activities
+                      {t('recent-activities')}
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
@@ -397,4 +400,4 @@ const ExecutiveDashboard = () => {
   );
 };
 
-export default ExecutiveDashboard;
+export default withAuth(ExecutiveDashboard, 'executive');

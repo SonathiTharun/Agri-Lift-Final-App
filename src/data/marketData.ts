@@ -1,4 +1,8 @@
 import { ReactNode } from "react";
+import { apiService } from '@/services/apiService';
+
+// Translation function type
+type TranslationFunction = (key: string) => string;
 
 export type ProductCategory = {
   id: string;
@@ -33,6 +37,53 @@ export type Product = {
   benefits?: string[];
 };
 
+// Helper function to get translated categories
+export const getTranslatedCategories = (t: TranslationFunction): ProductCategory[] => [
+  {
+    id: "lab-grown-plants",
+    name: t("lab-grown-plants"),
+    description: t("lab-grown-plants-desc"),
+    icon: "Sprout",
+    image: "https://plus.unsplash.com/premium_photo-1679436184527-74af0573db60?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTd8fGxhYiUyMGdyb3duJTIwcGxhbnRzJTIwcGxhbnRpbmclMjBpbiUyMGZlaWxkc3xlbnwwfHwwfHx8MA%3D%3D"
+  },
+  {
+    id: "seeds",
+    name: t("seeds"),
+    description: t("seeds-desc"),
+    icon: "Leaf",
+    image: "https://media.istockphoto.com/id/1190855168/photo/young-woman-sowing-seeds-in-soil.webp?a=1&b=1&s=612x612&w=0&k=20&c=t_wtHjJmkLfuFa6NPdkbxUD6Rf-lfbYpniHGAORITO0="
+  },
+  {
+    id: "fertilizers",
+    name: t("fertilizers"),
+    description: t("fertilizers-desc"),
+    icon: "FlaskConical",
+    image: "https://media.istockphoto.com/id/522391502/photo/farmer-spreading-fertilizer-in-the-field-wheat.webp?a=1&b=1&s=612x612&w=0&k=20&c=uAfPuR4JPwdlx-KADzSAVbEYeuPR8SkHXsCiXuyizAo="
+  },
+  {
+    id: "pesticides",
+    name: t("pesticides"),
+    description: t("pesticides-desc"),
+    icon: "Flower",
+    image: "https://media.istockphoto.com/id/652966504/photo/watering-field.webp?a=1&b=1&s=612x612&w=0&k=20&c=e_d5LE1bDvairIeXHvviiWc_2__Ptn2eRS03GqEm8ueM="
+  },
+  {
+    id: "farming-tools",
+    name: t("farming-tools"),
+    description: t("farming-tools-desc"),
+    icon: "Shovel",
+    image: "https://media.istockphoto.com/id/1271469823/photo/gardening-tools-on-a-green-background-top-view-farming.jpg?s=612x612&w=0&k=20&c=UBrbD-SqT3O-jOnSd-wRiU0SdCgKC23ji8HyBb6GVME="
+  },
+  {
+    id: "irrigation",
+    name: t("irrigation"),
+    description: t("irrigation-desc"),
+    icon: "Leaf",
+    image: "https://media.istockphoto.com/id/1146633438/photo/irrigation-system-watering-agricultural-field-with-young-plants-and-sprinkler-system.webp?a=1&b=1&s=612x612&w=0&k=20&c=Ig2HJvkkAJ8ijC0N06wwKKdFTQRORFcDZoBcpahyw84="
+  }
+];
+
+// Keep the original categories for fallback
 export const categories: ProductCategory[] = [
   {
     id: "lab-grown-plants",
@@ -568,4 +619,155 @@ export const productsByCategory: Record<string, Product[]> = {
       discount: 10
     }
   ]
+};
+
+// API-based data fetching functions
+
+// Function to get categories from API with fallback to static data
+export const getMarketCategories = async (): Promise<ProductCategory[]> => {
+  try {
+    const response = await apiService.getProductCategories();
+    if (response.success) {
+      return response.data.categories.map(category => ({
+        id: category._id,
+        name: category.name,
+        description: category.description,
+        icon: category.icon,
+        image: category.image
+      }));
+    }
+  } catch (error) {
+    console.warn('Failed to fetch categories from API, using fallback:', error);
+  }
+
+  return categories; // Fallback to static data
+};
+
+// Function to get featured products from API with fallback
+export const getFeaturedProducts = async (): Promise<FeaturedProduct[]> => {
+  try {
+    const response = await apiService.getFeaturedProducts(10);
+    if (response.success) {
+      return response.data.products.map(product => ({
+        id: product._id,
+        categoryId: product.categoryId._id || product.categoryId,
+        name: product.name,
+        description: product.description,
+        price: product.discountedPrice || product.price,
+        image: product.images?.[0] || product.image,
+        rating: product.rating,
+        discount: product.discount
+      }));
+    }
+  } catch (error) {
+    console.warn('Failed to fetch featured products from API, using fallback:', error);
+  }
+
+  return featuredProducts; // Fallback to static data
+};
+
+// Function to get products by category from API with fallback
+export const getProductsByCategory = async (categoryId: string): Promise<Product[]> => {
+  try {
+    const response = await apiService.getProductsByCategory(categoryId, 1, 50);
+    if (response.success) {
+      return response.data.products.map(product => ({
+        id: product._id,
+        name: product.name,
+        description: product.description,
+        price: product.discountedPrice || product.price,
+        image: product.images?.[0] || product.image,
+        rating: product.rating,
+        stock: product.stock,
+        discount: product.discount,
+        images: product.images,
+        specifications: product.specifications ? Object.fromEntries(product.specifications) : undefined,
+        benefits: product.benefits
+      }));
+    }
+  } catch (error) {
+    console.warn(`Failed to fetch products for category ${categoryId} from API, using fallback:`, error);
+  }
+
+  return productsByCategory[categoryId] || []; // Fallback to static data
+};
+
+// Function to get all products with filtering
+export const getProducts = async (options: {
+  categoryId?: string;
+  search?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  page?: number;
+  limit?: number;
+} = {}): Promise<{ products: Product[]; pagination: any }> => {
+  try {
+    const response = await apiService.getProducts(options);
+    if (response.success) {
+      const products = response.data.products.map(product => ({
+        id: product._id,
+        name: product.name,
+        description: product.description,
+        price: product.discountedPrice || product.price,
+        image: product.images?.[0] || product.image,
+        rating: product.rating,
+        stock: product.stock,
+        discount: product.discount,
+        images: product.images,
+        specifications: product.specifications ? Object.fromEntries(product.specifications) : undefined,
+        benefits: product.benefits
+      }));
+
+      return {
+        products,
+        pagination: response.data.pagination
+      };
+    }
+  } catch (error) {
+    console.warn('Failed to fetch products from API, using fallback:', error);
+  }
+
+  // Fallback to static data
+  let allProducts: Product[] = [];
+  Object.values(productsByCategory).forEach(categoryProducts => {
+    allProducts = allProducts.concat(categoryProducts);
+  });
+
+  // Apply basic filtering for fallback
+  if (options.categoryId) {
+    allProducts = productsByCategory[options.categoryId] || [];
+  }
+
+  if (options.search) {
+    const searchTerm = options.search.toLowerCase();
+    allProducts = allProducts.filter(product =>
+      product.name.toLowerCase().includes(searchTerm) ||
+      product.description.toLowerCase().includes(searchTerm)
+    );
+  }
+
+  if (options.minPrice !== undefined) {
+    allProducts = allProducts.filter(product => product.price >= options.minPrice!);
+  }
+
+  if (options.maxPrice !== undefined) {
+    allProducts = allProducts.filter(product => product.price <= options.maxPrice!);
+  }
+
+  const page = options.page || 1;
+  const limit = options.limit || 20;
+  const startIndex = (page - 1) * limit;
+  const endIndex = startIndex + limit;
+
+  return {
+    products: allProducts.slice(startIndex, endIndex),
+    pagination: {
+      page,
+      limit,
+      total: allProducts.length,
+      totalPages: Math.ceil(allProducts.length / limit),
+      hasNext: endIndex < allProducts.length,
+      hasPrev: page > 1
+    }
+  };
 };

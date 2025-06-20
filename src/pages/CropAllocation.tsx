@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { Layout } from "@/components/Layout";
 import { useNavigate } from "react-router-dom";
+import { useLanguage } from "@/components/LanguageContext";
 import LandDetailsForm from "@/components/crop-allocation/LandDetailsForm";
 import CropSelectionEnhanced from "@/components/crop-allocation/CropSelectionEnhanced";
 import PlotVisualizationEnhanced from "@/components/crop-allocation/PlotVisualizationEnhanced";
@@ -29,6 +30,7 @@ interface SelectedCrop {
 }
 
 const CropAllocation = () => {
+  const { t } = useLanguage();
   const [currentStep, setCurrentStep] = useState<StepType>("land-details");
   const [landDetails, setLandDetails] = useState<LandDetails>({
     location: "",
@@ -90,7 +92,7 @@ const CropAllocation = () => {
         <div className="max-w-7xl mx-auto pt-6">
           <div className="text-center mb-8">
             <h1 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
-              Smart Crop Allocation System
+              {t('crop-allocation')}
             </h1>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
               AI-powered crop planning with real-time insights, market analysis, and predictive recommendations
@@ -116,7 +118,7 @@ const CropAllocation = () => {
                   )}
                 </div>
                 <div className="text-center mt-3">
-                  <div className="font-semibold text-gray-900">Smart Land Analysis</div>
+                  <div className="font-semibold text-gray-900">{t('land-details')}</div>
                   <div className="text-sm text-gray-500">GPS mapping & soil testing</div>
                 </div>
               </div>
@@ -147,7 +149,7 @@ const CropAllocation = () => {
                   )}
                 </div>
                 <div className="text-center mt-3">
-                  <div className="font-semibold text-gray-900">AI Crop Selection</div>
+                  <div className="font-semibold text-gray-900">{t('crop-selection')}</div>
                   <div className="text-sm text-gray-500">Smart recommendations</div>
                 </div>
               </div>
@@ -178,7 +180,7 @@ const CropAllocation = () => {
                   )}
                 </div>
                 <div className="text-center mt-3">
-                  <div className="font-semibold text-gray-900">Real-Time Analysis</div>
+                  <div className="font-semibold text-gray-900">{t('visualization')}</div>
                   <div className="text-sm text-gray-500">Live monitoring & insights</div>
                 </div>
               </div>

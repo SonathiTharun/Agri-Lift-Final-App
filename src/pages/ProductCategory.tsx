@@ -15,7 +15,7 @@ import {
   LayoutList,
   SlidersHorizontal
 } from "lucide-react";
-import { productsByCategory } from "@/data/marketData";
+import { productsByCategory, getProductsByCategory, type Product } from "@/data/marketData";
 import { motion } from "framer-motion";
 
 const ProductCard = ({ product, categoryId }) => {
@@ -102,8 +102,34 @@ export default function ProductCategory() {
     return categoryMap[catId] || "Products";
   };
 
-  // Get products for current category
-  const products = categoryId && productsByCategory[categoryId] ? productsByCategory[categoryId] : [];
+  // State for API products
+  const [apiProducts, setApiProducts] = useState<Product[]>([]);
+  const [isLoadingProducts, setIsLoadingProducts] = useState(true);
+
+  // Load products from API
+  useEffect(() => {
+    const loadProducts = async () => {
+      if (!categoryId) return;
+
+      setIsLoadingProducts(true);
+      try {
+        const products = await getProductsByCategory(categoryId);
+        setApiProducts(products);
+      } catch (error) {
+        console.error('Failed to load products:', error);
+        // Fallback handled in getProductsByCategory function
+      } finally {
+        setIsLoadingProducts(false);
+      }
+    };
+
+    loadProducts();
+  }, [categoryId]);
+
+  // Get products for current category (API first, then fallback)
+  const products = apiProducts.length > 0
+    ? apiProducts
+    : (categoryId && productsByCategory[categoryId] ? productsByCategory[categoryId] : []);
 
   // Filter and sort controls
   const sortOptions = [

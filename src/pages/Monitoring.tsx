@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Layout } from '@/components/Layout';
+import { useLanguage } from '@/components/LanguageContext';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -145,6 +146,7 @@ const getSeverityColor = (severity: string) => {
 };
 
 const Monitoring = () => {
+  const { t } = useLanguage();
   const { toast } = useToast();
   const [selectedField, setSelectedField] = useState(fieldData[0]);
   const [activeTab, setActiveTab] = useState('overview');
@@ -169,9 +171,9 @@ const Monitoring = () => {
         <div className="flex justify-between items-center mb-6 animate-fade-in">
           <div>
             <h1 className="text-3xl font-bold text-foliage-dark hover:text-foliage transition-colors">
-              Farm Monitoring System
+              {t('farm-monitoring')}
             </h1>
-            <p className="text-gray-600">Monitor and manage all your farming operations in real-time</p>
+            <p className="text-gray-600">{t('monitoring-description')}</p>
           </div>
           <div className="flex gap-3">
             <Button 

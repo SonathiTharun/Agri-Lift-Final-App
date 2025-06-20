@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tractor, Shovel, Forklift } from "lucide-react";
 import { Link } from "react-router-dom";
 import { toast } from "@/components/ui/use-toast";
+import { useLanguage } from "@/components/LanguageContext";
 
 type MachineryItem = {
   id: string;
@@ -117,6 +118,7 @@ const comboOffers: ComboOffer[] = [
 ];
 
 export default function Machinery() {
+  const { t } = useLanguage();
   const [currentTab, setCurrentTab] = useState<string>("rental");
   
   const handleBooking = (item: string, type: "rental" | "purchase" | "combo") => {
@@ -129,11 +131,11 @@ export default function Machinery() {
   const getAvailabilityBadge = (availability: MachineryItem["availability"]) => {
     switch(availability) {
       case "available":
-        return <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">Available Now</Badge>;
+        return <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">{t('available-now')}</Badge>;
       case "limited":
-        return <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200">Limited Availability</Badge>;
+        return <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200">{t('limited-availability')}</Badge>;
       case "unavailable":
-        return <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200">Currently Unavailable</Badge>;
+        return <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200">{t('currently-unavailable')}</Badge>;
       default:
         return null;
     }
@@ -145,9 +147,9 @@ export default function Machinery() {
       
       <main className="container mx-auto px-4 pb-10">
         <div className="max-w-5xl mx-auto text-center mb-8 animate-fade-in">
-          <h1 className="text-3xl md:text-4xl font-bold text-soil-dark mb-2">Farm Machinery</h1>
+          <h1 className="text-3xl md:text-4xl font-bold text-soil-dark mb-2">{t('machinery-title')}</h1>
           <p className="text-gray-600 max-w-2xl mx-auto">
-            Access modern farming equipment through flexible rental or purchase options.<br />
+            {t('machinery-description')}<br />
             <span className="block text-amber-600 mt-2 font-medium">New: View combo packages with operator + machinery for optimized harvest!</span>
           </p>
         </div>
@@ -155,9 +157,9 @@ export default function Machinery() {
         <div className="max-w-5xl mx-auto">
           <Tabs defaultValue="rental" onValueChange={setCurrentTab} value={currentTab} className="w-full">
             <TabsList className="grid grid-cols-3 mb-8 w-full md:w-auto">
-              <TabsTrigger value="rental">Rental Equipment</TabsTrigger>
-              <TabsTrigger value="purchase">Purchase Options</TabsTrigger>
-              <TabsTrigger value="combo">Machine + Labor Combos</TabsTrigger>
+              <TabsTrigger value="rental">{t('rental-equipment')}</TabsTrigger>
+              <TabsTrigger value="purchase">{t('purchase-options')}</TabsTrigger>
+              <TabsTrigger value="combo">{t('machine-labor-combos')}</TabsTrigger>
             </TabsList>
             
             <TabsContent value="rental" className="mt-6">
@@ -200,7 +202,7 @@ export default function Machinery() {
                         disabled={item.availability === "unavailable"}
                         onClick={() => handleBooking(item.name, "rental")}
                       >
-                        Book Rental
+                        {t('book-rental')}
                       </Button>
                     </CardFooter>
                   </Card>
@@ -255,7 +257,7 @@ export default function Machinery() {
                         disabled={item.availability === "unavailable"}
                         onClick={() => handleBooking(item.name, "purchase")}
                       >
-                        Purchase Inquiry
+                        {t('purchase-inquiry')}
                       </Button>
                     </CardFooter>
                   </Card>
@@ -263,14 +265,14 @@ export default function Machinery() {
               </div>
               
               <div className="mt-8 p-6 bg-foliage-light/20 rounded-lg">
-                <h3 className="text-xl font-semibold mb-2">Financing Options Available</h3>
+                <h3 className="text-xl font-semibold mb-2">{t('financing-options')}</h3>
                 <p className="text-gray-700">
                   We offer flexible financing solutions for machinery purchases. Visit our loans page or contact us for more information.
                 </p>
                 <div className="mt-4">
                   <Link to="/loans">
                     <Button variant="default" className="bg-foliage hover:bg-foliage-dark">
-                      Explore Financing Options
+                      {t('explore-financing')}
                     </Button>
                   </Link>
                 </div>
@@ -279,7 +281,7 @@ export default function Machinery() {
             
             <TabsContent value="combo" className="mt-6">
               <div className="mb-6 p-6 bg-wheat-light rounded-lg border border-wheat">
-                <h3 className="text-xl font-semibold text-soil-dark mb-2">Machine + Labor Combo Packages</h3>
+                <h3 className="text-xl font-semibold text-soil-dark mb-2">{t('combo-packages')}</h3>
                 <p className="text-gray-700">
                   Get the equipment you need along with skilled operators to maximize productivity. These packages offer significant savings compared to separate rentals.<br />
                   <span className="text-green-600 font-medium">Operator background verified and insured for all combo packages.</span>
@@ -335,7 +337,7 @@ export default function Machinery() {
                         className="w-full hover:bg-foliage hover:text-white"
                         onClick={() => handleBooking(combo.name, "combo")}
                       >
-                        Book Combo Package
+                        {t('book-combo')}
                       </Button>
                     </CardFooter>
                   </Card>
@@ -343,14 +345,14 @@ export default function Machinery() {
               </div>
               
               <div className="mt-8 p-6 bg-foliage-light/20 rounded-lg">
-                <h3 className="text-xl font-semibold mb-2">Custom Combo Packages</h3>
+                <h3 className="text-xl font-semibold mb-2">{t('custom-combo')}</h3>
                 <p className="text-gray-700">
                   Need a specific machinery and labor combination? Contact us to create a custom package tailored to your farming needs.
                 </p>
                 <div className="mt-4">
                   <Link to="/contact">
                     <Button variant="default" className="bg-foliage hover:bg-foliage-dark">
-                      Request Custom Package
+                      {t('request-custom')}
                     </Button>
                   </Link>
                 </div>

@@ -3,7 +3,17 @@ import { Navbar } from "@/components/Navbar";
 import { WeatherWidget } from "@/components/WeatherWidget";
 import { useLanguage } from "@/components/LanguageContext";
 import { motion } from "framer-motion";
-import { categories, featuredProducts, productsByCategory } from "@/data/marketData";
+import {
+  featuredProducts,
+  productsByCategory,
+  getTranslatedCategories,
+  getMarketCategories,
+  getFeaturedProducts,
+  getProducts,
+  type ProductCategory,
+  type FeaturedProduct,
+  type Product
+} from "@/data/marketData";
 import { FeaturedProductsCarousel } from "@/components/market/FeaturedProductsCarousel";
 import { CategoryCard } from "@/components/market/CategoryCard";
 import { TrustSection } from "@/components/market/TrustSection";
@@ -17,7 +27,7 @@ import { ProductComparison } from "@/components/market/ProductComparison";
 import { NotificationCenter } from "@/components/market/NotificationCenter";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Compare, Moon, Sun, Grid, List, Zap, TrendingUp } from "lucide-react";
+import { SplitSquareVertical, Moon, Sun, Grid, List, Zap, TrendingUp } from "lucide-react";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { useRealTimeData } from "@/hooks/useRealTimeData";
@@ -54,22 +64,75 @@ export default function Market() {
   const { wishlist } = useWishlist();
   const { marketData, isLoading: isRealTimeLoading } = useRealTimeData("global");
 
+  // API data states
+  const [apiCategories, setApiCategories] = useState<ProductCategory[]>([]);
+  const [apiFeaturedProducts, setApiFeaturedProducts] = useState<FeaturedProduct[]>([]);
+  const [apiProducts, setApiProducts] = useState<Product[]>([]);
+  const [isLoadingData, setIsLoadingData] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+
+  // Get translated categories (fallback)
+  const translatedCategories = getTranslatedCategories(t);
+
+  // Load initial data from API
+  useEffect(() => {
+    const loadInitialData = async () => {
+      setIsLoadingData(true);
+      try {
+        // Load categories, featured products, and initial products in parallel
+        const [categoriesData, featuredData, productsData] = await Promise.all([
+          getMarketCategories(),
+          getFeaturedProducts(),
+          getProducts({ page: 1, limit: 24 })
+        ]);
+
+        setApiCategories(categoriesData);
+        setApiFeaturedProducts(featuredData);
+        setApiProducts(productsData.products);
+        setTotalPages(productsData.pagination?.totalPages || 1);
+      } catch (error) {
+        console.error('Failed to load initial data:', error);
+        // Fallback to static data is handled in the API functions
+      } finally {
+        setIsLoadingData(false);
+      }
+    };
+
+    loadInitialData();
+  }, []);
+
   useEffect(() => {
     setTimeout(() => setPageLoaded(true), 100);
   }, []);
 
   // Get all products for display with enhanced filtering
   useEffect(() => {
-    const allProducts = Object.entries(productsByCategory).flatMap(([categoryId, products]) =>
-      products.map(product => ({ 
-        ...product, 
-        categoryId,
-        isNew: Math.random() > 0.8,
-        isTrending: Math.random() > 0.7,
-        viewCount: Math.floor(Math.random() * 1000) + 50,
-        discount: Math.random() > 0.7 ? Math.floor(Math.random() * 30) + 5 : undefined
-      }))
-    );
+    const loadFilteredProducts = async () => {
+      try {
+        // Use API data if available, otherwise fallback to static data
+        let allProducts: any[] = [];
+
+        if (apiProducts.length > 0) {
+          allProducts = apiProducts.map(product => ({
+            ...product,
+            isNew: Math.random() > 0.8,
+            isTrending: Math.random() > 0.7,
+            viewCount: Math.floor(Math.random() * 1000) + 50,
+          }));
+        } else {
+          // Fallback to static data
+          allProducts = Object.entries(productsByCategory).flatMap(([categoryId, products]) =>
+            products.map(product => ({
+              ...product,
+              categoryId,
+              isNew: Math.random() > 0.8,
+              isTrending: Math.random() > 0.7,
+              viewCount: Math.floor(Math.random() * 1000) + 50,
+              discount: Math.random() > 0.7 ? Math.floor(Math.random() * 30) + 5 : undefined
+            }))
+          );
+        }
 
     let filtered = allProducts;
 
@@ -141,8 +204,33 @@ export default function Market() {
         break;
     }
 
-    setDisplayedProducts(filtered.slice(0, 24));
-  }, [filters, searchQuery]);
+        setDisplayedProducts(filtered.slice(0, 24));
+      } catch (error) {
+        console.error('Error loading filtered products:', error);
+        // Fallback to static data filtering
+        const allProducts = Object.entries(productsByCategory).flatMap(([categoryId, products]) =>
+          products.map(product => ({
+            ...product,
+            categoryId,
+            isNew: Math.random() > 0.8,
+            isTrending: Math.random() > 0.7,
+            viewCount: Math.floor(Math.random() * 1000) + 50,
+            discount: Math.random() > 0.7 ? Math.floor(Math.random() * 30) + 5 : undefined
+          }))
+        );
+
+        let filtered = allProducts;
+        // Apply the same filtering logic...
+        if (filters.categories.length > 0) {
+          filtered = filtered.filter(product => filters.categories.includes(product.categoryId));
+        }
+        // ... (other filters would be applied here)
+        setDisplayedProducts(filtered.slice(0, 24));
+      }
+    };
+
+    loadFilteredProducts();
+  }, [filters, searchQuery, apiProducts]);
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
@@ -187,7 +275,7 @@ export default function Market() {
       {/* Weather Widget (Draggable) */}
       <WeatherWidget />
       
-      <main className="container mx-auto pt-28 px-4 pb-16">
+      <main className="container mx-auto pt-24 lg:pt-28 px-4 pb-16">
         {/* Enhanced Header */}
         <motion.div 
           className="max-w-6xl mx-auto text-center mb-12"
@@ -246,7 +334,9 @@ export default function Market() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.3 }}
         >
-          <FeaturedProductsCarousel featuredProducts={featuredProducts} />
+          <FeaturedProductsCarousel
+            featuredProducts={apiFeaturedProducts.length > 0 ? apiFeaturedProducts : featuredProducts}
+          />
         </motion.div>
         
         {/* Advanced Filters */}
@@ -274,7 +364,7 @@ export default function Market() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
                   <div className="flex items-center gap-2">
-                    <Compare className="h-5 w-5" />
+                    <SplitSquareVertical className="h-5 w-5" />
                     <span className="font-medium">Compare Products</span>
                     <Badge>{compareProducts.length}/3</Badge>
                   </div>
@@ -397,7 +487,7 @@ export default function Market() {
               </h2>
             </div>
           </div>
-          {categories.map((category, index) => (
+          {(apiCategories.length > 0 ? apiCategories : translatedCategories).map((category, index) => (
             <motion.div
               key={category.id}
               initial={{ opacity: 0, y: 20 }}

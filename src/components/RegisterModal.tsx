@@ -5,6 +5,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
 import { UserCircle, Briefcase, Mail, Lock, User, Phone } from "lucide-react";
 
 interface RegisterModalProps {
@@ -17,6 +18,7 @@ interface RegisterModalProps {
 
 export function RegisterModal({ open, setOpen, userType, lang, t }: RegisterModalProps) {
   const { toast } = useToast();
+  const { register } = useAuth();
   const navigate = useNavigate();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -46,31 +48,43 @@ export function RegisterModal({ open, setOpen, userType, lang, t }: RegisterModa
       return;
     }
     
-    // Simulate loading
     setLoading(true);
-    
-    // Simulate API call
-    setTimeout(() => {
-      setLoading(false);
-      toast({
-        title: "Registration successful",
-        description: `Welcome to AgriLift, ${name}!`,
+
+    try {
+      // Use AuthContext register method
+      await register({
+        name,
+        email,
+        password,
+        phone,
+        role: userType
       });
+
       setOpen(false);
+
       // Reset form
       setName('');
       setEmail('');
       setPhone('');
       setPassword('');
       setConfirmPassword('');
-      
+
       // Route based on user type
       if (userType === 'executive') {
         navigate('/executive-dashboard');
       } else {
         navigate('/dashboard');
       }
-    }, 1500);
+    } catch (error: any) {
+      console.error('Registration error:', error);
+      toast({
+        title: "Registration failed",
+        description: error.message || "An error occurred during registration",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

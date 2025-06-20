@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { useToast } from "@/hooks/use-toast";
 import { Layout } from "@/components/Layout";
+import { useLanguage } from "@/components/LanguageContext";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -15,6 +16,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 const Export = () => {
+  const { t } = useLanguage();
   const { toast } = useToast();
   const [selectedBuyers, setSelectedBuyers] = useState<string[]>([]);
   const [cropDetails, setCropDetails] = useState({
@@ -117,30 +119,30 @@ const Export = () => {
       <div className="container mx-auto py-10 px-4 md:px-6">
         <div className="flex flex-col space-y-5">
           <div>
-            <h1 className="text-3xl font-bold text-foliage-dark">Export Management Portal</h1>
-            <p className="text-muted-foreground mt-2">Connect with global and local buyers to sell your produce</p>
+            <h1 className="text-3xl font-bold text-foliage-dark">{t('export-management')}</h1>
+            <p className="text-muted-foreground mt-2">{t('export-description')}</p>
           </div>
 
           <Alert className="bg-foliage-light/20 border-foliage">
             <Package className="h-4 w-4 text-foliage" />
-            <AlertTitle>AgriLift Export Program</AlertTitle>
+            <AlertTitle>{t('agrilift-export-program')}</AlertTitle>
             <AlertDescription>
-              Join 2,500+ farmers already selling internationally with our export facilitation services.
+              {t('export-program-desc')}
             </AlertDescription>
           </Alert>
 
           <Tabs defaultValue="listing" className="w-full">
             <TabsList className="grid grid-cols-2 md:grid-cols-4 mb-8">
-              <TabsTrigger value="listing">Create Listing</TabsTrigger>
-              <TabsTrigger value="buyers">Find Buyers</TabsTrigger>
-              <TabsTrigger value="services">Export Services</TabsTrigger>
-              <TabsTrigger value="dashboard">My Exports</TabsTrigger>
+              <TabsTrigger value="listing">{t('create-listing')}</TabsTrigger>
+              <TabsTrigger value="buyers">{t('find-buyers')}</TabsTrigger>
+              <TabsTrigger value="services">{t('export-services')}</TabsTrigger>
+              <TabsTrigger value="dashboard">{t('my-exports')}</TabsTrigger>
             </TabsList>
 
             <TabsContent value="listing" className="space-y-4 bg-white p-6 rounded-lg border">
               <div className="space-y-2">
-                <h2 className="text-2xl font-semibold">List Your Produce</h2>
-                <p className="text-muted-foreground">Create a listing to showcase your produce to potential buyers</p>
+                <h2 className="text-2xl font-semibold">{t('list-your-produce')}</h2>
+                <p className="text-muted-foreground">{t('create-listing-desc')}</p>
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-6">

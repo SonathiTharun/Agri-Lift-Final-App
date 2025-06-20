@@ -18,137 +18,7 @@ import {
 } from 'lucide-react';
 import { LoginModal } from '@/components/LoginModal';
 import { RegisterModal } from '@/components/RegisterModal';
-
-const translations = {
-  en: {
-    "hero-title": "Empowering Farmers, Transforming Agriculture",
-    "hero-description": "Comprehensive platform offering end-to-end agricultural solutions, from land testing to market selling",
-    "farmer-login": "Farmer Login",
-    "farmer-register": "Register as Farmer",
-    "executive-portal": "Executive Portal",
-    "solutions-title": "Our Comprehensive Solutions",
-    "solutions-description": "Innovative agricultural technologies designed to increase efficiency and sustainability",
-    "land-testing": "Land Testing",
-    "land-testing-desc": "Advanced AI-driven soil analysis and crop recommendations",
-    "loan-services": "Loan Services",
-    "loan-services-desc": "Simplified access to government and private agricultural loans",
-    "market": "Market",
-    "market-desc": "Quality seeds and products sourced from trusted suppliers",
-    "machinery-options": "Machinery Options",
-    "machinery-options-desc": "Flexible ploughing and harvesting machinery rental",
-    "labor-management": "Labor Management",
-    "labor-management-desc": "Connect with skilled planting workers and farm managers",
-    "weather-forecasts": "Weather Forecasts",
-    "weather-forecasts-desc": "Localized, real-time weather updates for precise planning",
-    "diverse-farming": "Diverse Farming",
-    "diverse-farming-desc": "Support for poultry, dairy, and fishing farm operations",
-    "market-connections": "Export",
-    "market-connections-desc": "Direct crop selling platform to maximize farmer profits",
-    "footer-title": "AgriLift - Your Agricultural Partner",
-    "footer-description": "Innovating agriculture through technology and sustainable solutions",
-    "privacy-policy": "Privacy Policy",
-    "terms-of-service": "Terms of Service",
-    "support": "Support",
-    "copyright": "© 2025 AgriLift. All Rights Reserved.",
-    "language": "Language"
-  },
-  hi: {
-    "hero-title": "किसानों को सशक्त बनाना, कृषि को बदलना",
-    "hero-description": "जमीन परीक्षण से लेकर बाजार बिक्री तक संपूर्ण कृषि समाधान प्रदान करने वाला व्यापक मंच",
-    "farmer-login": "किसान लॉगिन",
-    "farmer-register": "किसान के रूप में पंजीकरण करें",
-    "executive-portal": "कार्यकारी पोर्टल",
-    "solutions-title": "हमारे व्यापक समाधान",
-    "solutions-description": "दक्षता और स्थिरता बढ़ाने के लिए नवीन कृषि प्रौद्योगिकियाँ",
-    "land-testing": "भूमि परीक्षण",
-    "land-testing-desc": "उन्नत AI-चालित मिट्टी विश्लेषण और फसल सिफारिशें",
-    "loan-services": "ऋण सेवाएँ",
-    "loan-services-desc": "सरकारी और निजी कृषि ऋणों तक सरल पहुँच",
-    "market": "बाज़ा���",
-    "market-desc": "विश्वसनीय आपूर्तिकर्ताओं से गुणवत्तापूर्ण बीज और उत्पाद",
-    "machinery-options": "मशीनरी विकल्प",
-    "machinery-options-desc": "लचीली जुताई और कटाई मशीनरी किराये पर",
-    "labor-management": "श्रम प्रबंधन",
-    "labor-management-desc": "कुशल रोपण श्रमिकों और खेत प्रबंधकों से जुड़ें",
-    "weather-forecasts": "मौसम की भविष्यवाणी",
-    "weather-forecasts-desc": "सटीक योजना के लिए स्थानीय, वास्तविक समय के मौसम अपडेट",
-    "diverse-farming": "विविध खेती",
-    "diverse-farming-desc": "पोल्ट्री, डेयरी और मत्स्य पालन के लिए समर्थन",
-    "market-connections": "निर्यात",
-    "market-connections-desc": "किसान लाभ को अधिकतम करने के लिए प्रत्यक्ष फसल बिक्री मंच",
-    "footer-title": "एग्रीलिफ्ट - आपका कृषि साथी",
-    "footer-description": "Innovating agriculture through technology and sustainable solutions",
-    "privacy-policy": "गोपनीयता नीति",
-    "terms-of-service": "सेवा की शर्तें",
-    "support": "सहायता",
-    "copyright": "© 2025 एग्रीलिफ्ट। सर्वाधिकार सुरक्षित।",
-    "language": "भाषा"
-  },
-  ta: {
-    "hero-title": "விவசாயிகளை மேம்படுத்துதல், விவசாயத்தை மாற்றுதல்",
-    "hero-description": "நிலச் சோதனை முதல் சந்தை விற்பனை வரை முழுமையான விவசாய தீர்வுகளை வழங்கும் விரிவான தளம்",
-    "farmer-login": "விவசாயி உள்நுழைவு",
-    "farmer-register": "விவசாயியாக பதிவு செய்யுங்கள்",
-    "executive-portal": "நிர்வாக போர்டல்",
-    "solutions-title": "எங்களின் விரிவான தீர்வுகள்",
-    "solutions-description": "திறன் மற்றும் நிலைத்தன்மையை அதிகரிக்க புதுமையான விவசாய தொழில்நுட்பங்கள்",
-    "land-testing": "நிலச் சோதனை",
-    "land-testing-desc": "மேம்பட்ட AI-இயக்கப்படும் மண் பகுப்பாய்வு மற்றும் பயிர் பரிந்துரைகள்",
-    "loan-services": "கடன் சேவைகள்",
-    "loan-services-desc": "அரசு மற்றும் தனியார் விவசாய கடன்களுக்கான எளிமையான அணுகல்",
-    "market": "சந்தை",
-    "market-desc": "விவசாயார் நம்பகமான விநியோகஸ்தர்களிடமிருந்து தரமான விதைகள் மற்றும் உत్పత్తుల்",
-    "machinery-options": "இயந்திர விருப்பங்கள்",
-    "machinery-options-desc": "நெகிழ்வான உழவு மற்றும் அறுவடை இயந்திர வாடகை",
-    "labor-management": "தொழிலாளர் மேலாண்மை",
-    "labor-management-desc": "திறமையான நடவு தொழிலாளர்கள் மற்றும் பண்ணை மேலாளர்களுடன் இணைக்கவும்",
-    "weather-forecasts": "வானிலை முன்னறிவிப்புகள்",
-    "weather-forecasts-desc": "ఖచ్చితమైన ప్రణాళిక కోసం స్థానిక, రియల్-టైమ్ వாతావరణ నవీకరణలు",
-    "diverse-farming": "விவேறு விவசாயம்",
-    "diverse-farming-desc": "கோழி வளர்ப்பு, பால் பண்ணை மற்றும் மீன் வளர்ப்பு செயல்பாடுகளுக்கு ஆதரவு",
-    "market-connections": "ஏற்றுமதி",
-    "market-connections-desc": "விவசாயி லாபத்தை அதிகரிக்க நேரடி பயிர் விற்பனை தளம்",
-    "footer-title": "அக்ரிலிஃப்ட் - உங்கள் விவசாய பங்காளர்",
-    "footer-description": "సాంకేతిక పరిజ్ఞానం మరియు స్థిరమైన పరిష్కారాల ద్వారా వ్యవసాయంలో వినూత్నత",
-    "privacy-policy": "తனியுரிமை கொள்கை",
-    "terms-of-service": "சேவை விதிமுறைகளు",
-    "support": "ஆதரவு",
-    "copyright": "© 2025 அக்ரிலிஃப்ட். அனைத்து உரிமைகளుம் பாதுகாக்கப்பட்டவை.",
-    "language": "மொழி"
-  },
-  te: {
-    "hero-title": "రైతులను బలోపేతం చేయడం, వ్యవసాయాన్ని మార్చడం",
-    "hero-description": "భూమి పరీక్ష నుండి మార్కెట్ విక్రయాల వరకు అంతిమదిశకు వ్యవసాయ పరిష్కారాలను అందించే సమగ్ర వేదిక",
-    "farmer-login": "రైతు లాగిన్",
-    "farmer-register": "రైతుగా నమోదు చేసుకోండి",
-    "executive-portal": "ఎగ్జిక్యూటివ్ పోర్టల్",
-    "solutions-title": "మా సమగ్ర పరిష్కారాలు",
-    "solutions-description": "సామర్థ్యం మరియు స్థిరత్వాన్ని పెంచడానికి వినూత్న వ్యవసాయ సాంకేతికతలు",
-    "land-testing": "భూమి పరీక్ష",
-    "land-testing-desc": "అధునాతన AI-ఆధారిత మట్టి విశ్లేషణ మరియు పంట సిఫార్సులు",
-    "loan-services": "రుణ సేవలు",
-    "loan-services-desc": "ప్రభుత్వ మరియు ప్రైవేట్ వ్యవసాయ రుణాలకు సరళీకృత ప్రాప్తి",
-    "market": "మార్కెట్",
-    "market-desc": "నమ్మదగిన సరఫరాదారుల నుండి నాణ్యమైన విత్తనాలు మరియు ఉత్పత్తులు",
-    "machinery-options": "యంత్రాల ఎంపికలు",
-    "machinery-options-desc": "సౌకర్యవంతమైన దున్నడం మరియు పంట కోయడం యంత్రాల అద్దె",
-    "labor-management": "కార్మిక నిర్వహణ",
-    "labor-management-desc": "నైపుణ్యం గల నాటు కార్మికులు మరియు వ్యవసాయ నిర్వాహకులతో కనెక్ట్ అవ్వ��డి",
-    "weather-forecasts": "వాతావరణ సూచనలు",
-    "weather-forecasts-desc": "ఖచ్చితమైన ప్రణాళిక కోసం స్థానిక, రియల్-టైమ్ వాతావరణ నవీకరణలు",
-    "diverse-farming": "వైవిధ్యమైన వ్యవసాయం",
-    "diverse-farming-desc": "పౌల్ట్రీ, డైరీ మరియు మత్స్య సాగు కార్�కలాపాలకు మద్దతు",
-    "market-connections": "ఎగుమతి",
-    "market-connections-desc": "రైతు లాభాలను గరిష్టీకరించడానికి ప్రత్యక్ష పంట అమ్మకాల వేదిక",
-    "footer-title": "అగ్రిలిఫ్ట్ - ఉங்களు వ్యవసాయ భాగస్వామి",
-    "footer-description": "సాంకేతిక పరిజ్ఞానం మరియు స్థిరమైన పరిష్కారాల ద్వారా వ్యవసాయంలో వినూత్నత",
-    "privacy-policy": "గోప్యతా విధానం",
-    "terms-of-service": "సేవా నిబంధనలు",
-    "support": "మద్దతు",
-    "copyright": "© 2025 అగ్రిలిఫ్ట్. అన్ని హక్కులు రిజర్వ్ చేయబడ్డాయి.",
-    "language": "భాష"
-  }
-};
+import { useLanguage } from '@/components/LanguageContext';
 
 const backgroundImages = [
   'https://images.unsplash.com/photo-1625246333195-78d9c38ad449?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80',
@@ -169,13 +39,11 @@ const features = [
 ];
 
 const Welcome = () => {
-  const [lang, setLang] = useState('en');
+  const { t, language, setLanguage } = useLanguage();
   const [currentSlide, setCurrentSlide] = useState(0);
   const [loginOpen, setLoginOpen] = useState(false);
   const [registerOpen, setRegisterOpen] = useState(false);
   const [userType, setUserType] = useState<'farmer' | 'executive'>('farmer');
-  
-  const t = (key: string) => translations[lang]?.[key] || translations.en[key];
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -197,7 +65,6 @@ const Welcome = () => {
 
   const handleLoginSuccess = () => {
     console.log('Login successful');
-    // Additional success handling can be added here if needed
   };
 
   return (
@@ -208,8 +75,8 @@ const Welcome = () => {
       
       <div className="fixed top-20 left-4 z-40 bg-white/90 backdrop-blur-sm p-2 rounded-lg shadow-md">
         <select 
-          value={lang}
-          onChange={(e) => setLang(e.target.value)}
+          value={language}
+          onChange={(e) => setLanguage(e.target.value)}
           className="bg-transparent text-sm font-medium focus:outline-none"
         >
           <option value="en">English</option>
@@ -268,7 +135,7 @@ const Welcome = () => {
                   variant="outline" 
                   className="w-full bg-white/10 hover:bg-white/20 text-white border-white/30"
                 >
-                  Register as Executive
+                  {t('farmer-register')}
                 </Button>
               </div>
             </div>
@@ -326,56 +193,6 @@ const Welcome = () => {
         </div>
       </section>
       
-      <footer className="bg-gradient-to-r from-foliage-dark to-foliage text-white py-12">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div>
-              <h3 className="text-xl font-bold mb-4">{t('footer-title')}</h3>
-              <p className="text-white/80 mb-6">{t('footer-description')}</p>
-              <div className="flex gap-4">
-                <a href="#" className="bg-white/10 hover:bg-white/20 w-10 h-10 rounded-full flex items-center justify-center transition-colors">
-                  <span className="sr-only">Facebook</span>
-                  <i className="fab fa-facebook-f"></i>
-                </a>
-                <a href="#" className="bg-white/10 hover:bg-white/20 w-10 h-10 rounded-full flex items-center justify-center transition-colors">
-                  <span className="sr-only">Twitter</span>
-                  <i className="fab fa-twitter"></i>
-                </a>
-                <a href="#" className="bg-white/10 hover:bg-white/20 w-10 h-10 rounded-full flex items-center justify-center transition-colors">
-                  <span className="sr-only">Instagram</span>
-                  <i className="fab fa-instagram"></i>
-                </a>
-              </div>
-            </div>
-            
-            <div>
-              <h4 className="text-lg font-semibold mb-4">Quick Links</h4>
-              <div className="grid grid-cols-2 gap-2">
-                <Link to="/" className="text-white/80 hover:text-white transition-colors">Home</Link>
-                <Link to="/loans" className="text-white/80 hover:text-white transition-colors">Loans</Link>
-                <Link to="/market" className="text-white/80 hover:text-white transition-colors">Market</Link>
-                <Link to="/labour" className="text-white/80 hover:text-white transition-colors">Labour</Link>
-                <Link to="/machinery" className="text-white/80 hover:text-white transition-colors">Machinery</Link>
-                <Link to="/contact" className="text-white/80 hover:text-white transition-colors">Contact</Link>
-              </div>
-            </div>
-            
-            <div>
-              <h4 className="text-lg font-semibold mb-4">Legal</h4>
-              <div className="space-y-2">
-                <a href="#" className="block text-white/80 hover:text-white transition-colors">{t('privacy-policy')}</a>
-                <a href="#" className="block text-white/80 hover:text-white transition-colors">{t('terms-of-service')}</a>
-                <a href="#" className="block text-white/80 hover:text-white transition-colors">{t('support')}</a>
-              </div>
-            </div>
-          </div>
-          
-          <div className="border-t border-white/10 mt-10 pt-6 text-center">
-            <p className="text-white/70">{t('copyright')}</p>
-          </div>
-        </div>
-      </footer>
-      
       <LoginModal 
         isOpen={loginOpen} 
         onClose={() => setLoginOpen(false)} 
@@ -386,7 +203,7 @@ const Welcome = () => {
         open={registerOpen}
         setOpen={setRegisterOpen}
         userType={userType}
-        lang={lang}
+        lang={language}
         t={t}
       />
     </div>

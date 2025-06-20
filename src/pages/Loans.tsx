@@ -1,12 +1,39 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Navbar } from "@/components/Navbar";
-import LoanCalculator from "@/components/LoanCalculator";
-import BankCard from "@/components/BankCard";
-import DisclaimerBanner from "@/components/DisclaimerBanner";
-import LoanAdvisorModal from "@/components/LoanAdvisorModal";
-import ThankYouModal from "@/components/ThankYouModal";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useLanguage } from "@/components/LanguageContext";
+import { GlassCard } from "@/components/market/GlassCard";
+import { ModernBankCard } from "@/components/loans/ModernBankCard";
+import { EnhancedLoanCalculator } from "@/components/loans/EnhancedLoanCalculator";
+import { LoanComparison } from "@/components/loans/LoanComparison";
+import { LoanApplicationWizard } from "@/components/loans/LoanApplicationWizard";
+import { LoanFAQ } from "@/components/loans/LoanFAQ";
+import { FloatingActionButton } from "@/components/loans/FloatingActionButton";
+import { EligibilityChecker } from "@/components/loans/EligibilityChecker";
+import {
+  Calculator,
+  TrendingUp,
+  Shield,
+  Clock,
+  Users,
+  Star,
+  ChevronRight,
+  Banknote,
+  PieChart,
+  FileText,
+  CheckCircle,
+  ArrowRight,
+  Sparkles,
+  Target,
+  Award,
+  Zap,
+  HelpCircle,
+  UserCheck
+} from "lucide-react";
 
 type Bank = {
   name: string;
@@ -17,7 +44,121 @@ type Bank = {
   rate: string;
   type: "Government" | "Private";
   country: string;
+  rating: number;
+  processingTime: string;
+  minAmount: number;
+  maxAmount: number;
+  eligibility: string[];
+  documents: string[];
 };
+
+type LoanCategory = {
+  id: string;
+  name: string;
+  nameKey: string;
+  icon: React.ReactNode;
+  description: string;
+  descriptionKey: string;
+  minRate: number;
+  maxRate: number;
+  features: string[];
+  featuresKeys: string[];
+};
+
+type SuccessStory = {
+  id: string;
+  name: string;
+  location: string;
+  loanAmount: number;
+  purpose: string;
+  story: string;
+  image: string;
+  rating: number;
+};
+
+const loanCategories: LoanCategory[] = [
+  {
+    id: "crop-loan",
+    name: "Crop Loans",
+    nameKey: "crop-loans",
+    icon: <Sparkles className="h-6 w-6" />,
+    description: "Short-term loans for crop cultivation and seasonal farming needs",
+    descriptionKey: "crop-loans-desc",
+    minRate: 7.0,
+    maxRate: 12.0,
+    features: ["Seasonal financing", "Quick approval", "Flexible repayment"],
+    featuresKeys: ["seasonal-financing", "quick-approval", "flexible-repayment"]
+  },
+  {
+    id: "equipment-loan",
+    name: "Equipment Loans",
+    nameKey: "equipment-loans",
+    icon: <Target className="h-6 w-6" />,
+    description: "Long-term financing for agricultural machinery and equipment",
+    descriptionKey: "equipment-loans-desc",
+    minRate: 8.5,
+    maxRate: 14.0,
+    features: ["Up to 7 years tenure", "Machinery financing", "Subsidies available"],
+    featuresKeys: ["up-to-years-tenure", "machinery-financing", "subsidies-available"]
+  },
+  {
+    id: "land-loan",
+    name: "Land Purchase",
+    nameKey: "land-purchase",
+    icon: <Award className="h-6 w-6" />,
+    description: "Loans for purchasing agricultural land and property",
+    descriptionKey: "land-purchase-desc",
+    minRate: 9.0,
+    maxRate: 15.0,
+    features: ["Long tenure", "Competitive rates", "Property insurance"],
+    featuresKeys: ["long-tenure", "competitive-rates", "property-insurance"]
+  },
+  {
+    id: "working-capital",
+    name: "Working Capital",
+    nameKey: "working-capital",
+    icon: <Zap className="h-6 w-6" />,
+    description: "Short-term loans for day-to-day farming operations",
+    descriptionKey: "working-capital-desc",
+    minRate: 8.0,
+    maxRate: 13.0,
+    features: ["Quick disbursal", "Minimal documentation", "Revolving credit"],
+    featuresKeys: ["quick-disbursal", "minimal-documentation", "revolving-credit"]
+  }
+];
+
+const successStories: SuccessStory[] = [
+  {
+    id: "1",
+    name: "Rajesh Kumar",
+    location: "Punjab, India",
+    loanAmount: 500000,
+    purpose: "Tractor Purchase",
+    story: "With AgriLift's help, I got a loan for a new tractor that increased my farm productivity by 40%.",
+    image: "https://images.unsplash.com/photo-1595273670150-bd0c3c392e46?w=150&h=150&fit=crop&crop=face",
+    rating: 5
+  },
+  {
+    id: "2",
+    name: "Maria Santos",
+    location: "São Paulo, Brazil",
+    loanAmount: 300000,
+    purpose: "Crop Expansion",
+    story: "The quick approval process helped me expand my soybean cultivation just in time for the season.",
+    image: "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face",
+    rating: 5
+  },
+  {
+    id: "3",
+    name: "John Smith",
+    location: "Iowa, USA",
+    loanAmount: 750000,
+    purpose: "Land Purchase",
+    story: "Secured financing for additional farmland that doubled my corn production capacity.",
+    image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face",
+    rating: 4
+  }
+];
 
 const banks: Bank[] = [
   {
@@ -33,6 +174,12 @@ const banks: Bank[] = [
     rate: "7.1% - 8.6%",
     type: "Government",
     country: "India",
+    rating: 4.2,
+    processingTime: "7-10 days",
+    minAmount: 50000,
+    maxAmount: 5000000,
+    eligibility: ["Valid land documents", "Age 18-65", "Good credit score"],
+    documents: ["Aadhaar", "PAN", "Land papers", "Income proof"]
   },
   {
     name: "Punjab National Bank",
@@ -47,6 +194,12 @@ const banks: Bank[] = [
     rate: "7.4% - 9.2%",
     type: "Government",
     country: "India",
+    rating: 4.0,
+    processingTime: "10-15 days",
+    minAmount: 25000,
+    maxAmount: 3000000,
+    eligibility: ["Land ownership", "Age 18-60", "Farming experience"],
+    documents: ["Aadhaar", "PAN", "Land records", "Bank statements"]
   },
   {
     name: "HDFC Bank",
@@ -61,6 +214,12 @@ const banks: Bank[] = [
     rate: "9.0% - 13.0%",
     type: "Private",
     country: "India",
+    rating: 4.1,
+    processingTime: "5-7 days",
+    minAmount: 100000,
+    maxAmount: 7500000,
+    eligibility: ["Stable income", "Age 21-65", "Good credit history"],
+    documents: ["Aadhaar", "PAN", "Salary slips", "Bank statements"]
   },
   {
     name: "Bank of Baroda",
@@ -75,6 +234,12 @@ const banks: Bank[] = [
     rate: "7.3% - 9.0%",
     type: "Government",
     country: "India",
+    rating: 3.9,
+    processingTime: "12-18 days",
+    minAmount: 50000,
+    maxAmount: 5000000,
+    eligibility: ["Land ownership", "Age 18-65", "Farming background"],
+    documents: ["Aadhaar", "PAN", "Land documents", "Income proof"]
   },
   {
     name: "ICICI Bank",
@@ -89,6 +254,12 @@ const banks: Bank[] = [
     rate: "8.9% - 12.5%",
     type: "Private",
     country: "India",
+    rating: 4.3,
+    processingTime: "7-10 days",
+    minAmount: 100000,
+    maxAmount: 10000000,
+    eligibility: ["Stable income", "Age 21-65", "Good credit score"],
+    documents: ["Aadhaar", "PAN", "Income proof", "Bank statements"]
   },
   {
     name: "Bank of America",
@@ -103,6 +274,12 @@ const banks: Bank[] = [
     rate: "5.5% - 8.0%",
     type: "Private",
     country: "United States",
+    rating: 4.1,
+    processingTime: "14-21 days",
+    minAmount: 150000,
+    maxAmount: 15000000,
+    eligibility: ["Business plan", "Age 21-70", "US citizenship/residency"],
+    documents: ["SSN", "Tax returns", "Business license", "Financial statements"]
   },
   {
     name: "Wells Fargo",
@@ -117,6 +294,12 @@ const banks: Bank[] = [
     rate: "6.0% - 9.0%",
     type: "Private",
     country: "United States",
+    rating: 4.0,
+    processingTime: "10-14 days",
+    minAmount: 100000,
+    maxAmount: 12000000,
+    eligibility: ["Business experience", "Age 21-65", "US citizenship/residency"],
+    documents: ["SSN", "Tax returns", "Business plan", "Financial statements"]
   },
   {
     name: "Rabobank",
@@ -131,6 +314,12 @@ const banks: Bank[] = [
     rate: "6.8% - 10.2%",
     type: "Private",
     country: "Brazil",
+    rating: 4.3,
+    processingTime: "15-20 days",
+    minAmount: 200000,
+    maxAmount: 25000000,
+    eligibility: ["Agricultural experience", "Age 21-65", "Brazilian residency"],
+    documents: ["CPF", "Tax returns", "Property documents", "Business plan"]
   },
   {
     name: "Caixa Econômica Federal",
@@ -145,6 +334,12 @@ const banks: Bank[] = [
     rate: "4.5% - 7.0%",
     type: "Government",
     country: "Brazil",
+    rating: 4.6,
+    processingTime: "12-18 days",
+    minAmount: 150000,
+    maxAmount: 20000000,
+    eligibility: ["Agricultural business", "Age 18-70", "Brazilian citizenship"],
+    documents: ["CPF", "Income proof", "Property documents", "Business registration"]
   },
   {
     name: "Banco do Brasil",
@@ -159,6 +354,12 @@ const banks: Bank[] = [
     rate: "5.2% - 8.3%",
     type: "Government",
     country: "Brazil",
+    rating: 4.5,
+    processingTime: "8-12 days",
+    minAmount: 100000,
+    maxAmount: 30000000,
+    eligibility: ["Agricultural business", "Age 18-65", "Brazilian citizenship"],
+    documents: ["CPF", "Tax returns", "Property documents", "Financial statements"]
   }
 ];
 
@@ -167,70 +368,294 @@ const defaultCountry = "India";
 
 export default function Loans() {
   const [country, setCountry] = useState(defaultCountry);
-  const [advisorOpen, setAdvisorOpen] = useState(false);
-  const [thankYouOpen, setThankYouOpen] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<string>("all");
+  const [activeTab, setActiveTab] = useState("browse");
+  const [showComparison, setShowComparison] = useState(false);
+  const [comparisonBanks, setComparisonBanks] = useState<Bank[]>([]);
+  const [loanAmount, setLoanAmount] = useState(500000);
+  const [loanTenure, setLoanTenure] = useState(5);
+  const [interestRate, setInterestRate] = useState(8.5);
   const { t } = useLanguage();
-  
-  // Placeholder for Leaflet country selection map.
-  // For full integration, add: import { MapContainer, TileLayer, ... } from 'react-leaflet';
-  // and install leaflet/react-leaflet. Using basic dropdown for now.
-  
+
   const banksForCountry = banks.filter((b) => b.country === country);
+
+  const addToComparison = (bank: Bank) => {
+    if (comparisonBanks.length < 3 && !comparisonBanks.find(b => b.name === bank.name)) {
+      setComparisonBanks([...comparisonBanks, bank]);
+    }
+  };
+
+  const removeFromComparison = (bankName: string) => {
+    setComparisonBanks(comparisonBanks.filter(b => b.name !== bankName));
+  };
+
+  const calculateEMI = (principal: number, rate: number, tenure: number) => {
+    const monthlyRate = rate / 12 / 100;
+    const totalMonths = tenure * 12;
+    return (principal * monthlyRate * Math.pow(1 + monthlyRate, totalMonths)) /
+           (Math.pow(1 + monthlyRate, totalMonths) - 1);
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 to-foliage-light/10">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
       <Navbar />
-      <main className="container mx-auto pt-24 px-4 pb-10">
-        <div className="max-w-4xl mx-auto text-center mb-8">
-          <h1 className="text-3xl md:text-4xl font-bold text-soil-dark mb-2">{t("loans-title")}</h1>
-          <p className="text-gray-600 max-w-2xl mx-auto">
-            {t("loans-description")}
-          </p>
-        </div>
 
-        {/* Country Selector */}
-        <section aria-label="Select your country" className="mb-2">
-          <label htmlFor="country-picker" className="text-sm font-medium mr-2">Country:</label>
-          <select
-            id="country-picker"
-            className="border rounded py-1 px-2"
-            aria-label="Choose country for loan info"
-            value={country}
-            onChange={e => setCountry(e.target.value)}
+      {/* Hero Section */}
+      <section className="relative pt-24 pb-16 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-foliage/10 to-blue-500/10" />
+        <div className="container mx-auto px-4 relative z-10">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="text-center max-w-4xl mx-auto"
           >
-            {countries.map((c) => <option key={c}>{c}</option>)}
-          </select>
-        </section>
+            <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-foliage to-blue-600 bg-clip-text text-transparent mb-6">
+              {t("loans-title") || "Agricultural Loans Made Simple"}
+            </h1>
+            <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+              {t("loans-description") || "Compare rates, get instant approvals, and grow your farming business with our comprehensive loan solutions."}
+            </p>
 
-        {/* Disclaimer Banner */}
-        <DisclaimerBanner />
+            <div className="flex flex-wrap justify-center gap-4 mb-8">
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                className="bg-white/80 backdrop-blur-sm rounded-lg p-4 shadow-lg"
+              >
+                <div className="flex items-center gap-2">
+                  <TrendingUp className="h-5 w-5 text-green-500" />
+                  <span className="text-sm font-medium">{t("rates-from")}</span>
+                </div>
+              </motion.div>
 
-        {/* Bank Cards */}
-        <section aria-label="Loan Bank Options">
-          <div className="grid md:grid-cols-2 gap-6 my-6">
-            {banksForCountry.map((bank, idx) => (
-              <BankCard
-                key={bank.name}
-                bank={bank}
-                onInfoClick={() => setAdvisorOpen(true)}
-              />
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                className="bg-white/80 backdrop-blur-sm rounded-lg p-4 shadow-lg"
+              >
+                <div className="flex items-center gap-2">
+                  <Clock className="h-5 w-5 text-blue-500" />
+                  <span className="text-sm font-medium">{t("quick-approval")}</span>
+                </div>
+              </motion.div>
+
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                className="bg-white/80 backdrop-blur-sm rounded-lg p-4 shadow-lg"
+              >
+                <div className="flex items-center gap-2">
+                  <Shield className="h-5 w-5 text-purple-500" />
+                  <span className="text-sm font-medium">{t("secure-process")}</span>
+                </div>
+              </motion.div>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      <main className="container mx-auto px-4 pb-16">
+        {/* Loan Categories */}
+        <motion.section
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="mb-16"
+        >
+          <h2 className="text-3xl font-bold text-center mb-8">{t("choose-loan-type")}</h2>
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {loanCategories.map((category, index) => (
+              <motion.div
+                key={category.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 * index }}
+                whileHover={{ y: -5 }}
+                onClick={() => setSelectedCategory(category.id)}
+                className={`cursor-pointer transition-all duration-300 ${
+                  selectedCategory === category.id ? 'ring-2 ring-foliage' : ''
+                }`}
+              >
+                <GlassCard className="h-full p-6 text-center hover:bg-white/90">
+                  <div className="text-foliage mb-4 flex justify-center">
+                    {category.icon}
+                  </div>
+                  <h3 className="font-semibold text-lg mb-2">{t(category.nameKey)}</h3>
+                  <p className="text-gray-600 text-sm mb-4">{t(category.descriptionKey)}</p>
+                  <div className="text-sm text-foliage font-medium">
+                    {category.minRate}% - {category.maxRate}%
+                  </div>
+                  <div className="mt-3 flex flex-wrap gap-1 justify-center">
+                    {category.featuresKeys.slice(0, 2).map((featureKey, idx) => (
+                      <Badge key={idx} variant="secondary" className="text-xs">
+                        {t(featureKey)}
+                      </Badge>
+                    ))}
+                  </div>
+                </GlassCard>
+              </motion.div>
             ))}
           </div>
-        </section>
+        </motion.section>
 
-        {/* User Message Block (Educational Note) */}
-        <div className="my-6 bg-foliage-light/30 rounded p-4 text-soil-dark text-[15px]">
-          <strong>Note:</strong> AgriLift is a reference platform only. We collate loan rates and features from verified banks and government partners; we do not disburse funds. For actual loan approval, please reach out to the banks listed.
-        </div>
+        {/* Main Content Tabs */}
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="grid w-full grid-cols-6 mb-8">
+            <TabsTrigger value="browse" className="flex items-center gap-2">
+              <Banknote className="h-4 w-4" />
+              {t("browse")}
+            </TabsTrigger>
+            <TabsTrigger value="calculator" className="flex items-center gap-2">
+              <Calculator className="h-4 w-4" />
+              {t("calculator")}
+            </TabsTrigger>
+            <TabsTrigger value="eligibility" className="flex items-center gap-2">
+              <UserCheck className="h-4 w-4" />
+              {t("eligibility")}
+            </TabsTrigger>
+            <TabsTrigger value="compare" className="flex items-center gap-2">
+              <PieChart className="h-4 w-4" />
+              {t("compare")} ({comparisonBanks.length})
+            </TabsTrigger>
+            <TabsTrigger value="apply" className="flex items-center gap-2">
+              <FileText className="h-4 w-4" />
+              {t("apply")}
+            </TabsTrigger>
+            <TabsTrigger value="faq" className="flex items-center gap-2">
+              <HelpCircle className="h-4 w-4" />
+              {t("faq")}
+            </TabsTrigger>
+          </TabsList>
 
-        {/* Loan Calculator */}
-        <section className="max-w-xl mx-auto my-10">
-          <LoanCalculator />
-        </section>
+          <TabsContent value="browse" className="space-y-8">
+            {/* Country Selector */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="flex justify-center"
+            >
+              <GlassCard className="p-4">
+                <div className="flex items-center gap-4">
+                  <label htmlFor="country-picker" className="text-sm font-medium">
+                    {t("select-country")}:
+                  </label>
+                  <select
+                    id="country-picker"
+                    className="border rounded-lg py-2 px-3 bg-white/80 backdrop-blur-sm"
+                    value={country}
+                    onChange={e => setCountry(e.target.value)}
+                  >
+                    {countries.map((c) => <option key={c}>{c}</option>)}
+                  </select>
+                </div>
+              </GlassCard>
+            </motion.div>
+
+            {/* Bank Cards Grid */}
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {banksForCountry.map((bank, index) => (
+                <motion.div
+                  key={bank.name}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 * index }}
+                >
+                  <ModernBankCard
+                    bank={bank}
+                    onAddToComparison={() => addToComparison(bank)}
+                    isInComparison={comparisonBanks.some(b => b.name === bank.name)}
+                  />
+                </motion.div>
+              ))}
+            </div>
+          </TabsContent>
+
+          <TabsContent value="calculator">
+            <EnhancedLoanCalculator
+              loanAmount={loanAmount}
+              setLoanAmount={setLoanAmount}
+              loanTenure={loanTenure}
+              setLoanTenure={setLoanTenure}
+              interestRate={interestRate}
+              setInterestRate={setInterestRate}
+            />
+          </TabsContent>
+
+          <TabsContent value="eligibility">
+            <EligibilityChecker />
+          </TabsContent>
+
+          <TabsContent value="compare">
+            <LoanComparison
+              banks={comparisonBanks}
+              onRemove={removeFromComparison}
+            />
+          </TabsContent>
+
+          <TabsContent value="apply">
+            <LoanApplicationWizard />
+          </TabsContent>
+
+          <TabsContent value="faq">
+            <LoanFAQ />
+          </TabsContent>
+        </Tabs>
+
+        {/* Success Stories */}
+        <motion.section
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.4 }}
+          className="mt-16"
+        >
+          <h2 className="text-3xl font-bold text-center mb-8">{t("success-stories")}</h2>
+          <div className="grid md:grid-cols-3 gap-6">
+            {successStories.map((story, index) => (
+              <motion.div
+                key={story.id}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.1 * index }}
+                whileHover={{ y: -5 }}
+              >
+                <GlassCard className="p-6 h-full">
+                  <div className="flex items-center gap-4 mb-4">
+                    <img
+                      src={story.image}
+                      alt={story.name}
+                      className="w-12 h-12 rounded-full object-cover"
+                    />
+                    <div>
+                      <h3 className="font-semibold">{story.name}</h3>
+                      <p className="text-sm text-gray-600">{story.location}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center mb-2">
+                    {[...Array(5)].map((_, i) => (
+                      <Star
+                        key={i}
+                        size={16}
+                        className={`${
+                          i < story.rating ? "text-yellow-400 fill-yellow-400" : "text-gray-300"
+                        }`}
+                      />
+                    ))}
+                  </div>
+                  <p className="text-gray-700 text-sm mb-3">{story.story}</p>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-foliage font-medium">₹{story.loanAmount.toLocaleString()}</span>
+                    <span className="text-gray-600">{story.purpose}</span>
+                  </div>
+                </GlassCard>
+              </motion.div>
+            ))}
+          </div>
+        </motion.section>
       </main>
-      {/* Advisor Info Modal */}
-      <LoanAdvisorModal open={advisorOpen} onClose={() => setAdvisorOpen(false)} onThankYou={() => { setAdvisorOpen(false); setThankYouOpen(true); }} />
-      {/* Thank-You Modal */}
-      <ThankYouModal open={thankYouOpen} onClose={() => setThankYouOpen(false)} />
+
+      {/* Floating Action Button */}
+      <FloatingActionButton
+        onCalculatorClick={() => setActiveTab("calculator")}
+        onApplyClick={() => setActiveTab("apply")}
+      />
     </div>
   );
 }

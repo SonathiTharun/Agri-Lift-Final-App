@@ -1,14 +1,18 @@
 
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage } from "./LanguageContext";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Globe, Menu, Tractor, User, Settings, ShoppingCart } from "lucide-react";
+import { Globe, Menu, Tractor, User, Settings, ShoppingCart, Sparkles } from "lucide-react";
 import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { CartSidebar } from "./CartSidebar";
 import { CartProvider } from "@/context/CartContext";
+import { GlassNav, AnimatedDrawer, AnimatedMenuItem } from "@/components/ui/glass-nav";
+import { AnimatedNavItem, AnimatedNavContainer } from "@/components/ui/animated-nav-item";
+import { AnimatedLogo } from "@/components/ui/animated-logo";
 
 export function Navbar() {
   const location = useLocation();
@@ -71,116 +75,249 @@ export function Navbar() {
 
   return (
     <CartProvider>
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-[#2ecc71] py-1 px-4 shadow-md"> {/* Reduced py-2 to py-1 */}
+      <GlassNav variant="farmer" className="py-1 px-4">
         <div className="container mx-auto flex justify-between items-center">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             {isMobile ? (
               <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
                 <DrawerTrigger asChild>
-                  <Button variant="ghost" size="icon" className="text-white mr-2 hover:bg-white/20">
-                    <Menu size={22} />
-                  </Button>
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="text-white mr-2 hover:bg-white/20 transition-all duration-300 rounded-xl backdrop-blur-sm border border-white/20"
+                    >
+                      <Menu size={22} />
+                    </Button>
+                  </motion.div>
                 </DrawerTrigger>
-                <DrawerContent className="p-4">
-                  <div className="flex flex-col space-y-3 pt-2 pb-4">
-                    {menuItems.map(item => (
-                      <Link 
-                        key={item.id}
-                        to={item.path}
-                        onClick={() => setIsDrawerOpen(false)}
-                        className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-gray-100"
-                      >
-                        {item.icon}
-                        <span>{item.label}</span>
-                      </Link>
-                    ))}
-                  </div>
-                  <div className="border-t border-gray-200 pt-4">
-                    {navItems.map(item => (
-                      <Link 
-                        key={item.id} 
-                        to={item.path}
-                        onClick={() => {
-                          setActiveItem(item.id);
-                          setIsDrawerOpen(false);
+                <DrawerContent className="p-0 border-none">
+                  <AnimatedDrawer isOpen={isDrawerOpen} onClose={() => setIsDrawerOpen(false)}>
+                    <div className="p-6">
+                      <motion.div
+                        className="flex flex-col space-y-3 pt-2 pb-4"
+                        variants={{
+                          open: {
+                            transition: { staggerChildren: 0.1, delayChildren: 0.2 }
+                          },
+                          closed: {
+                            transition: { staggerChildren: 0.05, staggerDirection: -1 }
+                          }
                         }}
-                        className={`flex items-center px-3 py-2 rounded-md mb-1 ${
-                          activeItem === item.id 
-                            ? "bg-[#2ecc71] text-white font-medium" 
-                            : "hover:bg-gray-100"
-                        }`}
                       >
-                        {item.label}
-                      </Link>
-                    ))}
-                  </div>
+                        {menuItems.map((item, index) => (
+                          <AnimatedMenuItem key={item.id} onClick={() => setIsDrawerOpen(false)}>
+                            <Link
+                              to={item.path}
+                              className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-green-50 transition-all duration-300 group"
+                            >
+                              <motion.div
+                                className="text-green-600 group-hover:text-green-700"
+                                whileHover={{ rotate: 5, scale: 1.1 }}
+                              >
+                                {item.icon}
+                              </motion.div>
+                              <span className="font-medium text-gray-700 group-hover:text-green-700">
+                                {item.label}
+                              </span>
+                            </Link>
+                          </AnimatedMenuItem>
+                        ))}
+                      </motion.div>
+
+                      <div className="border-t border-gray-200 pt-4">
+                        <motion.div
+                          variants={{
+                            open: {
+                              transition: { staggerChildren: 0.05, delayChildren: 0.3 }
+                            },
+                            closed: {
+                              transition: { staggerChildren: 0.02, staggerDirection: -1 }
+                            }
+                          }}
+                        >
+                          {navItems.map((item, index) => (
+                            <AnimatedMenuItem
+                              key={item.id}
+                              onClick={() => {
+                                setActiveItem(item.id);
+                                setIsDrawerOpen(false);
+                              }}
+                            >
+                              <div className={`flex items-center px-4 py-3 rounded-xl mb-2 transition-all duration-300 ${
+                                activeItem === item.id
+                                  ? "bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-lg"
+                                  : "hover:bg-green-50 text-gray-700 hover:text-green-700"
+                              }`}>
+                                <Link to={item.path} className="w-full">
+                                  <span className="font-medium text-sm break-words">{item.label}</span>
+                                </Link>
+                              </div>
+                            </AnimatedMenuItem>
+                          ))}
+                        </motion.div>
+                      </div>
+                    </div>
+                  </AnimatedDrawer>
                 </DrawerContent>
               </Drawer>
             ) : (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon" className="text-white mr-2 hover:bg-white/20">
-                    <Menu size={22} />
-                  </Button>
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="text-white mr-2 hover:bg-white/20 transition-all duration-300 rounded-xl backdrop-blur-sm border border-white/20"
+                    >
+                      <Menu size={22} />
+                    </Button>
+                  </motion.div>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="start" className="w-56 bg-white">
-                  {menuItems.map(item => (
-                    <DropdownMenuItem key={item.id} asChild>
-                      <Link to={item.path} className="flex items-center gap-2 cursor-pointer">
-                        {item.icon}
-                        <span>{item.label}</span>
-                      </Link>
-                    </DropdownMenuItem>
-                  ))}
+                <DropdownMenuContent
+                  align="start"
+                  className="w-64 bg-white/95 backdrop-blur-lg border border-white/20 shadow-2xl rounded-xl p-2"
+                >
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    {menuItems.map((item, index) => (
+                      <motion.div
+                        key={item.id}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: index * 0.05 }}
+                      >
+                        <DropdownMenuItem asChild className="rounded-lg mb-1">
+                          <Link
+                            to={item.path}
+                            className="flex items-center gap-3 cursor-pointer px-3 py-2.5 hover:bg-green-50 transition-all duration-300 group"
+                          >
+                            <motion.div
+                              className="text-green-600 group-hover:text-green-700"
+                              whileHover={{ rotate: 5, scale: 1.1 }}
+                            >
+                              {item.icon}
+                            </motion.div>
+                            <span className="font-medium text-gray-700 group-hover:text-green-700">
+                              {item.label}
+                            </span>
+                          </Link>
+                        </DropdownMenuItem>
+                      </motion.div>
+                    ))}
+                  </motion.div>
                 </DropdownMenuContent>
               </DropdownMenu>
             )}
-            
-            <Link to="/dashboard" className="flex items-center">
-              <img 
-                alt="AgriLift Logo" 
-                className="h-12 w-auto" /* Reduced from h-20 to h-12 */
-                src="/lovable-uploads/bad258d5-10ef-4d65-bb8b-35f2420c6caa.png" 
-              />
-            </Link>
+
+            <AnimatedLogo
+              to="/dashboard"
+              variant="farmer"
+              size="xl"
+            />
           </div>
-          
-          <div className="hidden md:flex space-x-1">
-            {navItems.map(item => (
-              <Link 
-                key={item.id} 
-                to={item.path} 
-                onClick={() => setActiveItem(item.id)} 
-                className={`px-3 py-1.5 text-sm rounded-md transition duration-200 ${
-                  activeItem === item.id 
-                    ? "bg-white text-foliage-dark font-medium" 
-                    : "text-white hover:bg-white/20"
-                }`}
+
+          <AnimatedNavContainer className="hidden md:flex space-x-1 lg:space-x-2 flex-wrap justify-center">
+            {navItems.map((item, index) => (
+              <motion.div
+                key={item.id}
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
               >
-                {item.label}
-              </Link>
+                <AnimatedNavItem
+                  to={item.path}
+                  isActive={activeItem === item.id}
+                  onClick={() => setActiveItem(item.id)}
+                  variant="glass"
+                  size="sm"
+                  className="relative overflow-hidden text-xs lg:text-sm"
+                >
+                  {item.label}
+                </AnimatedNavItem>
+              </motion.div>
             ))}
-          </div>
-          
-          <div className="flex items-center gap-2">
-            <CartSidebar />
-            
+          </AnimatedNavContainer>
+
+          <motion.div
+            className="flex items-center gap-3"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.3 }}
+          >
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <CartSidebar />
+            </motion.div>
+
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" className="bg-white/20 border-white/30 text-white hover:bg-white/30">
-                  <Globe size={16} className="mr-1" /> {language.toUpperCase()}
-                </Button>
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="bg-white/20 border-white/30 text-white hover:bg-white/30 transition-all duration-300 rounded-xl backdrop-blur-sm"
+                  >
+                    <motion.div
+                      animate={{ rotate: [0, 360] }}
+                      transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                    >
+                      <Globe size={16} className="mr-2" />
+                    </motion.div>
+                    {language.toUpperCase()}
+                  </Button>
+                </motion.div>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => setLanguage('en')}>English</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setLanguage('hi')}>हिंदी</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setLanguage('ta')}>தமிழ்</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setLanguage('te')}>తెలుగు</DropdownMenuItem>
+              <DropdownMenuContent
+                align="end"
+                className="bg-white/95 backdrop-blur-lg border border-white/20 shadow-2xl rounded-xl p-2"
+              >
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  {[
+                    { code: 'en', label: 'English', flag: '🇺🇸' },
+                    { code: 'hi', label: 'हिंदी', flag: '🇮🇳' },
+                    { code: 'ta', label: 'தமிழ்', flag: '🇮🇳' },
+                    { code: 'te', label: 'తెలుగు', flag: '🇮🇳' }
+                  ].map((lang, index) => (
+                    <motion.div
+                      key={lang.code}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: index * 0.05 }}
+                    >
+                      <DropdownMenuItem
+                        onClick={() => setLanguage(lang.code)}
+                        className="rounded-lg mb-1 cursor-pointer hover:bg-green-50 transition-all duration-300"
+                      >
+                        <span className="mr-2">{lang.flag}</span>
+                        <span className="font-medium">{lang.label}</span>
+                      </DropdownMenuItem>
+                    </motion.div>
+                  ))}
+                </motion.div>
               </DropdownMenuContent>
             </DropdownMenu>
-          </div>
+          </motion.div>
         </div>
-      </nav>
+      </GlassNav>
     </CartProvider>
   );
 }

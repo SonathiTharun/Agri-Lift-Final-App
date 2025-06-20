@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "./LanguageContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { Eye, EyeOff, User, Shield } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
@@ -23,11 +24,12 @@ export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
   const [userType, setUserType] = useState<'farmer' | 'executive'>('farmer');
   const { toast } = useToast();
   const { t } = useLanguage();
+  const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!email || !password) {
       toast({
         title: "Error",
@@ -40,32 +42,23 @@ export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
     setIsLoading(true);
 
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // Use AuthContext login method
+      await login(email, password, userType);
 
-      // Mock authentication logic
-      if (userType === 'executive' && email.includes('admin')) {
-        toast({
-          title: "Login Successful",
-          description: "Welcome to AgriLift Executive Portal!",
-        });
-        onClose();
+      onClose();
+
+      // Navigate based on user type
+      if (userType === 'executive') {
         navigate('/executive-dashboard');
-      } else if (userType === 'farmer') {
-        toast({
-          title: "Login Successful", 
-          description: "Welcome to AgriLift!",
-        });
-        onSuccess();
-        onClose();
-        navigate('/dashboard');
       } else {
-        throw new Error('Invalid credentials for selected user type');
+        onSuccess();
+        navigate('/dashboard');
       }
-    } catch (error) {
+    } catch (error: any) {
+      console.error('Login error:', error);
       toast({
         title: "Login Failed",
-        description: "Invalid credentials. Please try again.",
+        description: error.message || "Invalid credentials. Please try again.",
         variant: "destructive",
       });
     } finally {
