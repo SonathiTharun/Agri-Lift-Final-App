@@ -11,6 +11,7 @@ import { toast } from "@/components/ui/use-toast";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ChevronDown, ChevronUp, RefreshCw, MapPin, Maximize2, Minimize2, Bell, Tractor, Minus } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useLanguage } from './LanguageContext';
 
 type WeatherDay = {
   date: string;
@@ -82,15 +83,15 @@ function getTimeOfDay(): "day" | "afternoon" | "night" {
   return "night";
 }
 
-function getWeatherCondition(id: number): string {
-  if (id >= 200 && id < 300) return "Thunderstorm";
-  if (id >= 300 && id < 400) return "Drizzle";
-  if (id >= 500 && id < 600) return "Rain";
-  if (id >= 600 && id < 700) return "Snow";
-  if (id >= 700 && id < 800) return "Fog";
-  if (id === 800) return "Sunny";
-  if (id > 800) return "Partly Cloudy";
-  return "Unknown";
+function getWeatherCondition(id: number, t: (key: string) => string): string {
+  if (id >= 200 && id < 300) return t("thunderstorm");
+  if (id >= 300 && id < 400) return t("drizzle");
+  if (id >= 500 && id < 600) return t("rain");
+  if (id >= 600 && id < 700) return t("snow");
+  if (id >= 700 && id < 800) return t("fog");
+  if (id === 800) return t("sunny");
+  if (id > 800) return t("partly-cloudy");
+  return t("unknown");
 }
 
 function getWeatherIcon(owmIcon: string, timeOfDay: "day" | "afternoon" | "night"): string {
@@ -118,26 +119,26 @@ function mpsToKmh(mps: number): number {
   return Math.round(mps * 3.6);
 }
 
-function getDrivingDifficulty(weatherId: number, humidity: number): string {
+function getDrivingDifficulty(weatherId: number, humidity: number, t: (key: string) => string): string {
   if ((weatherId >= 500 && weatherId < 700) || humidity > 85) {
-    return "High";
+    return t("high");
   }
   if (weatherId >= 700 && weatherId < 800) {
-    return "Moderate";
+    return t("moderate");
   }
-  return "Low";
+  return t("low");
 }
 
-function getPollenLevel(weatherId: number, month: number): string {
+function getPollenLevel(weatherId: number, month: number, t: (key: string) => string): string {
   if (weatherId >= 500 && weatherId < 700) {
-    return "Low";
+    return t("low");
   }
   if ((month >= 2 && month <= 4) || (month >= 8 && month <= 9)) {
     if (weatherId < 500 || weatherId >= 800) {
-      return "High";
+      return t("high");
     }
   }
-  return "Moderate";
+  return t("moderate");
 }
 
 function getWindDirection(degrees: number): string {
@@ -146,15 +147,15 @@ function getWindDirection(degrees: number): string {
   return directions[index];
 }
 
-function generateWeatherAlerts(weather: any, agriculture: any): WeatherAlert[] {
+function generateWeatherAlerts(weather: any, agriculture: any, t: (key: string) => string): WeatherAlert[] {
   const alerts: WeatherAlert[] = [];
 
   // Temperature alerts
   if (weather.temp > 35) {
     alerts.push({
       id: 'heat-warning',
-      title: 'Heat Warning',
-      description: 'Extreme heat conditions. Protect crops and livestock.',
+      title: t('heat-warning'),
+      description: t('extreme-heat-conditions'),
       severity: 'high',
       type: 'agriculture',
       startTime: '12:00 PM',
@@ -166,11 +167,11 @@ function generateWeatherAlerts(weather: any, agriculture: any): WeatherAlert[] {
   if (weather.wind > 25) {
     alerts.push({
       id: 'wind-warning',
-      title: 'Strong Wind Alert',
-      description: 'High winds may damage crops and structures.',
+      title: t('strong-wind-alert'),
+      description: t('high-winds-damage'),
       severity: 'medium',
       type: 'weather',
-      startTime: 'Now',
+      startTime: t('now'),
       endTime: '8:00 PM'
     });
   }
@@ -179,19 +180,19 @@ function generateWeatherAlerts(weather: any, agriculture: any): WeatherAlert[] {
   if (weather.humidity > 85) {
     alerts.push({
       id: 'humidity-alert',
-      title: 'High Humidity',
-      description: 'Increased risk of fungal diseases in crops.',
+      title: t('high-humidity'),
+      description: t('increased-fungal-risk'),
       severity: 'medium',
       type: 'agriculture',
-      startTime: 'Now',
-      endTime: 'Tomorrow'
+      startTime: t('now'),
+      endTime: t('tomorrow')
     });
   }
 
   return alerts;
 }
 
-function generateAgricultureData(weather: any): AgricultureData {
+function generateAgricultureData(weather: any, t: (key: string) => string): AgricultureData {
   const soilMoisture = Math.max(0, Math.min(100,
     50 + (weather.humidity - 50) * 0.5 + (weather.precipitation || 0) * 5
   ));
@@ -220,11 +221,11 @@ function generateAgricultureData(weather: any): AgricultureData {
   return {
     soilMoisture,
     growingConditions,
-    plantingRecommendation: growingConditions === 'excellent' ? 'Ideal conditions for planting most crops' :
-                           growingConditions === 'good' ? 'Good conditions for hardy crops' :
-                           growingConditions === 'fair' ? 'Consider waiting for better conditions' :
-                           'Not recommended for planting',
-    harvestingCondition: weather.humidity < 60 ? 'Good harvesting conditions' : 'Wait for drier conditions',
+    plantingRecommendation: growingConditions === 'excellent' ? t('ideal-conditions-planting') :
+                           growingConditions === 'good' ? t('good-conditions-hardy') :
+                           growingConditions === 'fair' ? t('consider-waiting') :
+                           t('not-recommended-planting'),
+    harvestingCondition: weather.humidity < 60 ? t('good-harvesting-conditions') : t('wait-for-drier'),
     irrigationNeeded: soilMoisture < 40,
     pestRisk: pestRisk as 'low' | 'medium' | 'high',
     diseaseRisk: diseaseRisk as 'low' | 'medium' | 'high',
@@ -255,7 +256,7 @@ function generateHourlyForecast(currentWeather: any): HourlyWeather[] {
   return hourly;
 }
 
-function getMoonPhase(date: Date): string {
+function getMoonPhase(date: Date, t: (key: string) => string): string {
   const synmonth = 29.53058867;
   const daysSinceNewMoon = 13;
 
@@ -265,17 +266,18 @@ function getMoonPhase(date: Date): string {
   const daysDiff = timeDiff / (1000 * 3600 * 24);
   const phase = (daysDiff % synmonth) / synmonth;
 
-  if (phase < 0.025 || phase >= 0.975) return "New Moon";
-  if (phase < 0.25) return "Waxing Crescent";
-  if (phase < 0.275) return "First Quarter";
-  if (phase < 0.475) return "Waxing Gibbous";
-  if (phase < 0.525) return "Full Moon";
-  if (phase < 0.725) return "Waning Gibbous";
-  if (phase < 0.775) return "Last Quarter";
-  return "Waning Crescent";
+  if (phase < 0.025 || phase >= 0.975) return t("new-moon");
+  if (phase < 0.25) return t("waxing-crescent");
+  if (phase < 0.275) return t("first-quarter");
+  if (phase < 0.475) return t("waxing-gibbous");
+  if (phase < 0.525) return t("full-moon");
+  if (phase < 0.725) return t("waning-gibbous");
+  if (phase < 0.775) return t("last-quarter");
+  return t("waning-crescent");
 }
 
 export function WeatherWidget() {
+  const { t } = useLanguage();
   const [isDragging, setIsDragging] = useState(false);
   const [position, setPosition] = useState({ x: 20, y: 80 });
   const [startPos, setStartPos] = useState({ x: 0, y: 0 });
@@ -289,7 +291,7 @@ export function WeatherWidget() {
   const [expanded, setExpanded] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [timeOfDay, setTimeOfDay] = useState(getTimeOfDay());
-  const [location, setLocation] = useState("Loading location...");
+  const [location, setLocation] = useState(t("loading-location"));
   const [userCoords, setUserCoords] = useState<{lat: number, lon: number} | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [sunrise, setSunrise] = useState("");
@@ -346,32 +348,32 @@ export function WeatherWidget() {
             setLocation(locationName);
           } catch (error) {
             console.error("Location fetch error:", error);
-            setLocation("Location unavailable");
+            setLocation(t("location-unavailable"));
             toast({
-              title: "Location error",
-              description: "Could not retrieve precise location",
+              title: t("location-error"),
+              description: t("could-not-retrieve-location"),
             });
           }
         },
         (error) => {
           console.error("Geolocation error:", error);
-          let errorMessage = "Location access denied";
+          let errorMessage = t("location-access-denied");
 
           switch (error.code) {
             case error.PERMISSION_DENIED:
-              errorMessage = "Location access denied by user";
+              errorMessage = t("location-access-denied");
               break;
             case error.POSITION_UNAVAILABLE:
-              errorMessage = "Location information unavailable";
+              errorMessage = t("location-information-unavailable");
               break;
             case error.TIMEOUT:
-              errorMessage = "Location request timed out";
+              errorMessage = t("location-request-timed-out");
               break;
           }
 
           toast({
-            title: "Location Error",
-            description: errorMessage + ". Using default location.",
+            title: t("location-error"),
+            description: errorMessage + ". " + t("using-default-location"),
           });
           setLocation("New Delhi, India");
           setUserCoords({ lat: 28.6139, lon: 77.2090 });
@@ -383,7 +385,7 @@ export function WeatherWidget() {
         }
       );
     } else {
-      setLocation("Geolocation not supported");
+      setLocation(t("geolocation-not-supported"));
       setUserCoords({ lat: 28.6139, lon: 77.2090 });
     }
   };
@@ -434,7 +436,7 @@ export function WeatherWidget() {
       );
       
       if (!weatherResponse.ok) {
-        throw new Error(`Weather API error: ${weatherResponse.status}`);
+        throw new Error(`${t("weather-api-error")}: ${weatherResponse.status}`);
       }
       
       const weatherData = await weatherResponse.json();
@@ -471,7 +473,7 @@ export function WeatherWidget() {
           temp: Math.round(weatherData.main.temp),
           tempMin: Math.round(weatherData.main.temp_min),
           tempMax: Math.round(weatherData.main.temp_max),
-          condition: getWeatherCondition(weatherId),
+          condition: getWeatherCondition(weatherId, t),
           icon: getWeatherIcon(weatherData.weather[0].icon, timeOfDay),
           humidity: weatherData.main.humidity,
           wind: mpsToKmh(weatherData.wind.speed),
@@ -480,8 +482,8 @@ export function WeatherWidget() {
           visibility: weatherData.visibility ? Math.round(weatherData.visibility / 1000) : 10,
           aqi: aqiData.list && aqiData.list[0] ? aqiData.list[0].main.aqi * 25 : 50,
           uvIndex: Math.floor(Math.random() * 11), // Mock UV index
-          pollen: getPollenLevel(weatherId, currentMonth),
-          drivingDifficulty: getDrivingDifficulty(weatherId, weatherData.main.humidity),
+          pollen: getPollenLevel(weatherId, currentMonth, t),
+          drivingDifficulty: getDrivingDifficulty(weatherId, weatherData.main.humidity, t),
           precipitation: 0, // Will be updated from forecast data
           cloudCover: weatherData.clouds?.all || 0,
           dewPoint: Math.round(weatherData.main.temp - ((100 - weatherData.main.humidity) / 5)),
@@ -491,10 +493,10 @@ export function WeatherWidget() {
         setWeather(currentWeatherData);
 
         // Generate additional data
-        const agriData = generateAgricultureData(currentWeatherData);
+        const agriData = generateAgricultureData(currentWeatherData, t);
         setAgricultureData(agriData);
 
-        const alerts = generateWeatherAlerts(currentWeatherData, agriData);
+        const alerts = generateWeatherAlerts(currentWeatherData, agriData, t);
         setWeatherAlerts(alerts);
 
         const hourly = generateHourlyForecast(currentWeatherData);
@@ -525,13 +527,13 @@ export function WeatherWidget() {
               dailyForecasts.push({
                 date: dateString,
                 temp: Math.round(item.main.temp),
-                condition: getWeatherCondition(item.weather[0].id),
+                condition: getWeatherCondition(item.weather[0].id, t),
                 icon: getWeatherIcon(item.weather[0].icon, timeOfDay),
                 humidity: item.main.humidity,
                 wind: mpsToKmh(item.wind.speed),
                 aqi: 50,
-                pollen: getPollenLevel(item.weather[0].id, forecastDate.getMonth()),
-                drivingDifficulty: getDrivingDifficulty(item.weather[0].id, item.main.humidity)
+                pollen: getPollenLevel(item.weather[0].id, forecastDate.getMonth(), t),
+                drivingDifficulty: getDrivingDifficulty(item.weather[0].id, item.main.humidity, t)
               });
             }
           });
@@ -555,19 +557,19 @@ export function WeatherWidget() {
           return {
             date: pastDate.toLocaleDateString(),
             temp: Math.round(weatherData.main.temp + (Math.random() * 6 - 3)),
-            condition: getWeatherCondition(pastWeatherId),
+            condition: getWeatherCondition(pastWeatherId, t),
             icon: getWeatherIcon("01d", timeOfDay),
             humidity: weatherData.main.humidity + Math.floor(Math.random() * 10 - 5),
             wind: mpsToKmh(weatherData.wind.speed) + Math.floor(Math.random() * 6 - 3),
             aqi: (aqiData.list && aqiData.list[0] ? aqiData.list[0].main.aqi * 25 : 50) + Math.floor(Math.random() * 20 - 10),
-            pollen: getPollenLevel(pastWeatherId, pastDate.getMonth()),
-            drivingDifficulty: getDrivingDifficulty(pastWeatherId, weatherData.main.humidity)
+            pollen: getPollenLevel(pastWeatherId, pastDate.getMonth(), t),
+            drivingDifficulty: getDrivingDifficulty(pastWeatherId, weatherData.main.humidity, t)
           };
         });
         
         setHistory(historicalData);
         
-        const moonPhase = getMoonPhase(currentDate);
+        const moonPhase = getMoonPhase(currentDate, t);
         let moonriseHour, moonsetHour;
         
         if (moonPhase === "New Moon" || moonPhase.includes("Crescent")) {
@@ -607,15 +609,15 @@ export function WeatherWidget() {
         }));
       } else {
         toast({
-          title: "Weather API error",
-          description: weatherData.message || "Could not retrieve weather data",
+          title: t("weather-api-error"),
+          description: weatherData.message || t("could-not-retrieve-weather"),
         });
       }
     } catch (error: any) {
       console.error("Weather fetch error:", error);
       toast({
-        title: "Weather API error",
-        description: error.message || "Failed to fetch weather data",
+        title: t("weather-api-error"),
+        description: error.message || t("failed-to-fetch-weather"),
       });
     } finally {
       setIsLoading(false);

@@ -39,8 +39,8 @@ export function SoilAnalysis() {
     const validTypes = ['image/jpeg', 'image/png', 'image/jpg', 'application/pdf'];
     if (!validTypes.includes(file.type)) {
       toast({
-        title: "Invalid file type",
-        description: "Please upload a PDF, JPG, or PNG file.",
+        title: t("invalid-file-type"),
+        description: t("please-upload-pdf-jpg-png"),
         variant: "destructive",
       });
       return;
@@ -50,8 +50,8 @@ export function SoilAnalysis() {
     const maxSize = 10 * 1024 * 1024; // 10MB
     if (file.size > maxSize) {
       toast({
-        title: "File too large",
-        description: "Please upload a file smaller than 10MB.",
+        title: t("file-too-large"),
+        description: t("please-upload-smaller-file"),
         variant: "destructive",
       });
       return;
@@ -104,13 +104,13 @@ export function SoilAnalysis() {
       });
 
     } catch (error) {
-      console.error("Error during file upload:", error);
+      console.error(t("error-during-file-upload"), error);
       setIsUploading(false);
       setAnalyzing(false);
-      
+
       toast({
         title: t("analysis-failed"),
-        description: error instanceof Error ? error.message : "There was an error analyzing your soil health card. Please try again.",
+        description: error instanceof Error ? error.message : t("error-analyzing-soil-card"),
         variant: "destructive",
       });
     }
@@ -122,10 +122,10 @@ export function SoilAnalysis() {
       const response = await apiService.generateCropRecommendations(reportId, season);
       setCropRecommendations(response.recommendations);
     } catch (error) {
-      console.error("Error generating crop recommendations:", error);
+      console.error(t("error-generating-recommendations"), error);
       toast({
-        title: "Recommendation Failed",
-        description: "Could not generate crop recommendations. Using default values.",
+        title: t("recommendation-failed"),
+        description: t("could-not-generate-recommendations"),
         variant: "destructive",
       });
 
@@ -164,7 +164,7 @@ export function SoilAnalysis() {
     const cropDatabase: Record<string, CropData[]> = {
       kharif: [
         {
-          name: "Rice",
+          name: t("rice"),
           description: "Staple cereal crop, requires high water availability and slightly acidic to neutral soil.",
           growingPeriod: "120-150 days",
           waterNeed: "High" as const,
@@ -177,7 +177,7 @@ export function SoilAnalysis() {
           }
         },
         {
-          name: "Maize",
+          name: t("maize"),
           description: "Versatile cereal crop, adapts well to various soil conditions with good drainage.",
           growingPeriod: "90-120 days",
           waterNeed: "Medium" as const,
@@ -190,7 +190,7 @@ export function SoilAnalysis() {
           }
         },
         {
-          name: "Cotton",
+          name: t("cotton"),
           description: "Cash crop requiring well-drained soil with moderate fertility and warm climate.",
           growingPeriod: "180-200 days",
           waterNeed: "Medium" as const,
@@ -203,7 +203,7 @@ export function SoilAnalysis() {
           }
         },
         {
-          name: "Sugarcane",
+          name: t("sugarcane"),
           description: "Long-duration crop requiring rich, well-drained soil with high organic matter.",
           growingPeriod: "300-365 days",
           waterNeed: "High" as const,
@@ -218,7 +218,7 @@ export function SoilAnalysis() {
       ],
       rabi: [
         {
-          name: "Wheat",
+          name: t("wheat"),
           description: "Major cereal crop, prefers cool climate and well-drained fertile soil.",
           growingPeriod: "120-150 days",
           waterNeed: "Medium" as const,
@@ -231,7 +231,7 @@ export function SoilAnalysis() {
           }
         },
         {
-          name: "Barley",
+          name: t("barley"),
           description: "Hardy cereal crop, tolerates alkaline soil and requires less water than wheat.",
           growingPeriod: "90-120 days",
           waterNeed: "Low" as const,
@@ -244,7 +244,7 @@ export function SoilAnalysis() {
           }
         },
         {
-          name: "Mustard",
+          name: t("mustard"),
           description: "Oilseed crop, adapts to various soil types and requires moderate fertility.",
           growingPeriod: "90-110 days",
           waterNeed: "Low" as const,
@@ -257,7 +257,7 @@ export function SoilAnalysis() {
           }
         },
         {
-          name: "Chickpea",
+          name: t("chickpea"),
           description: "Legume crop that fixes nitrogen, prefers well-drained soil with neutral pH.",
           growingPeriod: "100-120 days",
           waterNeed: "Low" as const,
@@ -272,7 +272,7 @@ export function SoilAnalysis() {
       ],
       zaid: [
         {
-          name: "Watermelon",
+          name: t("watermelon"),
           description: "Summer fruit crop requiring well-drained sandy loam soil with good organic matter.",
           growingPeriod: "90-100 days",
           waterNeed: "High" as const,
@@ -285,7 +285,7 @@ export function SoilAnalysis() {
           }
         },
         {
-          name: "Cucumber",
+          name: t("cucumber"),
           description: "Vine crop requiring warm climate and fertile, well-drained soil.",
           growingPeriod: "60-70 days",
           waterNeed: "Medium" as const,
@@ -298,7 +298,7 @@ export function SoilAnalysis() {
           }
         },
         {
-          name: "Fodder Maize",
+          name: t("fodder-maize"),
           description: "Quick-growing fodder crop, suitable for summer cultivation with irrigation.",
           growingPeriod: "60-75 days",
           waterNeed: "Medium" as const,
@@ -311,7 +311,7 @@ export function SoilAnalysis() {
           }
         },
         {
-          name: "Sunflower",
+          name: t("sunflower"),
           description: "Oilseed crop with good drought tolerance, adapts to various soil conditions.",
           growingPeriod: "90-110 days",
           waterNeed: "Medium" as const,
@@ -366,10 +366,10 @@ export function SoilAnalysis() {
 
       // Determine suitability based on score
       let suitability: "Excellent" | "Good" | "Fair" | "Poor";
-      if (finalScore >= 85) suitability = "Excellent";
-      else if (finalScore >= 70) suitability = "Good";
-      else if (finalScore >= 50) suitability = "Fair";
-      else suitability = "Poor";
+      if (finalScore >= 85) suitability = t("excellent") as "Excellent";
+      else if (finalScore >= 70) suitability = t("good") as "Good";
+      else if (finalScore >= 50) suitability = t("fair") as "Fair";
+      else suitability = t("poor") as "Poor";
 
       return {
         name: crop.name,
@@ -393,42 +393,42 @@ export function SoilAnalysis() {
   const initializeManualEntry = () => {
     const parameters: SoilParameter[] = [
       {
-        name: "pH",
+        name: t("ph"),
         value: 6.5,
         unit: "",
         status: "optimal",
         optimal: { min: 6.0, max: 7.5 },
       },
       {
-        name: "Nitrogen",
+        name: t("nitrogen"),
         value: 120,
         unit: "kg/ha",
         status: "optimal",
         optimal: { min: 80, max: 180 },
       },
       {
-        name: "Phosphorus",
+        name: t("phosphorus"),
         value: 25,
         unit: "kg/ha",
         status: "optimal",
         optimal: { min: 15, max: 35 },
       },
       {
-        name: "Potassium",
+        name: t("potassium"),
         value: 180,
         unit: "kg/ha",
         status: "optimal",
         optimal: { min: 120, max: 280 },
       },
       {
-        name: "Organic Matter",
+        name: t("organic-matter"),
         value: 3.5,
         unit: "%",
         status: "optimal",
         optimal: { min: 3, max: 6 },
       },
       {
-        name: "Moisture",
+        name: t("moisture"),
         value: 30,
         unit: "%",
         status: "optimal",
@@ -442,8 +442,8 @@ export function SoilAnalysis() {
     setCropRecommendations([]);
 
     toast({
-      title: "Manual Entry Mode",
-      description: "Enter your soil parameter values and click 'Visualize Data' to see analysis.",
+      title: t("manual-entry-mode"),
+      description: t("enter-soil-parameters"),
     });
   };
 
@@ -615,19 +615,19 @@ export function SoilAnalysis() {
                   <svg xmlns="http://www.w3.org/2000/svg" className="mx-auto h-12 w-12 text-soil" viewBox="0 0 20 20" fill="currentColor">
                     <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z" clipRule="evenodd" />
                   </svg>
-                  <p className="mt-2 text-sm text-gray-600">Click to upload or drag and drop</p>
-                  <p className="mt-1 text-xs text-gray-500">PDF, JPG, JPEG or PNG</p>
-                  <p className="mt-3 text-xs text-soil-dark font-medium">Our system will extract soil parameters from your health card</p>
+                  <p className="mt-2 text-sm text-gray-600">{t("click-to-upload")}</p>
+                  <p className="mt-1 text-xs text-gray-500">{t("pdf-jpg-jpeg-png")}</p>
+                  <p className="mt-3 text-xs text-soil-dark font-medium">{t("extract-soil-parameters")}</p>
                 </div>
               </div>
 
               <div className="mt-8 p-4 bg-blue-50 rounded-lg">
-                <h4 className="text-sm font-medium text-blue-900 mb-2">💡 Tips for Better Results:</h4>
+                <h4 className="text-sm font-medium text-blue-900 mb-2">{t("tips-better-results")}</h4>
                 <ul className="text-xs text-blue-800 space-y-1">
-                  <li>• Ensure good lighting when taking photos of your soil health card</li>
-                  <li>• Keep the document flat and avoid shadows</li>
-                  <li>• Make sure all text is clearly visible and not blurred</li>
-                  <li>• For best results, scan the document instead of taking a photo</li>
+                  <li>{t("ensure-good-lighting")}</li>
+                  <li>{t("keep-document-flat")}</li>
+                  <li>{t("capture-all-text")}</li>
+                  <li>{t("high-resolution")}</li>
                 </ul>
               </div>
             </div>
@@ -635,7 +635,7 @@ export function SoilAnalysis() {
 
           {isUploading && (
             <div className="text-center py-8">
-              <h3 className="text-lg font-medium mb-4">Uploading File...</h3>
+              <h3 className="text-lg font-medium mb-4">{t("uploading-file")}</h3>
               <div className="max-w-sm mx-auto">
                 <Progress value={uploadProgress} className="h-2 mb-2" />
                 <p className="text-sm text-gray-600">{uploadProgress}%</p>
@@ -652,13 +652,13 @@ export function SoilAnalysis() {
                   variant="ghost"
                   className="text-gray-600 hover:text-gray-800"
                 >
-                  ← Back to selection
+                  {t("back-to-selection-tips")}
                 </Button>
-                <h3 className="text-lg font-medium">Manual Data Entry</h3>
+                <h3 className="text-lg font-medium">{t("manual-data-entry-title")}</h3>
                 <div></div>
               </div>
 
-              <p className="text-sm text-gray-600 mb-6 text-center">Enter your soil parameter values below</p>
+              <p className="text-sm text-gray-600 mb-6 text-center">{t("enter-soil-parameters-below")}</p>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
                 {manualData.map((param, index) => (
@@ -687,7 +687,7 @@ export function SoilAnalysis() {
                         setManualData(updatedData);
                       }}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-soil focus:border-transparent"
-                      placeholder={`Enter ${param.name.toLowerCase()} value`}
+                      placeholder={t("enter-value-placeholder").replace("{param}", param.name.toLowerCase())}
                     />
                     <div className="mt-2 flex items-center justify-between">
                       <span className={`text-xs px-2 py-1 rounded-full ${
@@ -698,7 +698,7 @@ export function SoilAnalysis() {
                         {param.status}
                       </span>
                       <span className="text-xs text-gray-500">
-                        Optimal: {param.optimal.min} - {param.optimal.max}
+                        {t("optimal-range").replace("{min}", param.optimal.min.toString()).replace("{max}", param.optimal.max.toString())}
                       </span>
                     </div>
                   </Card>
@@ -711,7 +711,7 @@ export function SoilAnalysis() {
                   className="bg-soil hover:bg-soil-dark text-white px-8 py-3 text-lg"
                   size="lg"
                 >
-                  🔍 {t("visualize-data")} & Get Recommendations
+                  🔍 {t("visualize-data")} {t("get-recommendations")}
                 </Button>
               </div>
 
@@ -764,7 +764,7 @@ export function SoilAnalysis() {
                         ← Back to Entry
                       </Button>
                     )}
-                    <h3 className="text-lg font-medium">Soil Parameters</h3>
+                    <h3 className="text-lg font-medium">{t("soil-parameters")}</h3>
                   </div>
                   {inputMode === 'upload' && (
                     <Button
@@ -778,14 +778,14 @@ export function SoilAnalysis() {
                       variant="outline"
                       className="text-sm"
                     >
-                      New Analysis
+                      {t("new-analysis")}
                     </Button>
                   )}
                 </div>
                 <p className="text-sm text-gray-600 mb-4">
                   {inputMode === 'upload'
-                    ? 'Values extracted from your soil health card. You can adjust any value by clicking on it.'
-                    : 'Your manually entered values. You can still adjust them by clicking on any value.'
+                    ? t("values-extracted")
+                    : t("manually-entered-values")
                   }
                 </p>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -852,7 +852,7 @@ export function SoilAnalysis() {
                           </div>
                         </div>
                         <div className="mt-2">
-                          <div className="text-xs text-gray-500 mb-1">Optimal Range: {param.optimal.min} - {param.optimal.max} {param.unit}</div>
+                          <div className="text-xs text-gray-500 mb-1">{t("optimal-range-display").replace("{min}", param.optimal.min.toString()).replace("{max}", param.optimal.max.toString()).replace("{unit}", param.unit)}</div>
                           <div className="relative h-2 bg-gray-200 rounded-full overflow-hidden">
                             <div className="absolute top-0 left-0 h-2 bg-gradient-to-r from-soil-light to-soil-dark rounded-full"
                                 style={{
@@ -870,12 +870,12 @@ export function SoilAnalysis() {
               </div>
 
               <div className="mt-8 border-t pt-6">
-                <h3 className="text-lg font-medium mb-4">Crop Recommendations</h3>
+                <h3 className="text-lg font-medium mb-4">{t("crop-recommendations")}</h3>
                 <Tabs defaultValue="kharif" value={selectedSeason} onValueChange={setSelectedSeason}>
                   <TabsList className="grid grid-cols-3 mb-4">
-                    <TabsTrigger value="kharif">Kharif Season</TabsTrigger>
-                    <TabsTrigger value="rabi">Rabi Season</TabsTrigger>
-                    <TabsTrigger value="zaid">Zaid Season</TabsTrigger>
+                    <TabsTrigger value="kharif">{t("kharif-season")}</TabsTrigger>
+                    <TabsTrigger value="rabi">{t("rabi-season")}</TabsTrigger>
+                    <TabsTrigger value="zaid">{t("zaid-season")}</TabsTrigger>
                   </TabsList>
                   
                   <TabsContent value={selectedSeason} className="mt-0">
@@ -895,15 +895,15 @@ export function SoilAnalysis() {
                                 🕒 {crop.growingPeriod}
                               </span>
                               <span className="bg-sky-100 text-sky-800 py-0.5 px-2 rounded-full">
-                                💧 {crop.waterNeed} water need
+                                💧 {crop.waterNeed} {t("water-need")}
                               </span>
                               <span className="bg-foliage-light/30 text-foliage-dark py-0.5 px-2 rounded-full">
-                                🎯 {crop.score}% match
+                                🎯 {crop.score}% {t("match")}
                               </span>
                             </div>
                             <div className="mt-3">
                               <Button variant="outline" className="text-xs h-7 border-soil text-soil hover:bg-soil-light/20">
-                                Buy Seeds
+                                {t("buy-seeds")}
                               </Button>
                             </div>
                           </CardContent>
@@ -921,7 +921,7 @@ export function SoilAnalysis() {
                     variant="outline"
                     className="border-soil text-soil hover:bg-soil-light/20"
                   >
-                    ← Back to Edit Values
+                    {t("back-to-edit-values")}
                   </Button>
                 )}
                 <Button
@@ -935,7 +935,7 @@ export function SoilAnalysis() {
                   }}
                   className="bg-soil hover:bg-soil-dark text-white"
                 >
-                  🔄 New Analysis
+                  {t("new-analysis-button")}
                 </Button>
               </div>
             </div>
