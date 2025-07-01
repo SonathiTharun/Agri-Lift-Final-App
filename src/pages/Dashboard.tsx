@@ -62,15 +62,15 @@ const Dashboard = () => {
         {/* Dashboard Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 animate-fade-in" style={{ animationDelay: '0.2s' }}>
           {/* Cart Summary */}
-          <div className="bg-white p-6 rounded-lg shadow-md">
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md dark:shadow-gray-900/20">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-800">{t('cart-summary')}</h3>
+              <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">{t('cart-summary')}</h3>
               <ShoppingCart className="h-6 w-6 text-foliage" />
             </div>
             {isCartLoading ? (
               <div className="animate-pulse">
-                <div className="h-4 bg-gray-200 rounded mb-2"></div>
-                <div className="h-4 bg-gray-200 rounded w-2/3"></div>
+                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded mb-2"></div>
+                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-2/3"></div>
               </div>
             ) : (
               <div>
@@ -82,15 +82,15 @@ const Dashboard = () => {
           </div>
 
           {/* Market Trends */}
-          <div className="bg-white p-6 rounded-lg shadow-md">
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md dark:shadow-gray-900/20">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-800">{t('market-trends')}</h3>
+              <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">{t('market-trends')}</h3>
               <TrendingUp className="h-6 w-6 text-foliage" />
             </div>
             {isRealTimeLoading ? (
               <div className="animate-pulse">
-                <div className="h-4 bg-gray-200 rounded mb-2"></div>
-                <div className="h-4 bg-gray-200 rounded w-2/3"></div>
+                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded mb-2"></div>
+                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-2/3"></div>
               </div>
             ) : (
               <div className="space-y-2">
@@ -107,9 +107,9 @@ const Dashboard = () => {
           </div>
 
           {/* Featured Products */}
-          <div className="bg-white p-6 rounded-lg shadow-md">
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md dark:shadow-gray-900/20">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-800">{t('featured-products')}</h3>
+              <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">{t('featured-products')}</h3>
               <Package className="h-6 w-6 text-foliage" />
             </div>
             <div className="space-y-2">
@@ -127,9 +127,9 @@ const Dashboard = () => {
         </div>
 
         {/* Crop Allocation Card */}
-        <div className="mb-6 bg-white p-6 rounded-lg shadow-md animate-fade-in" style={{ animationDelay: '0.3s' }}>
-          <h2 className="text-2xl font-semibold text-foliage-dark mb-4">{t('crop-allocation-title')}</h2>
-          <p className="text-gray-600 mb-6">
+        <div className="mb-6 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md dark:shadow-gray-900/20 animate-fade-in" style={{ animationDelay: '0.3s' }}>
+          <h2 className="text-2xl font-semibold text-foliage-dark dark:text-green-400 mb-4">{t('crop-allocation-title')}</h2>
+          <p className="text-gray-600 dark:text-gray-300 mb-6">
             {t('crop-allocation-description')}
           </p>
           <Link to="/crop-allocation" className="inline-flex items-center">

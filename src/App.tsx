@@ -22,6 +22,7 @@ const FarmingType = React.lazy(() => import("./pages/FarmingType"));
 const CropAllocation = React.lazy(() => import("./pages/CropAllocation"));
 const Orders = React.lazy(() => import("./pages/Orders"));
 const Settings = React.lazy(() => import("./pages/Settings"));
+const Profile = React.lazy(() => import("./pages/Profile"));
 const ExecutiveDashboard = React.lazy(() => import("./pages/ExecutiveDashboard"));
 const ExecutiveFarmers = React.lazy(() => import("./pages/ExecutiveFarmers"));
 const ExecutiveAnalytics = React.lazy(() => import("./pages/ExecutiveAnalytics"));
@@ -69,6 +70,7 @@ const App = () => (
         <Route path="/orders" element={<Orders />} />
         <Route path="/settings" element={<Settings />} />
         <Route path="/dairy-lift/*" element={<DairyLiftHome />} />
+        <Route path="/profile" element={<Profile />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Suspense>

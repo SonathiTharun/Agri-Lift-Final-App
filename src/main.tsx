@@ -18,18 +18,18 @@ createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
-        <ThemeProvider>
-          <LanguageProvider>
-            <AuthProvider>
+        <LanguageProvider>
+          <AuthProvider>
+            <ThemeProvider>
               <CartProvider>
                 <WishlistProvider>
                   <App />
                   <Toaster />
                 </WishlistProvider>
               </CartProvider>
-            </AuthProvider>
-          </LanguageProvider>
-        </ThemeProvider>
+            </ThemeProvider>
+          </AuthProvider>
+        </LanguageProvider>
       </BrowserRouter>
     </QueryClientProvider>
   </StrictMode>

@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage } from "./LanguageContext";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Globe, Menu, Users, BarChart3, DollarSign, Settings, Bell, LogOut, Shield, Sparkles } from "lucide-react";
+import { Globe, Menu, Users, BarChart3, DollarSign, Settings, Bell, LogOut, Shield, Sparkles, User } from "lucide-react";
 import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { GlassNav, AnimatedDrawer, AnimatedMenuItem } from "@/components/ui/glass-nav";
@@ -47,6 +47,7 @@ export function ExecutiveNavbar() {
   ];
   
   const menuItems = [
+    { id: "profile", label: "Profile", path: "/profile", icon: <User size={18} /> },
     { id: "notifications", label: "Notifications", path: "/executive/notifications", icon: <Bell size={18} /> },
     { id: "settings", label: "Settings", path: "/executive/settings", icon: <Settings size={18} /> },
     { id: "logout", label: "Logout", path: "/", icon: <LogOut size={18} /> },
@@ -160,7 +161,7 @@ export function ExecutiveNavbar() {
               </DropdownMenuTrigger>
               <DropdownMenuContent
                 align="start"
-                className="w-64 bg-white/95 backdrop-blur-lg border border-white/20 shadow-2xl rounded-xl p-2"
+                className="w-64 bg-white/95 dark:bg-gray-800/95 backdrop-blur-lg border border-white/20 dark:border-gray-700/30 shadow-2xl rounded-xl p-2"
               >
                 <motion.div
                   initial={{ opacity: 0, y: -10 }}
@@ -288,7 +289,7 @@ export function ExecutiveNavbar() {
             </DropdownMenuTrigger>
             <DropdownMenuContent
               align="end"
-              className="bg-white/95 backdrop-blur-lg border border-white/20 shadow-2xl rounded-xl p-2"
+              className="bg-white/95 dark:bg-gray-800/95 backdrop-blur-lg border border-white/20 dark:border-gray-700/30 shadow-2xl rounded-xl p-2"
             >
               <motion.div
                 initial={{ opacity: 0, y: -10 }}

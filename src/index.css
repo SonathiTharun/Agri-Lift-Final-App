@@ -100,6 +100,176 @@
   }
 }
 
+/* AgriLift Dark Theme Styles */
+@layer components {
+  /* Light theme gradients (default) */
+  .agrilift-gradient {
+    @apply bg-gradient-to-br from-green-50 to-blue-50;
+  }
+
+  .agrilift-gradient-primary {
+    @apply bg-gradient-to-r from-green-600 to-green-700;
+  }
+
+  .agrilift-gradient-secondary {
+    @apply bg-gradient-to-r from-green-100 to-green-200;
+  }
+
+  .agrilift-card {
+    @apply bg-white border border-gray-200 shadow-sm;
+  }
+
+  .agrilift-card-header {
+    @apply bg-gray-50 border-b border-gray-200;
+  }
+
+  .agrilift-text-primary {
+    @apply text-gray-900;
+  }
+
+  .agrilift-text-secondary {
+    @apply text-gray-600;
+  }
+
+  .agrilift-text-muted {
+    @apply text-gray-500;
+  }
+
+  .agrilift-border {
+    @apply border-gray-200;
+  }
+
+  .agrilift-input {
+    @apply bg-white border-gray-300 text-gray-900 placeholder-gray-500;
+  }
+
+  .agrilift-button-primary {
+    @apply bg-green-600 hover:bg-green-700 text-white;
+  }
+
+  .agrilift-button-secondary {
+    @apply bg-gray-100 hover:bg-gray-200 text-gray-900;
+  }
+
+  /* Dark theme overrides */
+  .dark .agrilift-gradient {
+    @apply bg-gradient-to-br from-gray-900 to-gray-800;
+  }
+
+  .dark .agrilift-gradient-primary {
+    @apply bg-gradient-to-r from-green-700 to-green-800;
+  }
+
+  .dark .agrilift-gradient-secondary {
+    @apply bg-gradient-to-r from-green-800 to-green-900;
+  }
+
+  .dark .agrilift-card {
+    @apply bg-gray-800 border-gray-700 shadow-lg;
+  }
+
+  .dark .agrilift-card-header {
+    @apply bg-gray-700 border-gray-600;
+  }
+
+  .dark .agrilift-text-primary {
+    @apply text-gray-100;
+  }
+
+  .dark .agrilift-text-secondary {
+    @apply text-gray-300;
+  }
+
+  .dark .agrilift-text-muted {
+    @apply text-gray-400;
+  }
+
+  .dark .agrilift-border {
+    @apply border-gray-700;
+  }
+
+  .dark .agrilift-input {
+    @apply bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400;
+  }
+
+  .dark .agrilift-button-primary {
+    @apply bg-green-700 hover:bg-green-600 text-white;
+  }
+
+  .dark .agrilift-button-secondary {
+    @apply bg-gray-700 hover:bg-gray-600 text-gray-100;
+  }
+
+  /* Navigation specific dark theme */
+  .dark .navbar-bg {
+    @apply bg-gray-800 border-gray-700;
+  }
+
+  .dark .navbar-text {
+    @apply text-gray-200;
+  }
+
+  .dark .navbar-text-hover {
+    @apply hover:text-green-400;
+  }
+
+  .dark .navbar-active {
+    @apply text-green-400 bg-gray-700;
+  }
+
+  /* Market and product cards dark theme */
+  .dark .product-card {
+    @apply bg-gray-800 border-gray-700 hover:bg-gray-700;
+  }
+
+  .dark .product-card-hover {
+    @apply hover:shadow-xl hover:border-green-600;
+  }
+
+  /* Dashboard specific dark theme */
+  .dark .dashboard-bg {
+    @apply bg-gray-900;
+  }
+
+  .dark .dashboard-card {
+    @apply bg-gray-800 border-gray-700;
+  }
+
+  .dark .dashboard-stat-card {
+    @apply bg-gradient-to-r from-gray-800 to-gray-700 border-gray-600;
+  }
+
+  /* Form elements dark theme */
+  .dark .form-input {
+    @apply bg-gray-700 border-gray-600 text-gray-100 focus:border-green-500;
+  }
+
+  .dark .form-label {
+    @apply text-gray-300;
+  }
+
+  .dark .form-select {
+    @apply bg-gray-700 border-gray-600 text-gray-100;
+  }
+
+  /* Badge and status indicators dark theme */
+  .dark .badge-success {
+    @apply bg-green-800 text-green-200;
+  }
+
+  .dark .badge-warning {
+    @apply bg-yellow-800 text-yellow-200;
+  }
+
+  .dark .badge-error {
+    @apply bg-red-800 text-red-200;
+  }
+
+  .dark .badge-info {
+    @apply bg-blue-800 text-blue-200;
+  }
+}
+
 /* Navigation spacing utilities */
 @layer utilities {
   .nav-spacing {

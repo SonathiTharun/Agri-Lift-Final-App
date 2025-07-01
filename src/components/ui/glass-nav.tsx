@@ -11,14 +11,14 @@ interface GlassNavProps {
 
 const variants = {
   farmer: {
-    background: 'bg-gradient-to-r from-green-500/90 via-green-600/90 to-emerald-500/90',
-    border: 'border-green-400/30',
-    shadow: 'shadow-green-500/20'
+    background: 'bg-gradient-to-r from-green-500/90 via-green-600/90 to-emerald-500/90 dark:from-green-700/90 dark:via-green-800/90 dark:to-emerald-700/90',
+    border: 'border-green-400/30 dark:border-green-600/30',
+    shadow: 'shadow-green-500/20 dark:shadow-green-700/20'
   },
   executive: {
-    background: 'bg-gradient-to-r from-green-800/90 via-green-900/90 to-emerald-800/90',
-    border: 'border-green-600/30',
-    shadow: 'shadow-green-800/20'
+    background: 'bg-gradient-to-r from-green-800/90 via-green-900/90 to-emerald-800/90 dark:from-green-900/90 dark:via-gray-900/90 dark:to-emerald-900/90',
+    border: 'border-green-600/30 dark:border-green-700/30',
+    shadow: 'shadow-green-800/20 dark:shadow-green-900/20'
   }
 };
 
@@ -117,7 +117,7 @@ export function AnimatedDrawer({
           }
         }
       }}
-      className="bg-white/95 backdrop-blur-lg rounded-lg shadow-2xl border border-white/20"
+      className="bg-white/95 dark:bg-gray-800/95 backdrop-blur-lg rounded-lg shadow-2xl border border-white/20 dark:border-gray-700/30"
     >
       {children}
     </motion.div>
