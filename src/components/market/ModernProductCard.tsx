@@ -22,6 +22,8 @@ import { GlassCard } from "./GlassCard";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { useCart } from "@/context/CartContext";
 import { toast } from 'sonner';
+import { ProductPreviewDialog } from "./ProductPreviewDialog";
+
 
 interface ModernProductCardProps {
   product: {
@@ -47,9 +49,10 @@ export const ModernProductCard = ({ product, onAddToComparison, viewMode = 'grid
   const [imageLoaded, setImageLoaded] = useState(false);
   const [quantity, setQuantity] = useState(1);
   const [isAdding, setIsAdding] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
 
   const { isInWishlist, addToWishlist, removeFromWishlist } = useWishlist();
-  const { addToCart } = useCart();
+  const { addToCart, formatCurrency } = useCart();
 
   const finalPrice = product.discount 
     ? Math.round(product.price * (1 - product.discount / 100)) 
@@ -128,181 +131,188 @@ export const ModernProductCard = ({ product, onAddToComparison, viewMode = 'grid
     onAddToComparison?.();
   };
 
-  if (viewMode === 'list') {
-    return (
-      <motion.div
-        layout
-        initial={{ opacity: 0, x: -20 }}
-        animate={{ opacity: 1, x: 0 }}
-        whileHover={{ x: 5 }}
-        className="group"
-      >
-        <Link to={`/market/${product.categoryId}/${product.id}`}>
-          <GlassCard className="overflow-hidden bg-white/90 backdrop-blur-sm hover:bg-white/95 transition-all duration-300">
-            <div className="flex gap-4 p-4">
-              {/* Image */}
-              <div className="relative w-32 h-32 flex-shrink-0">
-                <img 
-                  src={product.image} 
-                  alt={product.name}
-                  className="w-full h-full object-cover rounded-lg"
-                  onLoad={() => setImageLoaded(true)}
-                />
-                {/* Status badges */}
-                <div className="absolute top-2 left-2 flex flex-col gap-1">
-                  {product.discount && (
-                    <Badge className="bg-red-500 border-0 text-xs">
-                      -{product.discount}%
-                    </Badge>
-                  )}
-                  {product.isNew && (
-                    <Badge className="bg-green-500 border-0 text-xs">
-                      <Zap className="h-2 w-2 mr-1" />
-                      New
-                    </Badge>
+  const handleViewClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setShowPreview(true);
+  };
+
+  // Store the JSX for the list view card
+  const listViewCard = (
+    <motion.div
+      layout
+      initial={{ opacity: 0, x: -20 }}
+      animate={{ opacity: 1, x: 0 }}
+      whileHover={{ x: 5 }}
+      className="group"
+    >
+      <div onClick={handleViewClick} className="cursor-pointer">
+        <GlassCard className="overflow-hidden bg-white/90 backdrop-blur-sm hover:bg-white/95 transition-all duration-300">
+          <div className="flex gap-4 p-4">
+            {/* Image */}
+            <div className="relative w-32 h-32 flex-shrink-0">
+              <img 
+                src={product.image} 
+                alt={product.name}
+                className="w-full h-full object-cover rounded-lg cursor-pointer"
+                onLoad={() => setImageLoaded(true)}
+                onClick={handleViewClick}
+              />
+              {/* Status badges */}
+              <div className="absolute top-2 left-2 flex flex-col gap-1">
+                {product.discount && (
+                  <Badge className="bg-red-500 border-0 text-xs">
+                    -{product.discount}%
+                  </Badge>
+                )}
+                {product.isNew && (
+                  <Badge className="bg-green-500 border-0 text-xs">
+                    <Zap className="h-2 w-2 mr-1" />
+                    New
+                  </Badge>
+                )}
+              </div>
+            </div>
+
+            {/* Content */}
+            <div className="flex-1 flex flex-col justify-between">
+              <div>
+                <h3 className="font-semibold text-lg text-gray-800 group-hover:text-foliage transition-colors line-clamp-2">
+                  {product.name}
+                </h3>
+                
+                <div className="flex items-center gap-2 mt-2">
+                  <div className="flex items-center">
+                    {[...Array(5)].map((_, i) => (
+                      <Star
+                        key={i}
+                        size={14}
+                        className={`${
+                          i < Math.floor(product.rating) 
+                            ? "text-yellow-400 fill-yellow-400" 
+                            : "text-gray-300"
+                        }`}
+                      />
+                    ))}
+                  </div>
+                  <span className="text-sm text-gray-600">({product.rating})</span>
+                  {product.viewCount && (
+                    <div className="flex items-center text-sm text-gray-500 ml-auto">
+                      <Users className="h-3 w-3 mr-1" />
+                      {product.viewCount}
+                    </div>
                   )}
                 </div>
+
+                <p className="text-gray-600 text-sm mt-2 line-clamp-2">{product.description}</p>
               </div>
 
-              {/* Content */}
-              <div className="flex-1 flex flex-col justify-between">
-                <div>
-                  <h3 className="font-semibold text-lg text-gray-800 group-hover:text-foliage transition-colors line-clamp-2">
-                    {product.name}
-                  </h3>
-                  
-                  <div className="flex items-center gap-2 mt-2">
-                    <div className="flex items-center">
-                      {[...Array(5)].map((_, i) => (
-                        <Star
-                          key={i}
-                          size={14}
-                          className={`${
-                            i < Math.floor(product.rating) 
-                              ? "text-yellow-400 fill-yellow-400" 
-                              : "text-gray-300"
-                          }`}
-                        />
-                      ))}
-                    </div>
-                    <span className="text-sm text-gray-600">({product.rating})</span>
-                    {product.viewCount && (
-                      <div className="flex items-center text-sm text-gray-500 ml-auto">
-                        <Users className="h-3 w-3 mr-1" />
-                        {product.viewCount}
-                      </div>
-                    )}
-                  </div>
-
-                  <p className="text-gray-600 text-sm mt-2 line-clamp-2">{product.description}</p>
+              <div className="space-y-3 mt-4">
+                <div className="flex items-center gap-2">
+                  <span className="text-foliage-dark font-bold text-xl">{formatCurrency(finalPrice)}</span>
+                  {product.discount && (
+                    <span className="text-gray-500 line-through text-sm">
+                      {formatCurrency(product.price)}
+                    </span>
+                  )}
                 </div>
 
-                <div className="space-y-3 mt-4">
+                <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <span className="text-foliage-dark font-bold text-xl">₹{finalPrice}</span>
-                    {product.discount && (
-                      <span className="text-gray-500 line-through text-sm">
-                        ₹{product.price}
-                      </span>
-                    )}
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={handleWishlistToggle}
+                      className="p-2"
+                    >
+                      <Heart
+                        className={`h-4 w-4 transition-colors ${
+                          isWishlisted ? 'text-red-500 fill-red-500' : 'text-gray-600'
+                        }`}
+                      />
+                    </Button>
+
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={handleCompare}
+                      className="p-2"
+                    >
+                      <SplitSquareVertical className="h-4 w-4" />
+                    </Button>
+
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={handleViewClick}
+                      className="p-2"
+                    >
+                      <Eye className="h-4 w-4" />
+                    </Button>
                   </div>
 
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2">
+                    <div className="flex items-center border border-gray-200 rounded-lg overflow-hidden">
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={handleWishlistToggle}
-                        className="p-2"
+                        className="h-8 w-8 p-0 hover:bg-gray-100"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          setQuantity(Math.max(1, quantity - 1));
+                        }}
+                        disabled={quantity <= 1}
                       >
-                        <Heart
-                          className={`h-4 w-4 transition-colors ${
-                            isWishlisted ? 'text-red-500 fill-red-500' : 'text-gray-600'
-                          }`}
-                        />
+                        <Minus className="h-3 w-3" />
                       </Button>
-
+                      <span className="px-3 py-1 text-sm font-medium min-w-[2rem] text-center">
+                        {quantity}
+                      </span>
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={handleCompare}
-                        className="p-2"
+                        className="h-8 w-8 p-0 hover:bg-gray-100"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          setQuantity(Math.min(product.stock, quantity + 1));
+                        }}
+                        disabled={quantity >= product.stock}
                       >
-                        <SplitSquareVertical className="h-4 w-4" />
-                      </Button>
-
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={handleShare}
-                        className="p-2"
-                      >
-                        <Share className="h-4 w-4" />
+                        <Plus className="h-3 w-3" />
                       </Button>
                     </div>
 
-                    <div className="flex items-center gap-2">
-                      <div className="flex items-center border border-gray-200 rounded-lg overflow-hidden">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="h-8 w-8 p-0 hover:bg-gray-100"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            setQuantity(Math.max(1, quantity - 1));
-                          }}
-                          disabled={quantity <= 1}
-                        >
-                          <Minus className="h-3 w-3" />
-                        </Button>
-                        <span className="px-3 py-1 text-sm font-medium min-w-[2rem] text-center">
-                          {quantity}
-                        </span>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="h-8 w-8 p-0 hover:bg-gray-100"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            setQuantity(Math.min(product.stock, quantity + 1));
-                          }}
-                          disabled={quantity >= product.stock}
-                        >
-                          <Plus className="h-3 w-3" />
-                        </Button>
-                      </div>
-
-                      <Button
-                        size="sm"
-                        className={`transition-colors ${
-                          isAdding
-                            ? 'bg-green-600 hover:bg-green-700'
-                            : 'bg-foliage hover:bg-foliage-dark'
-                        }`}
-                        disabled={stockStatus === 'out' || isAdding}
-                        onClick={handleAddToCart}
-                      >
-                        {stockStatus === 'out'
-                          ? 'Out of Stock'
-                          : isAdding
-                            ? 'Added!'
-                            : 'Add to Cart'
-                        }
-                      </Button>
-                    </div>
+                    <Button
+                      size="sm"
+                      className={`transition-colors ${
+                        isAdding
+                          ? 'bg-green-600 hover:bg-green-700'
+                          : 'bg-foliage hover:bg-foliage-dark'
+                      }`}
+                      disabled={stockStatus === 'out' || isAdding}
+                      onClick={handleAddToCart}
+                    >
+                      {stockStatus === 'out'
+                        ? 'Out of Stock'
+                        : isAdding
+                          ? 'Added!'
+                          : 'Add to Cart'
+                      }
+                    </Button>
                   </div>
                 </div>
               </div>
             </div>
-          </GlassCard>
-        </Link>
-      </motion.div>
-    );
-  }
+          </div>
+        </GlassCard>
+      </div>
+    </motion.div>
+  );
 
-  return (
+  // Store the JSX for the grid view card
+  const gridViewCard = (
     <motion.div
       layout
       initial={{ opacity: 0, y: 20 }}
@@ -312,7 +322,7 @@ export const ModernProductCard = ({ product, onAddToComparison, viewMode = 'grid
       onHoverEnd={() => setIsHovered(false)}
       className="group relative"
     >
-      <GlassCard className="h-full overflow-hidden bg-white/90 backdrop-blur-sm">
+      <GlassCard className="h-full overflow-hidden bg-white/90 backdrop-blur-sm cursor-pointer" onClick={handleViewClick}>
         <div className="relative h-56 overflow-hidden">
           {/* Image */}
           <motion.div
@@ -320,19 +330,20 @@ export const ModernProductCard = ({ product, onAddToComparison, viewMode = 'grid
             whileHover={{ scale: 1.1 }}
             transition={{ duration: 0.3 }}
           >
-            <Link to={`/market/${product.categoryId}/${product.id}`}>
+            <div>
               <img 
                 src={product.image} 
                 alt={product.name}
-                className={`w-full h-full object-cover transition-all duration-500 ${
+                className={`w-full h-full object-cover transition-all duration-500 cursor-pointer ${
                   imageLoaded ? 'opacity-100' : 'opacity-0'
                 }`}
                 onLoad={() => setImageLoaded(true)}
+                onClick={handleViewClick}
               />
               {!imageLoaded && (
                 <div className="absolute inset-0 bg-gradient-to-br from-gray-200 to-gray-300 animate-pulse" />
               )}
-            </Link>
+            </div>
           </motion.div>
 
           {/* Overlay with quick actions */}
@@ -353,16 +364,15 @@ export const ModernProductCard = ({ product, onAddToComparison, viewMode = 'grid
                   <SplitSquareVertical className="h-4 w-4 mr-1" />
                   Compare
                 </Button>
-                <Link to={`/market/${product.categoryId}/${product.id}`}>
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    className="bg-white/90 hover:bg-white"
-                  >
-                    <Eye className="h-4 w-4 mr-1" />
-                    View
-                  </Button>
-                </Link>
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  className="bg-white/90 hover:bg-white"
+                  onClick={handleViewClick}
+                >
+                  <Eye className="h-4 w-4 mr-1" />
+                  View
+                </Button>
               </motion.div>
             )}
           </AnimatePresence>
@@ -430,11 +440,11 @@ export const ModernProductCard = ({ product, onAddToComparison, viewMode = 'grid
 
         <CardContent className="p-4 space-y-3">
           {/* Product name */}
-          <Link to={`/market/${product.categoryId}/${product.id}`}>
+          <div onClick={handleViewClick} className="cursor-pointer">
             <h3 className="font-semibold text-lg text-gray-800 hover:text-foliage transition-colors line-clamp-2 group-hover:text-foliage">
               {product.name}
             </h3>
-          </Link>
+          </div>
 
           {/* Rating and views */}
           <div className="flex items-center justify-between">
@@ -469,10 +479,10 @@ export const ModernProductCard = ({ product, onAddToComparison, viewMode = 'grid
           {/* Price and Cart Controls */}
           <div className="space-y-3">
             <div className="flex items-center gap-2">
-              <span className="text-foliage-dark font-bold text-xl">₹{finalPrice}</span>
+              <span className="text-foliage-dark font-bold text-xl">{formatCurrency(finalPrice)}</span>
               {product.discount && (
                 <span className="text-gray-500 line-through text-sm">
-                  ₹{product.price}
+                  {formatCurrency(product.price)}
                 </span>
               )}
             </div>
@@ -545,5 +555,20 @@ export const ModernProductCard = ({ product, onAddToComparison, viewMode = 'grid
         </CardContent>
       </GlassCard>
     </motion.div>
+  );
+
+  return (
+    <>
+      {/* Product Card */}
+      {viewMode === 'list' ? listViewCard : gridViewCard}
+      
+      {/* Product Preview Dialog */}
+      <ProductPreviewDialog 
+        open={showPreview} 
+        onOpenChange={setShowPreview} 
+        product={product}
+        formatCurrency={formatCurrency}
+      />
+    </>
   );
 };

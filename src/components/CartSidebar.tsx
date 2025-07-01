@@ -9,7 +9,7 @@ import { useCart } from '@/context/CartContext';
 import { Link } from 'react-router-dom';
 
 export function CartSidebar() {
-  const { cartItems, getCartCount, getCartTotal, updateQuantity, removeFromCart, clearCart } = useCart();
+  const { cartItems, getCartCount, getCartTotal, updateQuantity, removeFromCart, clearCart, formatCurrency } = useCart();
 
   const emptyCart = cartItems.length === 0;
   const cartCount = getCartCount();
@@ -37,7 +37,7 @@ export function CartSidebar() {
               {cartCount > 0 && <Badge variant="outline" className="ml-2">{cartCount} items</Badge>}
             </DrawerTitle>
             <DrawerDescription>
-              {emptyCart ? "Your cart is empty" : `Total: $${getCartTotal()}`}
+              {emptyCart ? "Your cart is empty" : `Total: ${formatCurrency(getCartTotal())}`}
             </DrawerDescription>
             <DrawerClose className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-secondary">
               <X className="h-4 w-4" />
@@ -93,7 +93,7 @@ export function CartSidebar() {
                           </button>
                         </div>
                         <div className="flex items-center gap-2">
-                          <span className="font-medium text-sm">${item.price * item.quantity}</span>
+                          <span className="font-medium text-sm">{formatCurrency(item.price * item.quantity)}</span>
                           <Button 
                             variant="ghost"
                             size="icon"
@@ -121,16 +121,16 @@ export function CartSidebar() {
                 <div className="space-y-2">
                   <div className="flex justify-between text-sm">
                     <span>Subtotal</span>
-                    <span>${getCartTotal()}</span>
+                    <span>{formatCurrency(getCartTotal())}</span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span>Shipping</span>
-                    <span>{getCartTotal() > 1000 ? "Free" : "$99"}</span>
+                    <span>{getCartTotal() > 1000 ? "Free" : formatCurrency(99)}</span>
                   </div>
                   <Separator />
                   <div className="flex justify-between font-medium">
                     <span>Total</span>
-                    <span>${getCartTotal() + (getCartTotal() > 1000 ? 0 : 99)}</span>
+                    <span>{formatCurrency(getCartTotal() + (getCartTotal() > 1000 ? 0 : 99))}</span>
                   </div>
                 </div>
               </div>

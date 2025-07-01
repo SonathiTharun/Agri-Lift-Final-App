@@ -21,6 +21,7 @@ type CartContextType = {
   clearCart: () => void;
   getCartTotal: () => number;
   getCartCount: () => number;
+  formatCurrency: (amount: number) => string;
 };
 
 // Create a comprehensive product catalog from all categories in marketData
@@ -178,6 +179,14 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     localStorage.removeItem('agrilift-cart');
   };
 
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('en-IN', {
+      style: 'currency',
+      currency: 'INR',
+      maximumFractionDigits: 0
+    }).format(amount);
+  };
+
   const getCartTotal = () => {
     return cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
   };
@@ -195,7 +204,8 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
       updateQuantity,
       clearCart,
       getCartTotal,
-      getCartCount
+      getCartCount,
+      formatCurrency
     }}>
       {children}
     </CartContext.Provider>
