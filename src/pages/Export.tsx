@@ -452,10 +452,6 @@ const Export = () => {
                     Global Trade Hub
                   </h1>
 
-                  <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-                    Connect with verified international buyers, access premium export services,
-                    and transform your agricultural produce into global success stories
-                  </p>
                 </div>
 
                 {/* Stats Cards */}
@@ -492,38 +488,7 @@ const Export = () => {
               </motion.div>
 
               {/* Success Banner */}
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.3 }}
-                className="relative overflow-hidden"
-              >
-                <div className="bg-gradient-to-r from-foliage via-foliage-dark to-foliage rounded-2xl p-6 shadow-xl">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                      <motion.div
-                        className="bg-white/20 rounded-full p-3"
-                        animate={{ rotate: [0, 10, -10, 0] }}
-                        transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
-                      >
-                        <Award className="h-6 w-6 text-white" />
-                      </motion.div>
-                      <div>
-                        <h3 className="text-white font-bold text-lg">🎉 Join the AgriLift Success Story</h3>
-                        <p className="text-white/90 text-sm">
-                          Over 10,000 farmers have successfully exported their produce globally through our platform
-                        </p>
-                      </div>
-                    </div>
-                    <Button
-                      variant="secondary"
-                      className="bg-white text-foliage hover:bg-gray-100 font-semibold"
-                    >
-                      Learn More
-                    </Button>
-                  </div>
-                </div>
-              </motion.div>
+              
 
               {/* Modern Navigation Tabs */}
               <motion.div
