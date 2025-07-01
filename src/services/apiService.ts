@@ -354,6 +354,30 @@ class ApiService {
     return response.json();
   }
 
+  // Upload profile picture
+  async uploadProfilePicture(file: File): Promise<{ success: boolean; message: string; data: { user: User; profileImageUrl: string } }> {
+    const formData = new FormData();
+    formData.append('profilePicture', file);
+
+    const headers: HeadersInit = {};
+    if (this.getToken()) {
+      headers['Authorization'] = `Bearer ${this.getToken()}`;
+    }
+
+    const response = await fetch(`${this.baseUrl}/auth/profile/picture`, {
+      method: 'POST',
+      headers,
+      body: formData,
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'Failed to upload profile picture');
+    }
+
+    return response.json();
+  }
+
   // Change password
   async changePassword(currentPassword: string, newPassword: string): Promise<{ success: boolean; message: string }> {
     const response = await this.makeRequest(`${this.baseUrl}/auth/change-password`, {

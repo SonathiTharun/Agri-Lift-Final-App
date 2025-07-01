@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage } from "./LanguageContext";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Globe, Menu, Users, BarChart3, DollarSign, Settings, Bell, LogOut, Shield, Sparkles } from "lucide-react";
+import { Globe, Menu, Users, BarChart3, DollarSign, Settings, Bell, LogOut, Shield, Sparkles, User } from "lucide-react";
 import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { GlassNav, AnimatedDrawer, AnimatedMenuItem } from "@/components/ui/glass-nav";
@@ -47,6 +47,7 @@ export function ExecutiveNavbar() {
   ];
   
   const menuItems = [
+    { id: "profile", label: "Profile", path: "/profile", icon: <User size={18} /> },
     { id: "notifications", label: "Notifications", path: "/executive/notifications", icon: <Bell size={18} /> },
     { id: "settings", label: "Settings", path: "/executive/settings", icon: <Settings size={18} /> },
     { id: "logout", label: "Logout", path: "/", icon: <LogOut size={18} /> },

@@ -1,15 +1,49 @@
 const express = require('express');
 const { body, validationResult } = require('express-validator');
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
+const { v4: uuidv4 } = require('uuid');
 const authService = require('../services/authService');
-const { 
-  authenticateToken, 
-  requireRole, 
+const {
+  authenticateToken,
+  requireRole,
   requireExecutive,
   logAuthEvent,
-  authRateLimit 
+  authRateLimit
 } = require('../middleware/auth');
 
 const router = express.Router();
+
+// Configure multer for profile picture uploads
+const profileStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const uploadDir = process.env.PROFILE_UPLOAD_DIR || './uploads/profiles';
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+    }
+    cb(null, uploadDir);
+  },
+  filename: (req, file, cb) => {
+    const uniqueName = `profile_${req.user._id}_${Date.now()}${path.extname(file.originalname)}`;
+    cb(null, uniqueName);
+  }
+});
+
+const profileUpload = multer({
+  storage: profileStorage,
+  limits: {
+    fileSize: 5 * 1024 * 1024, // 5MB limit for profile pictures
+  },
+  fileFilter: (req, file, cb) => {
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+    if (allowedTypes.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error('Invalid file type. Only JPEG and PNG images are allowed.'));
+    }
+  }
+});
 
 // Validation middleware
 const validateRegistration = [
@@ -331,6 +365,49 @@ router.get('/stats',
       console.error('Get stats error:', error);
       res.status(500).json({
         error: 'Failed to get statistics',
+        message: error.message
+      });
+    }
+  }
+);
+
+// POST /api/auth/profile/picture - Upload profile picture
+router.post('/profile/picture',
+  authenticateToken,
+  profileUpload.single('profilePicture'),
+  async (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({
+          error: 'No file uploaded',
+          message: 'Please upload a profile picture'
+        });
+      }
+
+      // Update user profile with new image path
+      const profileImageUrl = `/uploads/profiles/${req.file.filename}`;
+      const updatedProfile = await authService.updateProfile(req.user._id, {
+        profileImage: profileImageUrl
+      });
+
+      res.json({
+        success: true,
+        message: 'Profile picture updated successfully',
+        data: {
+          user: updatedProfile,
+          profileImageUrl: profileImageUrl
+        }
+      });
+    } catch (error) {
+      console.error('Profile picture upload error:', error);
+
+      // Clean up uploaded file if database update fails
+      if (req.file && fs.existsSync(req.file.path)) {
+        fs.unlinkSync(req.file.path);
+      }
+
+      res.status(400).json({
+        error: 'Failed to upload profile picture',
         message: error.message
       });
     }
