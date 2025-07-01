@@ -1,10 +1,12 @@
 
-import { Link } from "react-router-dom";
+import { useState } from "react";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Star, ChevronRight } from "lucide-react";
+import { Star, ChevronRight, Eye } from "lucide-react";
 import { motion } from "framer-motion";
+import { ProductPreviewDialog } from "./ProductPreviewDialog";
+import { useCart } from "@/context/CartContext";
 
 interface FeaturedProductCardProps {
   product: {
@@ -16,17 +18,31 @@ interface FeaturedProductCardProps {
     image: string;
     discount?: number;
     categoryId: string;
+    stock?: number;
+    isNew?: boolean;
+    isTrending?: boolean;
+    viewCount?: number;
   };
 }
 
 export const FeaturedProductCard = ({ product }: FeaturedProductCardProps) => {
+  const [showPreview, setShowPreview] = useState(false);
+  const { formatCurrency } = useCart();
+  
+  const handleViewClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setShowPreview(true);
+  };
+
   return (
-    <Link to={`/market/${product.categoryId}/${product.id}`}>
-      <motion.div 
-        whileHover={{ scale: 1.03 }} 
-        whileTap={{ scale: 0.98 }}
-        transition={{ duration: 0.2 }}
-      >
+    <>
+      <div onClick={handleViewClick} className="cursor-pointer">
+        <motion.div 
+          whileHover={{ scale: 1.03 }} 
+          whileTap={{ scale: 0.98 }}
+          transition={{ duration: 0.2 }}
+        >
         <Card className="h-full overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300">
           <div className="relative h-48 overflow-hidden">
             {product.discount && (
@@ -67,13 +83,26 @@ export const FeaturedProductCard = ({ product }: FeaturedProductCardProps) => {
             </div>
           </CardContent>
           <CardFooter className="bg-gray-50 border-t border-gray-100">
-            <Button variant="outline" className="w-full group hover:bg-foliage hover:text-white border-foliage text-foliage">
+            <Button 
+              variant="outline" 
+              className="w-full group hover:bg-foliage hover:text-white border-foliage text-foliage"
+              onClick={handleViewClick}
+            >
               <span>View Details</span>
-              <ChevronRight className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform" />
+              <Eye className="h-4 w-4 ml-2" />
             </Button>
           </CardFooter>
         </Card>
       </motion.div>
-    </Link>
+      </div>
+      
+      {/* Product Preview Dialog */}
+      <ProductPreviewDialog 
+        open={showPreview} 
+        onOpenChange={setShowPreview} 
+        product={product}
+        formatCurrency={formatCurrency}
+      />
+    </>
   );
 };

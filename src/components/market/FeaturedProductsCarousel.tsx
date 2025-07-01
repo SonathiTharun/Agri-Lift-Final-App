@@ -1,5 +1,5 @@
 
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { ChevronRight } from "lucide-react";
 import { motion } from "framer-motion";
 import { 
@@ -25,6 +25,8 @@ interface FeaturedProductsCarouselProps {
 }
 
 export const FeaturedProductsCarousel = ({ featuredProducts }: FeaturedProductsCarouselProps) => {
+  const navigate = useNavigate();
+  
   return (
     <motion.div 
       className="my-12 max-w-5xl mx-auto"
@@ -37,9 +39,12 @@ export const FeaturedProductsCarousel = ({ featuredProducts }: FeaturedProductsC
           <div className="w-1.5 h-8 bg-foliage rounded-full mr-3"></div>
           <h2 className="text-2xl font-bold">Featured Products</h2>
         </div>
-        <Link to="/market" className="text-foliage hover:underline flex items-center font-medium">
+        <div 
+          onClick={() => navigate('/market')} 
+          className="text-foliage hover:underline flex items-center font-medium cursor-pointer"
+        >
           View all <ChevronRight className="h-4 w-4" />
-        </Link>
+        </div>
       </div>
       
       <Carousel

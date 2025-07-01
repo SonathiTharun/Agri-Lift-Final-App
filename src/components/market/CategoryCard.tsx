@@ -1,5 +1,5 @@
 
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ShoppingCart, Sprout, Leaf, FlaskConical, Flower, Shovel } from "lucide-react";
@@ -34,8 +34,14 @@ const renderIcon = (iconName: string) => {
 };
 
 export const CategoryCard = ({ category }: CategoryCardProps) => {
+  const navigate = useNavigate();
+  
+  const handleCategoryClick = () => {
+    navigate(`/market/${category.id}`);
+  };
+  
   return (
-    <Link key={category.id} to={`/market/${category.id}`} className="group">
+    <div onClick={handleCategoryClick} className="group cursor-pointer">
       <motion.div
         whileHover={{ y: -5 }}
         whileTap={{ scale: 0.98 }}
@@ -72,6 +78,6 @@ export const CategoryCard = ({ category }: CategoryCardProps) => {
           </CardFooter>
         </Card>
       </motion.div>
-    </Link>
+    </div>
   );
 };
