@@ -161,7 +161,7 @@ export function ExecutiveNavbar() {
               </DropdownMenuTrigger>
               <DropdownMenuContent
                 align="start"
-                className="w-64 bg-white/95 backdrop-blur-lg border border-white/20 shadow-2xl rounded-xl p-2"
+                className="w-64 bg-white/95 dark:bg-gray-800/95 backdrop-blur-lg border border-white/20 dark:border-gray-700/30 shadow-2xl rounded-xl p-2"
               >
                 <motion.div
                   initial={{ opacity: 0, y: -10 }}
@@ -289,7 +289,7 @@ export function ExecutiveNavbar() {
             </DropdownMenuTrigger>
             <DropdownMenuContent
               align="end"
-              className="bg-white/95 backdrop-blur-lg border border-white/20 shadow-2xl rounded-xl p-2"
+              className="bg-white/95 dark:bg-gray-800/95 backdrop-blur-lg border border-white/20 dark:border-gray-700/30 shadow-2xl rounded-xl p-2"
             >
               <motion.div
                 initial={{ opacity: 0, y: -10 }}

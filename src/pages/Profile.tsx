@@ -12,6 +12,7 @@ import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useAuth } from '@/contexts/AuthContext';
+import { useTheme } from '@/contexts/ThemeContext';
 import { useToast } from '@/hooks/use-toast';
 import { apiService } from '@/services/apiService';
 import { motion } from 'framer-motion';
@@ -37,6 +38,7 @@ import {
 
 const Profile = () => {
   const { user, updateProfile, isAuthenticated, isLoading } = useAuth();
+  const { theme, setTheme } = useTheme();
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState('overview');
   const [isEditing, setIsEditing] = useState(false);
@@ -328,7 +330,7 @@ const Profile = () => {
                       <Button
                         size="icon"
                         variant="outline"
-                        className="h-8 w-8 rounded-full bg-white border-2 border-green-200 hover:bg-green-50"
+                        className="h-8 w-8 rounded-full bg-white dark:bg-gray-700 border-2 border-green-200 dark:border-green-600 hover:bg-green-50 dark:hover:bg-gray-600"
                         onClick={() => document.getElementById('profile-picture-upload')?.click()}
                         disabled={isUploadingPicture}
                       >
@@ -986,13 +988,18 @@ const Profile = () => {
                       {isEditing ? (
                         <Select
                           value={editData.preferences?.theme}
-                          onValueChange={(value) => setEditData({
-                            ...editData,
-                            preferences: {
-                              ...editData.preferences,
-                              theme: value
-                            }
-                          })}
+                          onValueChange={async (value) => {
+                            // Update local edit data
+                            setEditData({
+                              ...editData,
+                              preferences: {
+                                ...editData.preferences,
+                                theme: value
+                              }
+                            });
+                            // Immediately apply theme change
+                            await setTheme(value as 'light' | 'dark');
+                          }}
                         >
                           <SelectTrigger>
                             <SelectValue placeholder="Select theme" />
@@ -1003,7 +1010,7 @@ const Profile = () => {
                           </SelectContent>
                         </Select>
                       ) : (
-                        <p className="text-sm text-gray-700 bg-gray-50 p-2 rounded">
+                        <p className="text-sm text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-800 p-2 rounded">
                           {user.preferences?.theme === 'dark' ? 'Dark' : 'Light'}
                         </p>
                       )}

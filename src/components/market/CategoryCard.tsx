@@ -47,7 +47,7 @@ export const CategoryCard = ({ category }: CategoryCardProps) => {
         whileTap={{ scale: 0.98 }}
         transition={{ duration: 0.2 }}
       >
-        <Card className="overflow-hidden border-0 shadow-lg group-hover:shadow-xl transition-all duration-300 h-full">
+        <Card className="overflow-hidden border-0 shadow-lg group-hover:shadow-xl transition-all duration-300 h-full dark:bg-gray-800 dark:shadow-gray-900/20">
           <div className="h-48 overflow-hidden relative">
             <motion.img 
               src={category.image} 
@@ -64,10 +64,10 @@ export const CategoryCard = ({ category }: CategoryCardProps) => {
               <h3 className="text-xl font-bold drop-shadow-md">{category.name}</h3>
             </div>
           </div>
-          <CardContent className="py-4 bg-gradient-to-b from-white to-gray-50">
-            <p className="text-gray-600 line-clamp-2">{category.description}</p>
+          <CardContent className="py-4 bg-gradient-to-b from-white to-gray-50 dark:from-gray-800 dark:to-gray-700">
+            <p className="text-gray-600 dark:text-gray-300 line-clamp-2">{category.description}</p>
           </CardContent>
-          <CardFooter className="bg-gray-50 border-t border-gray-100">
+          <CardFooter className="bg-gray-50 dark:bg-gray-700 border-t border-gray-100 dark:border-gray-600">
             <Button 
               variant="outline" 
               className="w-full group hover:bg-foliage hover:border-foliage hover:text-white border-foliage text-foliage transition-colors"

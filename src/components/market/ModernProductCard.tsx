@@ -146,7 +146,7 @@ export const ModernProductCard = ({ product, onAddToComparison, viewMode = 'grid
       className="group"
     >
       <div onClick={handleViewClick} className="cursor-pointer">
-        <GlassCard className="overflow-hidden bg-white/90 backdrop-blur-sm hover:bg-white/95 transition-all duration-300">
+        <GlassCard className="overflow-hidden bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm hover:bg-white/95 dark:hover:bg-gray-800/95 transition-all duration-300">
           <div className="flex gap-4 p-4">
             {/* Image */}
             <div className="relative w-32 h-32 flex-shrink-0">
@@ -321,7 +321,7 @@ export const ModernProductCard = ({ product, onAddToComparison, viewMode = 'grid
       onHoverEnd={() => setIsHovered(false)}
       className="group relative"
     >
-      <GlassCard className="h-full overflow-hidden bg-white/90 backdrop-blur-sm cursor-pointer" onClick={handleViewClick}>
+      <GlassCard className="h-full overflow-hidden bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm cursor-pointer" onClick={handleViewClick}>
         <div className="relative h-56 overflow-hidden">
           {/* Image */}
           <motion.div
@@ -357,7 +357,7 @@ export const ModernProductCard = ({ product, onAddToComparison, viewMode = 'grid
                 <Button
                   variant="secondary"
                   size="sm"
-                  className="bg-white/90 hover:bg-white"
+                  className="bg-white/90 dark:bg-gray-700/90 hover:bg-white dark:hover:bg-gray-700"
                   onClick={handleCompare}
                 >
                   <SplitSquareVertical className="h-4 w-4 mr-1" />
@@ -366,7 +366,7 @@ export const ModernProductCard = ({ product, onAddToComparison, viewMode = 'grid
                 <Button
                   variant="secondary"
                   size="sm"
-                  className="bg-white/90 hover:bg-white"
+                  className="bg-white/90 dark:bg-gray-700/90 hover:bg-white dark:hover:bg-gray-700"
                   onClick={handleViewClick}
                 >
                   <Eye className="h-4 w-4 mr-1" />
@@ -403,7 +403,7 @@ export const ModernProductCard = ({ product, onAddToComparison, viewMode = 'grid
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
               onClick={handleWishlistToggle}
-              className="p-2 rounded-full bg-white/90 hover:bg-white transition-colors"
+              className="p-2 rounded-full bg-white/90 dark:bg-gray-700/90 hover:bg-white dark:hover:bg-gray-700 transition-colors"
             >
               <Heart 
                 className={`h-4 w-4 transition-colors ${
@@ -416,7 +416,7 @@ export const ModernProductCard = ({ product, onAddToComparison, viewMode = 'grid
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
               onClick={handleShare}
-              className="p-2 rounded-full bg-white/90 hover:bg-white transition-colors"
+              className="p-2 rounded-full bg-white/90 dark:bg-gray-700/90 hover:bg-white dark:hover:bg-gray-700 transition-colors"
             >
               <Share className="h-4 w-4 text-gray-600" />
             </motion.button>
