@@ -356,26 +356,58 @@ class ApiService {
 
   // Upload profile picture
   async uploadProfilePicture(file: File): Promise<{ success: boolean; message: string; data: { user: User; profileImageUrl: string } }> {
+    console.log('API Service: Starting upload');
+    console.log('API Service: File details:', file.name, file.size, file.type);
+    console.log('API Service: Base URL:', this.baseUrl);
+
     const formData = new FormData();
     formData.append('profilePicture', file);
 
     const headers: HeadersInit = {};
-    if (this.getToken()) {
-      headers['Authorization'] = `Bearer ${this.getToken()}`;
+    const token = this.getToken();
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+      console.log('API Service: Token added to headers');
+    } else {
+      console.log('API Service: No token found!');
+      throw new Error('No authentication token found');
     }
 
-    const response = await fetch(`${this.baseUrl}/auth/profile/picture`, {
-      method: 'POST',
-      headers,
-      body: formData,
-    });
+    const url = `${this.baseUrl}/auth/profile/picture`;
+    console.log('API Service: Making request to:', url);
 
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || 'Failed to upload profile picture');
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers,
+        body: formData,
+      });
+
+      console.log('API Service: Response status:', response.status);
+      console.log('API Service: Response headers:', Object.fromEntries(response.headers.entries()));
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.log('API Service: Error response:', errorText);
+
+        let errorMessage;
+        try {
+          const errorJson = JSON.parse(errorText);
+          errorMessage = errorJson.message || 'Failed to upload profile picture';
+        } catch {
+          errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+        }
+
+        throw new Error(errorMessage);
+      }
+
+      const result = await response.json();
+      console.log('API Service: Success response:', result);
+      return result;
+    } catch (error) {
+      console.error('API Service: Request failed:', error);
+      throw error;
     }
-
-    return response.json();
   }
 
   // Change password

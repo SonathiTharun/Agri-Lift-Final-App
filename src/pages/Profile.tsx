@@ -224,11 +224,20 @@ const Profile = () => {
 
   const handleProfilePictureUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (!file) return;
+    if (!file) {
+      console.log('No file selected');
+      return;
+    }
+
+    console.log('=== PROFILE UPLOAD DEBUG ===');
+    console.log('File:', file.name, file.size, file.type);
+    console.log('User:', user);
+    console.log('Token exists:', !!apiService.getToken());
 
     // Validate file type
     const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
     if (!allowedTypes.includes(file.type)) {
+      console.log('Invalid file type:', file.type);
       toast({
         title: "Invalid File Type",
         description: "Please upload a JPEG or PNG image.",
@@ -240,6 +249,7 @@ const Profile = () => {
     // Validate file size (5MB limit)
     const maxSize = 5 * 1024 * 1024; // 5MB
     if (file.size > maxSize) {
+      console.log('File too large:', file.size);
       toast({
         title: "File Too Large",
         description: "Please upload an image smaller than 5MB.",
@@ -251,17 +261,29 @@ const Profile = () => {
     setIsUploadingPicture(true);
 
     try {
+      console.log('Starting upload...');
+      // Upload the profile picture
       const response = await apiService.uploadProfilePicture(file);
+      console.log('Upload response:', response);
 
       // Update the user context with the new profile image
-      // The updateProfile function from AuthContext should handle this
+      console.log('Updating profile with URL:', response.data.profileImageUrl);
       await updateProfile({ profileImage: response.data.profileImageUrl });
 
       toast({
         title: "Profile Picture Updated",
         description: "Your profile picture has been updated successfully.",
       });
+
+      // Reset the file input
+      event.target.value = '';
     } catch (error: any) {
+      console.error('Upload error:', error);
+      console.error('Error details:', {
+        message: error.message,
+        stack: error.stack,
+        response: error.response
+      });
       toast({
         title: "Upload Failed",
         description: error.message || "Failed to upload profile picture. Please try again.",
@@ -313,7 +335,13 @@ const Profile = () => {
                   {/* Profile Picture */}
                   <div className="relative">
                     <Avatar className="h-24 w-24 border-4 border-white shadow-lg">
-                      <AvatarImage src={user.profileImage} alt={user.name} />
+                      <AvatarImage
+                        src={user.profileImage?.startsWith('http')
+                          ? user.profileImage
+                          : `http://localhost:5006${user.profileImage}`
+                        }
+                        alt={user.name}
+                      />
                       <AvatarFallback className="bg-green-600 text-white text-xl font-semibold">
                         {getInitials(user.name)}
                       </AvatarFallback>
