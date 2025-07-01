@@ -9,7 +9,6 @@ import { Globe, Menu, Tractor, User, Settings, ShoppingCart, Sparkles } from "lu
 import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { CartSidebar } from "./CartSidebar";
-import { CartProvider } from "@/context/CartContext";
 import { GlassNav, AnimatedDrawer, AnimatedMenuItem } from "@/components/ui/glass-nav";
 import { AnimatedNavItem, AnimatedNavContainer } from "@/components/ui/animated-nav-item";
 import { AnimatedLogo } from "@/components/ui/animated-logo";
@@ -74,8 +73,7 @@ export function Navbar() {
   ];
 
   return (
-    <CartProvider>
-      <GlassNav variant="farmer" className="py-1 px-4">
+    <GlassNav variant="farmer" className="py-1 px-4">
         <div className="container mx-auto flex justify-between items-center">
           <div className="flex items-center gap-3">
             {isMobile ? (
@@ -318,6 +316,5 @@ export function Navbar() {
           </motion.div>
         </div>
       </GlassNav>
-    </CartProvider>
   );
 }

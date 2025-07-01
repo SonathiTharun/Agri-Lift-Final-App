@@ -4,17 +4,19 @@ import { Link } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { 
-  Star, 
-  Heart, 
-  ShoppingCart, 
-  Eye, 
-  TrendingUp, 
+import {
+  Star,
+  Heart,
+  ShoppingCart,
+  Eye,
+  TrendingUp,
   Zap,
   Users,
   Clock,
   SplitSquareVertical, // Replacing Compare with SplitSquareVertical
-  Share
+  Share,
+  Plus,
+  Minus
 } from "lucide-react";
 import { GlassCard } from "./GlassCard";
 import { useWishlist } from "@/contexts/WishlistContext";
@@ -44,6 +46,7 @@ export const ModernProductCard = ({ product, onAddToComparison, viewMode = 'grid
   const [isHovered, setIsHovered] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
   const [quantity, setQuantity] = useState(1);
+  const [isAdding, setIsAdding] = useState(false);
 
   const { isInWishlist, addToWishlist, removeFromWishlist } = useWishlist();
   const { addToCart } = useCart();
@@ -72,21 +75,33 @@ export const ModernProductCard = ({ product, onAddToComparison, viewMode = 'grid
     }
   };
 
-  const handleAddToCart = (e: React.MouseEvent) => {
+  const handleAddToCart = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    
-    if (stockStatus === 'out') return;
-    
-    addToCart(
-      product.id,
-      product.name,
-      finalPrice,
-      product.image,
-      product.categoryId,
-      quantity
-    );
-    toast.success(`${product.name} added to cart!`);
+
+    if (stockStatus === 'out' || isAdding) return;
+
+    setIsAdding(true);
+
+    try {
+      addToCart(
+        product.id,
+        product.name,
+        finalPrice,
+        product.image,
+        product.categoryId,
+        quantity
+      );
+      toast.success(`${quantity}x ${product.name} added to cart!`);
+
+      // Reset quantity to 1 after adding
+      setQuantity(1);
+    } catch (error) {
+      toast.error('Failed to add item to cart');
+    } finally {
+      // Reset the adding state after a short delay
+      setTimeout(() => setIsAdding(false), 1000);
+    }
   };
 
   const handleShare = (e: React.MouseEvent) => {
@@ -182,7 +197,7 @@ export const ModernProductCard = ({ product, onAddToComparison, viewMode = 'grid
                   <p className="text-gray-600 text-sm mt-2 line-clamp-2">{product.description}</p>
                 </div>
 
-                <div className="flex items-center justify-between mt-4">
+                <div className="space-y-3 mt-4">
                   <div className="flex items-center gap-2">
                     <span className="text-foliage-dark font-bold text-xl">₹{finalPrice}</span>
                     {product.discount && (
@@ -191,47 +206,92 @@ export const ModernProductCard = ({ product, onAddToComparison, viewMode = 'grid
                       </span>
                     )}
                   </div>
-                  
-                  <div className="flex items-center gap-2">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={handleWishlistToggle}
-                      className="p-2"
-                    >
-                      <Heart 
-                        className={`h-4 w-4 transition-colors ${
-                          isWishlisted ? 'text-red-500 fill-red-500' : 'text-gray-600'
-                        }`} 
-                      />
-                    </Button>
-                    
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={handleCompare}
-                      className="p-2"
-                    >
-                      <SplitSquareVertical className="h-4 w-4" />
-                    </Button>
-                    
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={handleShare}
-                      className="p-2"
-                    >
-                      <Share className="h-4 w-4" />
-                    </Button>
-                    
-                    <Button 
-                      size="sm" 
-                      className="bg-foliage hover:bg-foliage-dark transition-colors"
-                      disabled={stockStatus === 'out'}
-                      onClick={handleAddToCart}
-                    >
-                      {stockStatus === 'out' ? 'Out of Stock' : 'Add to Cart'}
-                    </Button>
+
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={handleWishlistToggle}
+                        className="p-2"
+                      >
+                        <Heart
+                          className={`h-4 w-4 transition-colors ${
+                            isWishlisted ? 'text-red-500 fill-red-500' : 'text-gray-600'
+                          }`}
+                        />
+                      </Button>
+
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={handleCompare}
+                        className="p-2"
+                      >
+                        <SplitSquareVertical className="h-4 w-4" />
+                      </Button>
+
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={handleShare}
+                        className="p-2"
+                      >
+                        <Share className="h-4 w-4" />
+                      </Button>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <div className="flex items-center border border-gray-200 rounded-lg overflow-hidden">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-8 w-8 p-0 hover:bg-gray-100"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            setQuantity(Math.max(1, quantity - 1));
+                          }}
+                          disabled={quantity <= 1}
+                        >
+                          <Minus className="h-3 w-3" />
+                        </Button>
+                        <span className="px-3 py-1 text-sm font-medium min-w-[2rem] text-center">
+                          {quantity}
+                        </span>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-8 w-8 p-0 hover:bg-gray-100"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            setQuantity(Math.min(product.stock, quantity + 1));
+                          }}
+                          disabled={quantity >= product.stock}
+                        >
+                          <Plus className="h-3 w-3" />
+                        </Button>
+                      </div>
+
+                      <Button
+                        size="sm"
+                        className={`transition-colors ${
+                          isAdding
+                            ? 'bg-green-600 hover:bg-green-700'
+                            : 'bg-foliage hover:bg-foliage-dark'
+                        }`}
+                        disabled={stockStatus === 'out' || isAdding}
+                        onClick={handleAddToCart}
+                      >
+                        {stockStatus === 'out'
+                          ? 'Out of Stock'
+                          : isAdding
+                            ? 'Added!'
+                            : 'Add to Cart'
+                        }
+                      </Button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -406,8 +466,8 @@ export const ModernProductCard = ({ product, onAddToComparison, viewMode = 'grid
           {/* Description */}
           <p className="text-gray-600 text-sm line-clamp-2">{product.description}</p>
 
-          {/* Price */}
-          <div className="flex items-center justify-between">
+          {/* Price and Cart Controls */}
+          <div className="space-y-3">
             <div className="flex items-center gap-2">
               <span className="text-foliage-dark font-bold text-xl">₹{finalPrice}</span>
               {product.discount && (
@@ -416,18 +476,61 @@ export const ModernProductCard = ({ product, onAddToComparison, viewMode = 'grid
                 </span>
               )}
             </div>
-            
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Link to={`/market/${product.categoryId}/${product.id}`}>
-                <Button 
-                  size="sm" 
-                  className="bg-foliage hover:bg-foliage-dark transition-colors"
-                  disabled={stockStatus === 'out'}
+
+            {/* Quantity and Add to Cart */}
+            <div className="flex items-center gap-2">
+              <div className="flex items-center border border-gray-200 rounded-lg overflow-hidden">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 w-8 p-0 hover:bg-gray-100"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setQuantity(Math.max(1, quantity - 1));
+                  }}
+                  disabled={quantity <= 1}
                 >
-                  {stockStatus === 'out' ? 'Out of Stock' : 'Add to Cart'}
+                  <Minus className="h-3 w-3" />
                 </Button>
-              </Link>
-            </motion.div>
+                <span className="px-3 py-1 text-sm font-medium min-w-[2rem] text-center">
+                  {quantity}
+                </span>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 w-8 p-0 hover:bg-gray-100"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setQuantity(Math.min(product.stock, quantity + 1));
+                  }}
+                  disabled={quantity >= product.stock}
+                >
+                  <Plus className="h-3 w-3" />
+                </Button>
+              </div>
+
+              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="flex-1">
+                <Button
+                  size="sm"
+                  className={`w-full transition-colors ${
+                    isAdding
+                      ? 'bg-green-600 hover:bg-green-700'
+                      : 'bg-foliage hover:bg-foliage-dark'
+                  }`}
+                  disabled={stockStatus === 'out' || isAdding}
+                  onClick={handleAddToCart}
+                >
+                  {stockStatus === 'out'
+                    ? 'Out of Stock'
+                    : isAdding
+                      ? 'Added!'
+                      : 'Add to Cart'
+                  }
+                </Button>
+              </motion.div>
+            </div>
           </div>
 
           {/* Recently viewed indicator */}

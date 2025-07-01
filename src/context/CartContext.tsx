@@ -1,5 +1,5 @@
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { toast } from '@/components/ui/use-toast';
 import { categories, productsByCategory } from '@/data/marketData';
 
@@ -95,6 +95,25 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, []);
 
+  // Helper function to update cart items from cart object
+  const updateCartItems = useCallback((cartObj: Record<string, number>) => {
+    const items: CartItem[] = Object.entries(cartObj)
+      .filter(([id]) => allProducts[id] !== undefined)
+      .map(([id, quantity]) => {
+        const product = allProducts[id];
+        return {
+          id,
+          name: product.name,
+          price: product.price,
+          image: product.image,
+          quantity: quantity as number,
+          category: product.category
+        };
+      });
+
+    setCartItems(items);
+  }, []);
+
   const addToCart = (id: string, name: string, price: number, image: string, category: string, quantity = 1) => {
     // Verify the product exists in our catalog, if not add it temporarily
     if (!allProducts[id]) {
@@ -105,33 +124,18 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     setCart(prevCart => {
       const newQuantity = (prevCart[id] || 0) + quantity;
       const newCart = { ...prevCart, [id]: newQuantity };
-      
+
       // Save to localStorage
       localStorage.setItem('agrilift-cart', JSON.stringify(newCart));
-      
-      // Update cart items array
-      const updatedItems = [...cartItems];
-      const existingItemIndex = updatedItems.findIndex(item => item.id === id);
-      
-      if (existingItemIndex >= 0) {
-        updatedItems[existingItemIndex].quantity = newQuantity;
-      } else {
-        updatedItems.push({
-          id,
-          name,
-          price,
-          image,
-          quantity,
-          category
-        });
-      }
-      
-      setCartItems(updatedItems);
-      
+
+      // Update cart items using helper function
+      updateCartItems(newCart);
+
       toast({
-        description: `Added ${quantity} ${name} to your cart`,
+        title: "Added to Cart",
+        description: `${quantity}x ${name} added to your cart`,
       });
-      
+
       return newCart;
     });
   };
@@ -140,13 +144,13 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     setCart(prevCart => {
       const newCart = { ...prevCart };
       delete newCart[id];
-      
+
       // Save to localStorage
       localStorage.setItem('agrilift-cart', JSON.stringify(newCart));
-      
-      // Update cart items array
-      setCartItems(prevItems => prevItems.filter(item => item.id !== id));
-      
+
+      // Update cart items using helper function
+      updateCartItems(newCart);
+
       return newCart;
     });
   };
@@ -160,13 +164,10 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     setCart(prevCart => {
       const newCart = { ...prevCart, [id]: newQuantity };
       localStorage.setItem('agrilift-cart', JSON.stringify(newCart));
-      
-      setCartItems(prevItems => 
-        prevItems.map(item => 
-          item.id === id ? { ...item, quantity: newQuantity } : item
-        )
-      );
-      
+
+      // Update cart items using helper function
+      updateCartItems(newCart);
+
       return newCart;
     });
   };
