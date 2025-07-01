@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost:5006/api';
+const API_BASE_URL = 'http://localhost:5000/api';
 
 // Types for API responses
 export interface SoilParameter {
@@ -237,7 +237,7 @@ class ApiService {
   }
 
   // Make authenticated request
-  private async makeRequest(url: string, options: RequestInit = {}): Promise<Response> {
+  private async makeRequest(url: string, options: RequestInit = {}, skipTokenExpiredEvent = false): Promise<Response> {
     const response = await fetch(url, {
       ...options,
       headers: {
@@ -246,8 +246,8 @@ class ApiService {
       },
     });
 
-    // Handle token expiration
-    if (response.status === 401) {
+    // Handle token expiration (but skip for logout calls to prevent infinite loop)
+    if (response.status === 401 && !skipTokenExpiredEvent) {
       this.setToken(null);
       // Redirect to login or emit event
       window.dispatchEvent(new CustomEvent('auth:tokenExpired'));
@@ -314,17 +314,17 @@ class ApiService {
     const response = await this.makeRequest(`${this.baseUrl}/auth/logout`, {
       method: 'POST',
       credentials: 'include',
-    });
+    }, true); // Skip token expired event to prevent infinite loop
 
     if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || 'Logout failed');
+      // Don't throw error on logout failure, just clear token
+      console.warn('Logout API call failed, but clearing token anyway');
     }
 
     // Clear token
     this.setToken(null);
 
-    return response.json();
+    return { success: true, message: 'Logged out successfully' };
   }
 
   // Get user profile

@@ -22,6 +22,7 @@ interface AuthProviderProps {
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const { toast } = useToast();
 
   // Check if user is authenticated on app load
@@ -30,12 +31,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     
     // Listen for token expiration events
     const handleTokenExpired = () => {
-      handleLogout();
-      toast({
-        title: "Session Expired",
-        description: "Please log in again to continue.",
-        variant: "destructive",
-      });
+      // Only handle if not already logging out
+      if (!isLoggingOut) {
+        handleLogout();
+        toast({
+          title: "Session Expired",
+          description: "Please log in again to continue.",
+          variant: "destructive",
+        });
+      }
     };
 
     window.addEventListener('auth:tokenExpired', handleTokenExpired);
@@ -113,6 +117,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   const handleLogout = async () => {
+    // Prevent multiple simultaneous logout calls
+    if (isLoggingOut) {
+      return;
+    }
+
+    setIsLoggingOut(true);
+
     try {
       await apiService.logout();
     } catch (error) {
@@ -122,7 +133,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setUser(null);
       apiService.setToken(null);
       localStorage.removeItem('currentUser');
-      
+      setIsLoggingOut(false);
+
       toast({
         title: "Logged Out",
         description: "You have been successfully logged out.",

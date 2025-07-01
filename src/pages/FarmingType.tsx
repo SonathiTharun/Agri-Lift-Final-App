@@ -93,8 +93,11 @@ const FarmingType = () => {
   }, []);
 
   const handleGetStarted = (farmingType: string) => {
-    // Navigate to specific farming type page or dashboard
-    navigate(`/dashboard?type=${farmingType}`);
+    if (farmingType === "dairy") {
+      navigate("/dairy-lift");
+    } else {
+      navigate(`/dashboard?type=${farmingType}`);
+    }
   };
 
   return (
@@ -156,18 +159,17 @@ const FarmingType = () => {
                   <motion.div
                     key={type.id}
                     variants={item}
-                    whileHover={{ 
-                      y: -10, 
+                    whileHover={{
+                      y: -10,
                       scale: 1.02,
-                      transition: { duration: 0.3 } 
+                      transition: { duration: 0.3 }
                     }}
                     onMouseEnter={() => setActiveCard(index)}
                     onMouseLeave={() => setActiveCard(null)}
                     className="group"
                   >
-                    <Card className={`h-full overflow-hidden border-0 shadow-xl transition-all duration-500 ${
-                      activeCard === index ? 'shadow-2xl' : 'shadow-lg'
-                    }`}>
+                    <Card className={`h-full overflow-hidden border-0 shadow-xl transition-all duration-500 ${activeCard === index ? 'shadow-2xl' : 'shadow-lg'
+                      }`}>
                       {/* Card Background with Gradient */}
                       <div className={`relative bg-gradient-to-br ${type.gradient} p-8 text-white`}>
                         {/* Background Pattern */}
@@ -176,7 +178,7 @@ const FarmingType = () => {
                             {type.bgPattern}
                           </div>
                         </div>
-                        
+
                         {/* Icon */}
                         <motion.div
                           whileHover={{ rotate: 360, scale: 1.1 }}
@@ -185,7 +187,7 @@ const FarmingType = () => {
                         >
                           <IconComponent size={32} className="text-white" />
                         </motion.div>
-                        
+
                         {/* Title */}
                         <h3 className="relative z-10 text-2xl font-bold mb-3">
                           {type.title}

@@ -27,7 +27,7 @@ const validateRegistration = [
     .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/)
     .withMessage('Password must contain at least one uppercase letter, one lowercase letter, and one number'),
   body('phone')
-    .isMobilePhone()
+    .isLength({ min: 10, max: 15 })
     .withMessage('Please provide a valid phone number'),
   body('role')
     .isIn(['farmer', 'executive'])

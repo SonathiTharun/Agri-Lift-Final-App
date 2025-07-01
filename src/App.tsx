@@ -28,6 +28,7 @@ const ExecutiveAnalytics = React.lazy(() => import("./pages/ExecutiveAnalytics")
 const ExecutiveFinancial = React.lazy(() => import("./pages/ExecutiveFinancial"));
 const ExecutiveOperations = React.lazy(() => import("./pages/ExecutiveOperations"));
 const ExecutiveCommunications = React.lazy(() => import("./pages/ExecutiveCommunications"));
+const DairyLiftHome = React.lazy(() => import("./pages/dairy-lift/DairyLiftHome"));
 
 // Loading component
 const LoadingSpinner = () => (
@@ -67,6 +68,7 @@ const App = () => (
         <Route path="/contact" element={<Contact />} />
         <Route path="/orders" element={<Orders />} />
         <Route path="/settings" element={<Settings />} />
+        <Route path="/dairy-lift/*" element={<DairyLiftHome />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Suspense>

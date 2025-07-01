@@ -17,6 +17,8 @@ const productsRoutes = require('./src/routes/products');
 const cartRoutes = require('./src/routes/cart');
 const weatherRoutes = require('./src/routes/weather');
 const marketPricesRoutes = require('./src/routes/marketPrices');
+const livestockRoutes = require('./src/routes/livestock');
+const equipmentRoutes = require('./src/routes/equipment');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -83,18 +85,20 @@ app.use('/api/products', productsRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/api/weather', weatherRoutes);
 app.use('/api/market-prices', marketPricesRoutes);
+app.use('/api/livestock', livestockRoutes);
+app.use('/api/equipment', equipmentRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error('Error:', err);
-  
+
   if (err.code === 'LIMIT_FILE_SIZE') {
     return res.status(413).json({
       error: 'File too large',
       message: 'The uploaded file exceeds the maximum size limit.'
     });
   }
-  
+
   res.status(err.status || 500).json({
     error: err.message || 'Internal Server Error',
     ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
