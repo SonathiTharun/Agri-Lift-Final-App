@@ -1144,6 +1144,25 @@ class ApiService {
 
     return response.json();
   }
+
+  // --- FAVORITES (WISHLIST) ---
+  async getFavorites(): Promise<any[]> {
+    const res = await this.makeRequest(`${this.baseUrl}/equipment/favorites`, { method: 'GET', headers: this.getHeaders() });
+    if (!res.ok) throw new Error('Failed to fetch favorites');
+    return await res.json();
+  }
+
+  async addFavorite(equipmentId: string): Promise<{ success: boolean }> {
+    const res = await this.makeRequest(`${this.baseUrl}/equipment/favorites/${equipmentId}`, { method: 'POST', headers: this.getHeaders() });
+    if (!res.ok) throw new Error('Failed to add favorite');
+    return await res.json();
+  }
+
+  async removeFavorite(equipmentId: string): Promise<{ success: boolean }> {
+    const res = await this.makeRequest(`${this.baseUrl}/equipment/favorites/${equipmentId}`, { method: 'DELETE', headers: this.getHeaders() });
+    if (!res.ok) throw new Error('Failed to remove favorite');
+    return await res.json();
+  }
 }
 
 export const apiService = new ApiService();

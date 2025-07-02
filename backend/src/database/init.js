@@ -10,10 +10,14 @@ const connectionOptions = {
   serverSelectionTimeoutMS: 30000, // Keep trying to send operations for 30 seconds
   socketTimeoutMS: 45000, // Close sockets after 45 seconds of inactivity
   connectTimeoutMS: 30000, // Give up initial connection after 30 seconds
+  maxIdleTimeMS: 30000, // Close connections after 30 seconds of inactivity
   family: 4, // Use IPv4, skip trying IPv6
   retryWrites: true,
   w: 'majority'
 };
+
+// Mongoose-specific options
+mongoose.set('bufferCommands', false); // Disable mongoose buffering
 
 // Global connection variable
 let isConnected = false;
@@ -50,6 +54,16 @@ const initializeDatabase = async () => {
       console.log('✅ MongoDB reconnected');
       isConnected = true;
     });
+
+    // Set up periodic connection health check
+    setInterval(async () => {
+      try {
+        await mongoose.connection.db.admin().ping();
+      } catch (error) {
+        console.error('❌ MongoDB health check failed:', error.message);
+        isConnected = false;
+      }
+    }, 30000); // Check every 30 seconds
 
     // Graceful shutdown
     process.on('SIGINT', async () => {
@@ -181,6 +195,27 @@ const seedInitialData = async () => {
   }
 };
 
+// Check if database is connected and healthy
+const isDbConnected = () => {
+  return mongoose.connection.readyState === 1 && isConnected;
+};
+
+// Get connection status
+const getConnectionStatus = () => {
+  const states = {
+    0: 'disconnected',
+    1: 'connected',
+    2: 'connecting',
+    3: 'disconnecting'
+  };
+  return {
+    state: states[mongoose.connection.readyState] || 'unknown',
+    isConnected: isDbConnected(),
+    host: mongoose.connection.host,
+    name: mongoose.connection.name
+  };
+};
+
 module.exports = {
   initializeDatabase,
   getDatabase,
@@ -188,6 +223,8 @@ module.exports = {
   getConnectionStats,
   healthCheck,
   closeDatabase,
+  isDbConnected,
+  getConnectionStatus,
   MONGODB_URI: MONGODB_URI.replace(/\/\/([^:]+):([^@]+)@/, '//***:***@'), // Hide credentials
   DB_NAME
 };

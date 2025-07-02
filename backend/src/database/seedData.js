@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const { Product, ProductCategory } = require('../models/Product');
 const WeatherData = require('../models/WeatherData');
 const MarketPrice = require('../models/MarketPrice');
+const Equipment = require('../models/Equipment');
 
 // Sample product categories
 const sampleCategories = [
@@ -177,6 +178,137 @@ const sampleMarketPrices = [
   }
 ];
 
+// Sample equipment data
+const sampleEquipment = [
+  {
+    name: "Milking Machine Pro",
+    category: "Milking Machines",
+    brand: "DeLaval",
+    condition: "New",
+    capacity: "500L/hr",
+    location: "Hyderabad",
+    price: 120000,
+    description: "High-efficiency milking machine for medium to large dairy farms.",
+    images: ["/uploads/sample-milking-machine.jpg"],
+    seller: "AgroTech Solutions",
+    contactInfo: "info@agrotech.com",
+    conditionReport: ""
+  },
+  {
+    name: "Feed Grinder X2",
+    category: "Feed Grinders",
+    brand: "GEA",
+    condition: "Used",
+    capacity: "200kg/hr",
+    location: "Bangalore",
+    price: 45000,
+    description: "Durable feed grinder, lightly used, well maintained.",
+    images: ["/uploads/sample-feed-grinder.jpg"],
+    seller: "FarmEquip Dealer",
+    contactInfo: "dealer@farmequip.com",
+    conditionReport: "Minor scratches, fully functional."
+  },
+  {
+    name: "Bulk Milk Chiller 1000L",
+    category: "Bulk Milk Chillers",
+    brand: "Keventer",
+    condition: "New",
+    capacity: "1000L",
+    location: "Vijayawada",
+    price: 250000,
+    description: "Brand new milk chiller with rapid cooling technology.",
+    images: ["/uploads/sample-milk-chiller.jpg"],
+    seller: "DairyMart",
+    contactInfo: "sales@dairymart.com",
+    conditionReport: ""
+  },
+  // Additional diverse equipment entries
+  {
+    name: "TMR Wagon 3000",
+    category: "TMR Wagons",
+    brand: "Vijay",
+    condition: "Used",
+    capacity: "3 tons",
+    location: "Nagpur",
+    price: 180000,
+    description: "Used TMR wagon, perfect for mixing and distributing feed.",
+    images: ["/uploads/sample-tmr-wagon.jpg"],
+    seller: "FeedMix Solutions",
+    contactInfo: "contact@feedmix.com",
+    conditionReport: "Serviced last month, minor dents."
+  },
+  {
+    name: "Pasteurizer Compact",
+    category: "Pasteurizers",
+    brand: "Local Brand",
+    condition: "New",
+    capacity: "200L/batch",
+    location: "Chennai",
+    price: 95000,
+    description: "Compact pasteurizer for small-scale dairy operations.",
+    images: ["/uploads/sample-pasteurizer.jpg"],
+    seller: "Dairy Essentials",
+    contactInfo: "essentials@dairy.com",
+    conditionReport: ""
+  },
+  {
+    name: "Chaff Cutter Supreme",
+    category: "Chaff Cutters",
+    brand: "Keventer",
+    condition: "Used",
+    capacity: "1 ton/hr",
+    location: "Patna",
+    price: 30000,
+    description: "Heavy-duty chaff cutter, ideal for large herds.",
+    images: ["/uploads/sample-chaff-cutter.jpg"],
+    seller: "GreenFarms",
+    contactInfo: "info@greenfarms.in",
+    conditionReport: "Blades replaced recently."
+  },
+  {
+    name: "Multi-Utility Farm Equipment",
+    category: "Other",
+    brand: "Local Brand",
+    condition: "New",
+    capacity: "N/A",
+    location: "Lucknow",
+    price: 40000,
+    description: "Versatile equipment for various farm tasks.",
+    images: ["/uploads/sample-multi-utility.jpg"],
+    seller: "Farmers Hub",
+    contactInfo: "hub@farmers.com",
+    conditionReport: ""
+  },
+  {
+    name: "Bulk Milk Chiller 500L",
+    category: "Bulk Milk Chillers",
+    brand: "DeLaval",
+    condition: "Used",
+    capacity: "500L",
+    location: "Indore",
+    price: 120000,
+    description: "Reliable used milk chiller, energy efficient.",
+    images: ["/uploads/sample-milk-chiller2.jpg"],
+    seller: "Dairy Solutions",
+    contactInfo: "solutions@dairy.com",
+    conditionReport: "Compressor serviced, minor rust spots."
+  },
+  {
+    name: "Automatic Milking System",
+    category: "Milking Machines",
+    brand: "GEA",
+    condition: "New",
+    capacity: "700L/hr",
+    location: "Pune",
+    price: 200000,
+    description: "State-of-the-art automatic milking system for large farms.",
+    images: ["/uploads/sample-milking-machine2.jpg"],
+    seller: "Agri Innovations",
+    contactInfo: "innovations@agri.com",
+    conditionReport: ""
+  }
+];
+
 // Seed database function
 const seedDatabase = async () => {
   try {
@@ -187,6 +319,7 @@ const seedDatabase = async () => {
     await Product.deleteMany({});
     await WeatherData.deleteMany({});
     await MarketPrice.deleteMany({});
+    await Equipment.deleteMany({});
 
     console.log('🗑️ Cleared existing data');
 
@@ -237,13 +370,18 @@ const seedDatabase = async () => {
     const marketPrices = await MarketPrice.insertMany(sampleMarketPrices);
     console.log(`✅ Seeded ${marketPrices.length} market price records`);
 
+    // Seed equipment
+    const equipment = await Equipment.insertMany(sampleEquipment);
+    console.log(`✅ Seeded ${equipment.length} equipment items`);
+
     console.log('🎉 Database seeding completed successfully!');
-    
+
     return {
       categories: categories.length,
       products: products.length,
       weatherData: weatherData.length,
-      marketPrices: marketPrices.length
+      marketPrices: marketPrices.length,
+      equipment: equipment.length
     };
 
   } catch (error) {
@@ -257,7 +395,7 @@ const checkSeedingNeeded = async () => {
   try {
     const categoryCount = await ProductCategory.countDocuments();
     const productCount = await Product.countDocuments();
-    
+
     return categoryCount === 0 || productCount === 0;
   } catch (error) {
     console.error('Error checking seeding status:', error);

@@ -12,6 +12,7 @@ const {
   logAuthEvent,
   authRateLimit
 } = require('../middleware/auth');
+const { checkDbHealthForAuth } = require('../middleware/dbHealthCheck');
 
 const router = express.Router();
 
@@ -103,8 +104,9 @@ const handleValidationErrors = (req, res, next) => {
 };
 
 // POST /api/auth/register - Register new user
-router.post('/register', 
+router.post('/register',
   authRateLimit,
+  checkDbHealthForAuth,
   validateRegistration,
   handleValidationErrors,
   logAuthEvent('REGISTER_ATTEMPT'),
@@ -151,6 +153,7 @@ router.post('/register',
 // POST /api/auth/login - Login user
 router.post('/login',
   authRateLimit,
+  checkDbHealthForAuth,
   validateLogin,
   handleValidationErrors,
   logAuthEvent('LOGIN_ATTEMPT'),

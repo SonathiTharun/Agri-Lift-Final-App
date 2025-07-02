@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { ShoppingCart, X, Trash2, ChevronRight, AlertCircle } from 'lucide-react';
 import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger } from '@/components/ui/drawer';
@@ -19,9 +18,9 @@ export function CartSidebar() {
       <DrawerTrigger asChild>
         <div className="relative inline-block cursor-pointer">
           <Button variant="ghost" size="icon" className="relative">
-            <ShoppingCart className="h-5 w-5" />
+            <ShoppingCart className="h-8 w-8" />
             {cartCount > 0 && (
-              <Badge className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center p-0 bg-red-500">
+              <Badge className="absolute -top-2 -right-2 h-6 w-6 flex items-center justify-center p-0 bg-red-500 text-base">
                 {cartCount}
               </Badge>
             )}
@@ -44,11 +43,11 @@ export function CartSidebar() {
               <span className="sr-only">Close</span>
             </DrawerClose>
           </DrawerHeader>
-          
+
           <div className="px-4 pb-0">
             <Separator />
           </div>
-          
+
           <div className="flex-1 overflow-auto p-4">
             {emptyCart ? (
               <div className="flex flex-col items-center justify-center h-40 text-center">
@@ -63,21 +62,21 @@ export function CartSidebar() {
             ) : (
               <div className="space-y-4">
                 {cartItems.map((item) => (
-                  <div key={item.id} className="flex gap-2 animate-fade-in" style={{animationDelay: '0.1s'}}>
+                  <div key={item.id} className="flex gap-2 animate-fade-in" style={{ animationDelay: '0.1s' }}>
                     <div className="h-16 w-16 rounded-md overflow-hidden flex-shrink-0">
-                      <img 
-                        src={item.image} 
-                        alt={item.name} 
-                        className="h-full w-full object-cover" 
+                      <img
+                        src={item.image}
+                        alt={item.name}
+                        className="h-full w-full object-cover"
                       />
                     </div>
                     <div className="flex-1 min-w-0">
                       <h4 className="font-medium text-sm truncate">{item.name}</h4>
                       <p className="text-sm text-gray-500 capitalize">{item.category.replace(/-/g, ' ')}</p>
-                      
+
                       <div className="flex items-center justify-between mt-2">
                         <div className="flex items-center gap-2">
-                          <button 
+                          <button
                             className="h-6 w-6 flex items-center justify-center rounded-full border text-xs"
                             onClick={() => updateQuantity(item.id, item.quantity - 1)}
                             disabled={item.quantity <= 1}
@@ -85,7 +84,7 @@ export function CartSidebar() {
                             -
                           </button>
                           <span className="text-sm w-4 text-center">{item.quantity}</span>
-                          <button 
+                          <button
                             className="h-6 w-6 flex items-center justify-center rounded-full border text-xs"
                             onClick={() => updateQuantity(item.id, item.quantity + 1)}
                           >
@@ -94,7 +93,7 @@ export function CartSidebar() {
                         </div>
                         <div className="flex items-center gap-2">
                           <span className="font-medium text-sm">{formatCurrency(item.price * item.quantity)}</span>
-                          <Button 
+                          <Button
                             variant="ghost"
                             size="icon"
                             className="h-7 w-7 text-red-500 hover:text-red-700 hover:bg-red-50"
@@ -110,13 +109,13 @@ export function CartSidebar() {
               </div>
             )}
           </div>
-          
+
           {!emptyCart && (
             <>
               <div className="px-4 pb-0">
                 <Separator />
               </div>
-              
+
               <div className="p-4 space-y-4">
                 <div className="space-y-2">
                   <div className="flex justify-between text-sm">
@@ -134,16 +133,16 @@ export function CartSidebar() {
                   </div>
                 </div>
               </div>
-              
+
               <DrawerFooter className="px-4 py-4">
                 <Button asChild className="bg-foliage hover:bg-foliage-dark">
                   <Link to="/checkout">
                     Proceed to Checkout <ChevronRight className="ml-2 h-4 w-4" />
                   </Link>
                 </Button>
-                <Button 
-                  variant="outline" 
-                  className="mt-2" 
+                <Button
+                  variant="outline"
+                  className="mt-2"
                   onClick={clearCart}
                 >
                   Clear Cart

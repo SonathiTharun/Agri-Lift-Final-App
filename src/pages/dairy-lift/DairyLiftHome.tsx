@@ -1,6 +1,7 @@
 import React from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import DairyLiftRoutes from "./routes";
+import { CartSidebar } from "@/components/CartSidebar";
 
 // Example Dairy Lift color scheme
 const dairyLiftBg = "bg-gradient-to-br from-blue-50 via-blue-100 to-blue-200 min-h-screen";
@@ -113,6 +114,7 @@ const TopNav = ({ onNavigate, currentPath, language, onLanguageChange, onHamburg
           <option key={lang.code} value={lang.code}>{lang.label}</option>
         ))}
       </select>
+      <CartSidebar />
     </div>
   </nav>
 );

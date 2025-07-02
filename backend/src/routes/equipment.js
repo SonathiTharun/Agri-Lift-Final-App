@@ -3,6 +3,7 @@ const router = express.Router();
 const Equipment = require('../models/Equipment');
 const multer = require('multer');
 const path = require('path');
+const User = require('../models/User');
 
 // Multer setup for image uploads
 const storage = multer.diskStorage({
@@ -86,6 +87,47 @@ router.delete('/:id', async (req, res) => {
         res.json({ success: true });
     } catch (err) {
         res.status(400).json({ error: 'Invalid ID' });
+    }
+});
+
+// --- FAVORITES (WISHLIST) ENDPOINTS ---
+
+// Get current user's favorites
+router.get('/favorites', async (req, res) => {
+    try {
+        const user = await User.findById(req.user._id).populate('favorites');
+        if (!user) return res.status(404).json({ error: 'User not found' });
+        res.json(user.favorites);
+    } catch (err) {
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// Add equipment to favorites
+router.post('/favorites/:equipmentId', async (req, res) => {
+    try {
+        const user = await User.findById(req.user._id);
+        if (!user) return res.status(404).json({ error: 'User not found' });
+        if (!user.favorites.includes(req.params.equipmentId)) {
+            user.favorites.push(req.params.equipmentId);
+            await user.save();
+        }
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// Remove equipment from favorites
+router.delete('/favorites/:equipmentId', async (req, res) => {
+    try {
+        const user = await User.findById(req.user._id);
+        if (!user) return res.status(404).json({ error: 'User not found' });
+        user.favorites = user.favorites.filter(id => id.toString() !== req.params.equipmentId);
+        await user.save();
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ error: 'Server error' });
     }
 });
 
