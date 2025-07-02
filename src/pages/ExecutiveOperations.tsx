@@ -1,4 +1,3 @@
-
 import { Layout } from "@/components/Layout";
 import { ExecutiveNavbar } from "@/components/ExecutiveNavbar";
 import ResourceManagement from "@/components/executive/ResourceManagement";
@@ -7,7 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const ExecutiveOperations = () => {
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-foliage-light via-sky-light to-wheat-light">
       <ExecutiveNavbar />
       <div className="pt-20 lg:pt-24">
         <div className="container mx-auto px-4 py-6">
