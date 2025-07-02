@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { ExecutiveNavbar } from "@/components/ExecutiveNavbar";
 import { withAuth } from "@/contexts/AuthContext";
@@ -28,7 +27,8 @@ import {
   Zap,
   Download,
   Filter,
-  RefreshCw
+  RefreshCw,
+  Plus
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -43,6 +43,8 @@ import {
 import { GeographicMap, sampleRegionData } from "@/components/executive/charts/GeographicMap";
 import NotificationCenter from "@/components/executive/notifications/NotificationCenter";
 import QuickActions from "@/components/executive/dashboard/QuickActions";
+import QuickAddModal from "@/components/executive/dashboard/QuickAddModal";
+import AssignTaskModal from "@/components/executive/dashboard/AssignTaskModal";
 
 interface DashboardMetrics {
   totalFarmers: number;
@@ -214,6 +216,9 @@ const ExecutiveDashboard = () => {
 
   const [isLoading, setIsLoading] = useState(true);
   const [selectedTimeframe, setSelectedTimeframe] = useState('month');
+  const [showQuickAdd, setShowQuickAdd] = useState(false);
+  const [showAssignTask, setShowAssignTask] = useState(false);
+  const [exporting, setExporting] = useState(false);
 
   useEffect(() => {
     // Simulate loading
@@ -292,17 +297,30 @@ const ExecutiveDashboard = () => {
     }
   };
 
+  const handleExport = async () => {
+    setExporting(true);
+    try {
+      // Simulate CSV export
+      await new Promise(resolve => setTimeout(resolve, 1200));
+      toast({ title: "Export Complete", description: "Dashboard analytics exported as CSV." });
+    } catch (e) {
+      toast({ title: "Export Failed", description: "An error occurred during export.", variant: "destructive" });
+    } finally {
+      setExporting(false);
+    }
+  };
+
   if (isLoading && metrics.totalFarmers === 1247) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-gradient-to-br from-foliage-light via-sky-light to-wheat-light">
         <ExecutiveNavbar />
         <div className="pt-20 lg:pt-24">
           <div className="container mx-auto px-4 py-6">
             <div className="flex justify-center items-center min-h-[400px]">
               <div className="text-center animate-pulse">
-                <Activity className="h-12 w-12 mx-auto mb-4 text-green-600 animate-spin" />
-                <h2 className="text-xl font-semibold text-gray-700 mb-2">Loading Executive Dashboard</h2>
-                <p className="text-gray-500">Fetching latest platform data...</p>
+                <Activity className="h-12 w-12 mx-auto mb-4 text-foliage-dark animate-spin" />
+                <h2 className="text-xl font-semibold text-foliage-dark mb-2">Loading Executive Dashboard</h2>
+                <p className="text-sky-dark">Fetching latest platform data...</p>
               </div>
             </div>
           </div>
@@ -312,36 +330,36 @@ const ExecutiveDashboard = () => {
   }
 
   return (
-    <div className="min-h-screen agrilift-gradient">
+    <div className="min-h-screen bg-gradient-to-br from-foliage-light via-sky-light to-wheat-light">
       <ExecutiveNavbar />
       <div className="pt-20 lg:pt-24 animate-fade-in">
         <div className="container mx-auto px-4 py-6">
           <div className="flex justify-between items-center mb-8 animate-slide-in">
             <div>
-              <h1 className="text-3xl font-bold agrilift-text-primary">{t('executive-dashboard')}</h1>
-              <p className="agrilift-text-secondary mt-2">{t('executive-dashboard-desc')}</p>
+              <h1 className="text-3xl font-bold text-foliage-dark drop-shadow-md">{t('executive-dashboard')}</h1>
+              <p className="text-sky-dark mt-2 font-medium">{t('executive-dashboard-desc')}</p>
             </div>
             <div className="flex gap-3">
               <select
                 value={selectedTimeframe}
                 onChange={(e) => handleTimeframeChange(e.target.value)}
-                className="px-3 py-2 border rounded-md agrilift-input hover:bg-gray-50 transition-colors"
+                className="px-3 py-2 border rounded-md bg-wheat-light text-soil-dark focus:ring-2 focus:ring-foliage-dark hover:bg-wheat transition-colors"
               >
                 <option value="week">{t('this-week')}</option>
                 <option value="month">{t('this-month')}</option>
                 <option value="year">{t('this-year')}</option>
               </select>
-              <Button variant="outline" size="sm" className="flex items-center gap-2">
+              <Button variant="outline" size="sm" className="flex items-center gap-2 hover:scale-105 hover:shadow-2xl transition-all focus:ring-2 focus:ring-foliage-dark">
                 <RefreshCw className="h-4 w-4" />
                 Refresh
               </Button>
-              <Button variant="outline" size="sm" className="flex items-center gap-2">
+              <Button variant="outline" size="sm" className="flex items-center gap-2 hover:scale-105 hover:shadow-2xl transition-all focus:ring-2 focus:ring-foliage-dark" onClick={handleExport} disabled={exporting}>
                 <Download className="h-4 w-4" />
-                Export
+                {exporting ? "Exporting..." : "Export"}
               </Button>
               <Button 
                 onClick={() => handleQuickAction("System Health Check")}
-                className="hover:scale-105 transition-transform"
+                className="hover:scale-105 hover:shadow-2xl transition-all focus:ring-2 focus:ring-foliage-dark"
                 disabled={isLoading}
               >
                 <Activity className="h-4 w-4 mr-2" />
@@ -349,11 +367,19 @@ const ExecutiveDashboard = () => {
               </Button>
               <Button 
                 onClick={() => handleQuickAction("Generate Report")}
-                className="hover:scale-105 transition-transform"
+                className="hover:scale-105 hover:shadow-2xl transition-all focus:ring-2 focus:ring-foliage-dark"
                 disabled={isLoading}
               >
                 <BarChart3 className="h-4 w-4 mr-2" />
                 Generate Report
+              </Button>
+              <Button onClick={() => setShowQuickAdd(true)} variant="outline" size="sm" className="flex items-center gap-2 hover:scale-105 hover:shadow-2xl transition-all focus:ring-2 focus:ring-foliage-dark">
+                <Plus className="h-4 w-4" />
+                Quick Add
+              </Button>
+              <Button onClick={() => setShowAssignTask(true)} variant="outline" size="sm" className="flex items-center gap-2 hover:scale-105 hover:shadow-2xl transition-all focus:ring-2 focus:ring-foliage-dark">
+                <User className="h-4 w-4" />
+                Assign Task
               </Button>
             </div>
           </div>
@@ -365,7 +391,7 @@ const ExecutiveDashboard = () => {
               value={metrics.totalFarmers.toLocaleString()}
               subtitle={`${metrics.activeFarmers} ${t('active-farmers')} this month`}
               icon={Users}
-              color="text-blue-600"
+              color="text-foliage-dark"
               trend={{ value: 12.5, label: "this month" }}
               className="animate-fade-in"
             />
@@ -374,30 +400,27 @@ const ExecutiveDashboard = () => {
               value={`₹${(enhancedMetrics.financial.totalRevenue / 100000).toFixed(1)}L`}
               subtitle={`₹${(enhancedMetrics.financial.monthlyRevenue / 100000).toFixed(1)}L this month`}
               icon={DollarSign}
-              color="text-green-600"
+              color="text-foliage-dark"
               trend={{ value: enhancedMetrics.financial.revenueGrowth, label: "monthly growth" }}
               className="animate-fade-in"
-              style={{ animationDelay: '100ms' }}
             />
             <KPICard
               title="Platform Performance"
               value={`${enhancedMetrics.platform.successRate}%`}
               subtitle={`${enhancedMetrics.platform.systemUptime}% uptime`}
               icon={Activity}
-              color="text-purple-600"
+              color="text-foliage-dark"
               trend={{ value: 2.3, label: "improvement" }}
               className="animate-fade-in"
-              style={{ animationDelay: '200ms' }}
             />
             <KPICard
               title="Customer Satisfaction"
               value={`${enhancedMetrics.platform.customerSatisfaction}/5`}
               subtitle={`${enhancedMetrics.platform.totalTransactions} transactions`}
               icon={CheckCircle}
-              color="text-emerald-600"
+              color="text-foliage-dark"
               trend={{ value: 4.2, label: "rating increase" }}
               className="animate-fade-in"
-              style={{ animationDelay: '300ms' }}
             />
           </div>
 
@@ -408,46 +431,42 @@ const ExecutiveDashboard = () => {
               value={metrics.pendingLoans.toString()}
               subtitle="Requiring approval"
               icon={TrendingUp}
-              color="text-orange-600"
+              color="text-foliage-dark"
               className="animate-fade-in"
-              style={{ animationDelay: '400ms' }}
             />
             <KPICard
               title={t("market-orders")}
               value={metrics.marketOrders.toString()}
               subtitle="Active orders"
               icon={ShoppingCart}
-              color="text-indigo-600"
+              color="text-foliage-dark"
               className="animate-fade-in"
-              style={{ animationDelay: '500ms' }}
             />
             <KPICard
               title="Daily Active Users"
               value={enhancedMetrics.userEngagement.dailyActiveUsers.toLocaleString()}
               subtitle={`${enhancedMetrics.userEngagement.avgSessionDuration}min avg session`}
               icon={Users}
-              color="text-cyan-600"
+              color="text-foliage-dark"
               trend={{ value: 8.7, label: "daily growth" }}
               className="animate-fade-in"
-              style={{ animationDelay: '600ms' }}
             />
             <KPICard
               title="Geographic Reach"
               value={enhancedMetrics.geographic.totalRegions.toString()}
               subtitle={`${enhancedMetrics.geographic.newRegions} new regions`}
               icon={MapPin}
-              color="text-teal-600"
+              color="text-foliage-dark"
               trend={{ value: 15.2, label: "expansion" }}
               className="animate-fade-in"
-              style={{ animationDelay: '700ms' }}
             />
           </div>
 
           {/* System Alerts */}
           <div className="mb-8 animate-slide-in">
-            <Alert className="border-orange-200 bg-orange-50">
-              <AlertTriangle className="h-4 w-4 text-orange-600" />
-              <AlertDescription className="text-orange-800">
+            <Alert className="border-foliage-200 bg-foliage-50">
+              <AlertTriangle className="h-4 w-4 text-foliage-600" />
+              <AlertDescription className="text-foliage-800">
                 <strong>System Maintenance:</strong> Scheduled maintenance window tomorrow 2:00 AM - 4:00 AM IST
               </AlertDescription>
             </Alert>
@@ -519,9 +538,9 @@ const ExecutiveDashboard = () => {
                   <CardContent>
                     <div className="space-y-4">
                       {[
-                        { label: "Platform Uptime", value: 99.8, color: "bg-green-500" },
-                        { label: "Database Performance", value: 96.2, color: "bg-blue-500" },
-                        { label: "API Response Time", value: 85, color: "bg-yellow-500", unit: "142ms avg" }
+                        { label: "Platform Uptime", value: 99.8, color: "bg-foliage-500" },
+                        { label: "Database Performance", value: 96.2, color: "bg-foliage-500" },
+                        { label: "API Response Time", value: 85, color: "bg-foliage-500", unit: "142ms avg" }
                       ].map((stat, index) => (
                         <div key={stat.label} className="animate-slide-in" style={{ animationDelay: `${index * 200}ms` }}>
                           <div className="flex justify-between text-sm mb-1">
@@ -546,13 +565,13 @@ const ExecutiveDashboard = () => {
                 <CardContent>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {[
-                      { label: "Approve Pending Loans", icon: TrendingUp, action: "Approve All Pending Loans", color: "bg-green-500 hover:bg-green-600" },
-                      { label: "Send Weekly Report", icon: User, action: "Send Weekly Report", color: "bg-blue-500 hover:bg-blue-600" },
-                      { label: "Schedule Maintenance", icon: Tractor, action: "System Maintenance", color: "bg-orange-500 hover:bg-orange-600" }
+                      { label: "Approve Pending Loans", icon: TrendingUp, action: "Approve All Pending Loans", color: "bg-foliage-500 hover:bg-foliage-600" },
+                      { label: "Send Weekly Report", icon: User, action: "Send Weekly Report", color: "bg-foliage-500 hover:bg-foliage-600" },
+                      { label: "Schedule Maintenance", icon: Tractor, action: "System Maintenance", color: "bg-foliage-500 hover:bg-foliage-600" }
                     ].map((item, index) => (
                       <Button 
                         key={item.label}
-                        className={`h-20 flex flex-col ${item.color} text-white hover:scale-105 transition-all animate-scale-in`}
+                        className={`h-20 flex flex-col ${item.color} text-foliage-50 hover:scale-105 transition-all animate-scale-in`}
                         style={{ animationDelay: `${index * 100}ms` }}
                         onClick={() => handleQuickAction(item.action)}
                         disabled={isLoading}
@@ -577,17 +596,17 @@ const ExecutiveDashboard = () => {
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
-                      <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                      <div className="flex justify-between items-center p-3 bg-foliage-50 rounded-lg">
                         <span className="font-medium">Machinery Utilization</span>
-                        <span className="text-green-600 font-semibold">78%</span>
+                        <span className="text-foliage-600 font-semibold">78%</span>
                       </div>
-                      <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                      <div className="flex justify-between items-center p-3 bg-foliage-50 rounded-lg">
                         <span className="font-medium">Labor Efficiency</span>
-                        <span className="text-blue-600 font-semibold">85%</span>
+                        <span className="text-foliage-600 font-semibold">85%</span>
                       </div>
-                      <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                      <div className="flex justify-between items-center p-3 bg-foliage-50 rounded-lg">
                         <span className="font-medium">Market Success Rate</span>
-                        <span className="text-purple-600 font-semibold">92%</span>
+                        <span className="text-foliage-600 font-semibold">92%</span>
                       </div>
                     </div>
                   </CardContent>
@@ -603,17 +622,17 @@ const ExecutiveDashboard = () => {
                   <CardContent>
                     <div className="space-y-3">
                       {[
-                        { region: "Punjab", percentage: 35, color: "bg-green-500" },
-                        { region: "Haryana", percentage: 25, color: "bg-blue-500" },
-                        { region: "Gujarat", percentage: 20, color: "bg-yellow-500" },
-                        { region: "Others", percentage: 20, color: "bg-gray-500" }
+                        { region: "Punjab", percentage: 35, color: "bg-foliage-500" },
+                        { region: "Haryana", percentage: 25, color: "bg-foliage-500" },
+                        { region: "Gujarat", percentage: 20, color: "bg-foliage-500" },
+                        { region: "Others", percentage: 20, color: "bg-foliage-500" }
                       ].map((item, index) => (
                         <div key={item.region} className="animate-slide-in" style={{ animationDelay: `${index * 100}ms` }}>
                           <div className="flex justify-between text-sm mb-1">
                             <span>{item.region}</span>
                             <span>{item.percentage}%</span>
                           </div>
-                          <div className="w-full bg-gray-200 rounded-full h-2">
+                          <div className="w-full bg-foliage-200 rounded-full h-2">
                             <div 
                               className={`${item.color} h-2 rounded-full transition-all duration-1000`}
                               style={{ width: `${item.percentage}%` }}
@@ -666,7 +685,7 @@ const ExecutiveDashboard = () => {
 
             {/* Quick Actions Tab */}
             <TabsContent value="quickActions" className="space-y-6 animate-fade-in">
-              <QuickActions />
+              <QuickActions onAssignTask={() => setShowAssignTask(true)} />
             </TabsContent>
 
             {/* Notifications Tab */}
@@ -676,6 +695,8 @@ const ExecutiveDashboard = () => {
           </Tabs>
         </div>
       </div>
+      {showQuickAdd && <QuickAddModal open={showQuickAdd} onClose={() => setShowQuickAdd(false)} />}
+      {showAssignTask && <AssignTaskModal open={showAssignTask} onClose={() => setShowAssignTask(false)} />}
     </div>
   );
 };

@@ -17,7 +17,8 @@ import {
   Zap,
   CheckCircle,
   AlertTriangle,
-  Clock
+  Clock,
+  User
 } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from 'react-router-dom';
@@ -39,9 +40,10 @@ interface QuickAction {
 
 interface QuickActionsProps {
   className?: string;
+  onAssignTask?: () => void;
 }
 
-export const QuickActions: React.FC<QuickActionsProps> = ({ className = "" }) => {
+export const QuickActions: React.FC<QuickActionsProps> = ({ className = "", onAssignTask }) => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState<string | null>(null);
@@ -191,6 +193,21 @@ export const QuickActions: React.FC<QuickActionsProps> = ({ className = "" }) =>
           title: "Emergency Alert System",
           description: "Emergency alert interface opened.",
           variant: "destructive"
+        });
+      }
+    },
+    {
+      id: 'assign-task',
+      title: 'Assign Task',
+      description: 'Assign a task to a team member',
+      icon: User,
+      color: 'text-cyan-600',
+      bgColor: 'bg-cyan-50 hover:bg-cyan-100',
+      action: () => {
+        if (onAssignTask) onAssignTask();
+        toast({
+          title: "Assign Task",
+          description: "Open the assign task modal.",
         });
       }
     }
