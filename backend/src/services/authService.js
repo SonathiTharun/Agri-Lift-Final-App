@@ -57,7 +57,7 @@ class AuthService {
         password,
         phone,
         role,
-        status: role === 'executive' ? 'pending' : 'active', // Executives need approval
+        status: 'active', // All users are active by default
         verification: 'unverified'
       };
 
@@ -87,9 +87,7 @@ class AuthService {
         user: user.toJSON(),
         token,
         refreshToken,
-        message: role === 'executive' 
-          ? 'Registration successful. Your account is pending approval.' 
-          : 'Registration successful!'
+        message: 'Registration successful!'
       };
     } catch (error) {
       if (error.code === 11000) {
@@ -113,11 +111,8 @@ class AuthService {
         throw new Error('Account is temporarily locked due to too many failed login attempts. Please try again later.');
       }
 
-      // Verify user type if specified
-      if (userType && user.role !== userType) {
-        await user.incLoginAttempts();
-        throw new Error(`Invalid credentials for ${userType} login`);
-      }
+      // Note: Removed strict userType validation to allow flexible login
+      // Users can login regardless of the userType parameter sent from frontend
 
       // Check password
       const isPasswordValid = await user.comparePassword(password);

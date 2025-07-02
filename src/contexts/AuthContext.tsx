@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback, useRef } from 'react';
 import { apiService, User } from '@/services/apiService';
 import { useToast } from '@/hooks/use-toast';
 
@@ -24,15 +24,52 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const { toast } = useToast();
+  const isLoggingOutRef = useRef(false);
+
+  // Update ref when state changes
+  useEffect(() => {
+    isLoggingOutRef.current = isLoggingOut;
+  }, [isLoggingOut]);
+
+  // Stable logout function using useCallback
+  const handleLogout = useCallback(async () => {
+    // Prevent multiple simultaneous logout calls
+    if (isLoggingOutRef.current) {
+      return;
+    }
+
+    setIsLoggingOut(true);
+    isLoggingOutRef.current = true;
+
+    try {
+      await apiService.logout();
+    } catch (error) {
+      console.error('Logout error:', error);
+    } finally {
+      // Clear user state regardless of API call success
+      setUser(null);
+      apiService.setToken(null);
+      localStorage.removeItem('currentUser');
+      setIsLoggingOut(false);
+      isLoggingOutRef.current = false;
+
+      toast({
+        title: "Logged Out",
+        description: "You have been successfully logged out.",
+      });
+    }
+  }, [toast]);
 
   // Check if user is authenticated on app load
   useEffect(() => {
     checkAuthStatus();
-    
-    // Listen for token expiration events
+  }, []);
+
+  // Token expiration handler - using ref to avoid stale closures
+  useEffect(() => {
     const handleTokenExpired = () => {
       // Only handle if not already logging out
-      if (!isLoggingOut) {
+      if (!isLoggingOutRef.current) {
         handleLogout();
         toast({
           title: "Session Expired",
@@ -43,16 +80,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     };
 
     window.addEventListener('auth:tokenExpired', handleTokenExpired);
-    
+
     return () => {
       window.removeEventListener('auth:tokenExpired', handleTokenExpired);
     };
-  }, []);
+  }, [handleLogout, toast]);
 
   const checkAuthStatus = async () => {
     try {
       setIsLoading(true);
-      
+
       // Check if token exists
       if (!apiService.isAuthenticated()) {
         setIsLoading(false);
@@ -64,15 +101,23 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       if (response.success) {
         setUser(response.data.user);
       } else {
-        // Token is invalid, clear it
+        // Token is invalid, clear it silently without triggering logout
+        console.log('Token verification failed, clearing auth state');
+        setUser(null);
         apiService.setToken(null);
         localStorage.removeItem('currentUser');
       }
     } catch (error) {
       console.error('Auth check failed:', error);
-      // Clear invalid token
-      apiService.setToken(null);
-      localStorage.removeItem('currentUser');
+      // Only clear auth if it's a real authentication error, not a network error
+      if (error.message && (error.message.includes('Invalid') || error.message.includes('expired'))) {
+        console.log('Authentication error, clearing auth state');
+        setUser(null);
+        apiService.setToken(null);
+        localStorage.removeItem('currentUser');
+      } else {
+        console.log('Network or other error during auth check, keeping current state');
+      }
     } finally {
       setIsLoading(false);
     }
@@ -116,31 +161,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  const handleLogout = async () => {
-    // Prevent multiple simultaneous logout calls
-    if (isLoggingOut) {
-      return;
-    }
 
-    setIsLoggingOut(true);
-
-    try {
-      await apiService.logout();
-    } catch (error) {
-      console.error('Logout error:', error);
-    } finally {
-      // Clear user state regardless of API call success
-      setUser(null);
-      apiService.setToken(null);
-      localStorage.removeItem('currentUser');
-      setIsLoggingOut(false);
-
-      toast({
-        title: "Logged Out",
-        description: "You have been successfully logged out.",
-      });
-    }
-  };
 
   const handleUpdateProfile = async (updateData: Partial<User>) => {
     try {
