@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils';
 interface GlassNavProps {
   children: React.ReactNode;
   className?: string;
-  variant?: 'farmer' | 'executive';
+  variant?: 'farmer' | 'executive' | 'executiveLight';
   blur?: 'sm' | 'md' | 'lg';
 }
 
@@ -19,6 +19,11 @@ const variants = {
     background: 'bg-gradient-to-r from-green-800/90 via-green-900/90 to-emerald-800/90 dark:from-green-900/90 dark:via-gray-900/90 dark:to-emerald-900/90',
     border: 'border-green-600/30 dark:border-green-700/30',
     shadow: 'shadow-green-800/20 dark:shadow-green-900/20'
+  },
+  executiveLight: {
+    background: 'bg-gradient-to-r from-green-100/90 via-green-200/90 to-emerald-100/90',
+    border: 'border-green-200/60',
+    shadow: 'shadow-green-200/30'
   }
 };
 

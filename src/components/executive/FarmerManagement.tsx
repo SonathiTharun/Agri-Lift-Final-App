@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -24,6 +23,8 @@ import {
   ShoppingCart
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from "@/components/ui/dialog";
+import { useNavigate } from "react-router-dom";
 
 interface Farmer {
   id: string;
@@ -48,6 +49,11 @@ const FarmerManagement = () => {
   const [selectedStatus, setSelectedStatus] = useState<string>("all");
   const [isLoading, setIsLoading] = useState(false);
   const [selectedFarmers, setSelectedFarmers] = useState<string[]>([]);
+  const navigate = useNavigate();
+  const [viewedFarmer, setViewedFarmer] = useState<Farmer | null>(null);
+  const [contactFarmer, setContactFarmer] = useState<Farmer | null>(null);
+  const [contactMessage, setContactMessage] = useState("");
+  const [contactSubject, setContactSubject] = useState("");
   
   const [farmers, setFarmers] = useState<Farmer[]>([
     {
@@ -397,7 +403,7 @@ const FarmerManagement = () => {
                     <Button 
                       size="sm" 
                       variant="outline"
-                      onClick={() => handleAction("View Profile", farmer.id, farmer.name)}
+                      onClick={() => setViewedFarmer(farmer)}
                       className="hover:scale-105 transition-transform"
                       disabled={isLoading}
                     >
@@ -421,7 +427,11 @@ const FarmerManagement = () => {
                       <Button 
                         size="sm" 
                         variant="outline"
-                        onClick={() => handleAction("Contact", farmer.id, farmer.name)}
+                        onClick={() => {
+                          setContactFarmer(farmer);
+                          setContactSubject(`Message for ${farmer.name}`);
+                          setContactMessage("");
+                        }}
                         className="hover:scale-105 transition-transform"
                         disabled={isLoading}
                       >
@@ -533,6 +543,88 @@ const FarmerManagement = () => {
           </CardContent>
         </Card>
       )}
+
+      {/* Dialog for View Profile */}
+      <Dialog open={!!viewedFarmer} onOpenChange={open => !open && setViewedFarmer(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Farmer Profile</DialogTitle>
+            <DialogDescription>Details of the selected farmer.</DialogDescription>
+          </DialogHeader>
+          {viewedFarmer && (
+            <div className="space-y-3">
+              <div className="flex items-center gap-3">
+                <Avatar className="h-14 w-14">
+                  <AvatarFallback className="bg-gradient-to-br from-blue-400 to-purple-500 text-white text-2xl">
+                    {viewedFarmer.name.split(' ').map(n => n[0]).join('')}
+                  </AvatarFallback>
+                </Avatar>
+                <div>
+                  <div className="font-bold text-lg">{viewedFarmer.name}</div>
+                  <div className="text-sm text-gray-600">{viewedFarmer.email}</div>
+                  <div className="text-sm text-gray-600">{viewedFarmer.phone}</div>
+                  <div className="text-sm text-gray-600">{viewedFarmer.location}</div>
+                </div>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {viewedFarmer.cropTypes.map(crop => (
+                  <Badge key={crop} variant="outline" className="text-xs bg-green-50 border-green-200 text-green-700">{crop}</Badge>
+                ))}
+              </div>
+              <div className="grid grid-cols-2 gap-2 text-sm">
+                <span>Land Area: <b>{viewedFarmer.landArea} acres</b></span>
+                <span>Status: <b>{viewedFarmer.status}</b></span>
+                <span>Verification: <b>{viewedFarmer.verification}</b></span>
+                <span>Joined: <b>{new Date(viewedFarmer.joinDate).toLocaleDateString()}</b></span>
+                <span>Last Active: <b>{viewedFarmer.lastActive}</b></span>
+                <span>Orders: <b>{viewedFarmer.totalOrders}</b></span>
+                <span>Total Spent: <b>₹{viewedFarmer.totalSpent.toLocaleString()}</b></span>
+              </div>
+            </div>
+          )}
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button variant="outline">Close</Button>
+            </DialogClose>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Dialog for Contact */}
+      <Dialog open={!!contactFarmer} onOpenChange={open => !open && setContactFarmer(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Contact Farmer</DialogTitle>
+            <DialogDescription>Send a message to the selected farmer.</DialogDescription>
+          </DialogHeader>
+          {contactFarmer && (
+            <form onSubmit={e => {
+              e.preventDefault();
+              setContactFarmer(null);
+              toast({ title: "Message Sent", description: `Message sent to ${contactFarmer.name}` });
+            }} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-1">To</label>
+                <Input value={contactFarmer.email} disabled className="bg-gray-100" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Subject</label>
+                <Input value={contactSubject} onChange={e => setContactSubject(e.target.value)} required />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Message</label>
+                <textarea value={contactMessage} onChange={e => setContactMessage(e.target.value)} required rows={4} className="w-full border rounded-md p-2" />
+              </div>
+              <DialogFooter>
+                <Button type="submit" className="bg-green-600 hover:bg-green-700 text-white">Send</Button>
+                <DialogClose asChild>
+                  <Button variant="outline" type="button">Cancel</Button>
+                </DialogClose>
+              </DialogFooter>
+            </form>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
